@@ -1,40 +1,24 @@
-# HGO-TRANS-ISO
+# __HGO_biomechanical_cardiac_SIM__
 
-Code **FreeFEM++** pour simuler un matériau **hyperélastique transversément isotrope** (type HGO selon la direction des fibres).
+**Author :** Joyce Ghantous  
+**Date :**  2026 
+**Version :** 1.0  
 
-## Dépendances
+This is **FreeFEM++** code to simulate a **transversely isotropic hyperelastic** material (HGO-type behavior along the fiber direction).
 
-Pour lancer la simulation :
-- [FreeFEM](https://freefem.org) v4.15.
+# __🎯 Objective__ 
 
-Pour le post-traitement :
-- Python3 dans `plot.py` avec :
-  - `numpy`
-  - `matplotlib`
+The objective is to register cardiac data by transferring information (e.g., myocardial fiber directions) from MRI images to optical mapping images. 
+This is done by modeling the heart tissue as a quasi-incompressible, transversely isotropic hyperelastic material and computing the displacement field u. 
+This way we get a transformation phi(x) = x + u(x) that best maps the heart from its MRI resting configuration to its stretched/flattened optical-mapping configuration by minimizing the system’s total mechanical energy.
 
-# Notes 
+### 📥 Install Freefem++ and run the Project :
 
-- Il faut lancer 
+To run the simulation, you need to install :
+- [FreeFEM](https://freefem.org) v4.15
+
+Run:
   ```bash
-    FreeFem++ Resolution_2d.edp
-  ```
-  ou bien, en utilisant le Makefile
-  ```bash
-    make
-  ```
-  Attention : il faut préciser, dans le fichier Resolution_2d.edp, quel fichier de paramètres vous souhaitez utiliser.
-- Les résultats seront disponibles dans res :
-  - le maillage final ;
-  - les valeurs de l’énergie, son gradient, ainsi que la variation du volume au cours de la déformation.
-- Pour tracer ces résultats, faites :
-  ```bash
-    python3 plot.py res/2D_case/energy.txt nom_image
-  ```
-- Il ne faut pas modifier le contenu du dossier Curta.
-- Dans Latex_documents, vous trouverez un fichier .zip contenant mon projet LaTeX.
-  Il faut utiliser la classe que j’ai définie pour ce travail.
-- Si vous voulez faire un git push, il faut d’abord exécuter :
-  ```bash
-    make clean
-  ```
-  Cela effacera le contenu des dossiers dans res/.
+  FreeFem++ Resolution_2d.edp
+
+
