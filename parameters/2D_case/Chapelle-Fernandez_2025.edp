@@ -1,0 +1,11 @@
+/* 
+    Values in Table 1 from the article
+*/
+nu1 = 0.;
+// nu2 = 0.;
+C0 = 1.9*1e3; 
+C1 = 0.11;
+C2 = C0;
+C3 = 0.11;
+kappa = 2*1e5;
+caseId = 2025;

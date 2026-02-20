@@ -1,0 +1,86 @@
+include "../src/2D_case/Geometries/LR_1.edp"
+
+// Critères : ratio et ratioA < tol
+
+real minL = 1e100, maxL = 0.;
+real minA = 1e100, maxA = 0.;
+
+for (int k=0; k<Th.nt; k++)
+{
+    int i0 = Th[k][0], i1 = Th[k][1], i2 = Th[k][2];
+
+    real x0 = Th(i0).x, y0 = Th(i0).y;
+    real x1 = Th(i1).x, y1 = Th(i1).y;
+    real x2 = Th(i2).x, y2 = Th(i2).y;
+
+    // longueurs d'arêtes du triangle k
+    real l01 = sqrt( (x1-x0)^2 + (y1-y0)^2 );
+    real l12 = sqrt( (x2-x1)^2 + (y2-y1)^2 );
+    real l20 = sqrt( (x0-x2)^2 + (y0-y2)^2 );
+
+    minL = min(minL, min(l01, min(l12, l20)));
+    maxL = max(maxL, max(l01, max(l12, l20)));
+
+    // aire du triangle k
+    real A = 0.5*abs( (x1-x0)*(y2-y0) - (y1-y0)*(x2-x0) );
+    minA = min(minA, A);
+    maxA = max(maxA, A);
+}
+
+real ratio  = maxL/minL;
+real ratioA = maxA/minA;
+
+cout << "\n=== Uniformite (criteres simples) ===\n";
+cout << "min edge = " << minL << " , max edge = " << maxL << "  => ratio = " << ratio << "\n";
+cout << "min area = " << minA << " , max area = " << maxA << "  => ratioA = " << ratioA << "\n";
+
+real tolEdge = 3.0, tolArea = 4.0;
+cout << (ratio  < tolEdge ? "OK" : "NON") << " (edges, tol=" << tolEdge << ")\n";
+cout << (ratioA < tolArea ? "OK" : "NON") << " (areas, tol=" << tolArea << ")\n";
+
+// Critères : angles minimums > 30 deg
+
+real minAng = 1e100, sumMinAng = 0.;
+int n10=0, n20=0, n30=0;
+
+func real clamp(real v, real a, real b){ return max(a, min(b, v)); }
+
+for (int k=0; k<Th.nt; k++)
+{
+    int i0 = Th[k][0], i1 = Th[k][1], i2 = Th[k][2];
+
+    real x0 = Th(i0).x, y0 = Th(i0).y;
+    real x1 = Th(i1).x, y1 = Th(i1).y;
+    real x2 = Th(i2).x, y2 = Th(i2).y;
+
+    real l01 = sqrt( (x1-x0)^2 + (y1-y0)^2 );
+    real l12 = sqrt( (x2-x1)^2 + (y2-y1)^2 );
+    real l20 = sqrt( (x0-x2)^2 + (y0-y2)^2 );
+
+    // Angles via loi des cosinus (clamp pour éviter des acos hors [-1,1])
+    real cA = clamp((l01*l01 + l20*l20 - l12*l12)/(2.0*l01*l20), -1., 1.);
+    real cB = clamp((l01*l01 + l12*l12 - l20*l20)/(2.0*l01*l12), -1., 1.);
+    real cC = clamp((l12*l12 + l20*l20 - l01*l01)/(2.0*l12*l20), -1., 1.);
+
+    real A = acos(cA)*180.0/pi;
+    real B = acos(cB)*180.0/pi;
+    real C = acos(cC)*180.0/pi;
+
+    real amin = min(A, min(B, C));
+
+    minAng = min(minAng, amin);
+    sumMinAng += amin;
+
+    if (amin < 10) n10++;
+    if (amin < 20) n20++;
+    if (amin < 30) n30++;
+}
+
+real meanMinAng = sumMinAng/Th.nt;
+
+cout << "\n=== Qualite (angles) ===\n";
+cout << "Angle minimum global = " << minAng << " deg\n";
+cout << "Moyenne des angles minimum (par triangle) = " << meanMinAng << " deg\n";
+cout << "#triangles avec angle min < 10 deg : " << n10 << " / " << Th.nt << "\n";
+cout << "#triangles avec angle min < 20 deg : " << n20 << " / " << Th.nt << "\n";
+cout << "#triangles avec angle min < 30 deg : " << n30 << " / " << Th.nt << "\n" << endl;

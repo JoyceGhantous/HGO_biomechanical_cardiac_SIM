@@ -1,0 +1,106 @@
+load "medit"   
+
+real R1 = 1.0;   // outer radius
+real R2 = 0.75;  // inner radius
+// int Nmesh = 100;
+
+
+// --------------- straight segments on y=0 --------------------
+
+// we chose a small percentage 10% of the size of the segments 
+// on which the boundary conditions will be imposed
+
+real percentage = 0.2;
+real eps = (R1-R2) * percentage * 0.5 ;
+
+// ----- Left ----- 
+real xcutL = -R1 + (R1 - R2)*0.5; // point à 1/4 depuis (-R1,0) vers (-R2,0)
+
+border leftR(t=0,1) // (-R2,0) -> (xcutL+eps,0)
+{
+  x = -R2 - ( -R2 - (xcutL+eps))*t;   
+  y = 0;
+  label = 103;
+}
+
+border leftC(t=0,1) // (xcutL+eps,0) -> (xcutL-eps,0)
+{
+  x = xcutL+eps - ((xcutL+eps) - (xcutL-eps))*t;
+  y = 0;
+  label = 1030;
+}
+
+border leftL(t=0,1) // (xcutL-eps,0) -> (-R1,0)
+{
+  x = xcutL-eps - ((xcutL-eps) + R1)*t;
+  y = 0;
+  label = 103;
+}
+
+// ----- Right -----
+real xcut = R2 + (R1 - R2)*0.5; // point au milieu entre R2 et R1
+
+border rightL(t=0,1)   // (R1,0) -> (xcut+eps,0)
+{
+  x = R1 - (R1 - (xcut+eps))*t;
+  y = 0;
+  label = 104;
+}
+
+border rightC(t=0,1)   // (xcut+eps,0) -> (xcut-eps,0)
+{
+  x = (xcut+eps) - ((xcut+eps)- (xcut-eps))*t;
+  y = 0;
+  label = 1040;
+}
+
+border rightR(t=0,1)   // (xcut-eps,0) -> (R2,0)
+{
+  x = (xcut-eps) - ((xcut-eps) - R2)*t;
+  y = 0;
+  label = 104;
+}
+
+// -------------------- outer arc --------------------
+
+// Start at (-R1,0) -> go along outer arc to (R1,0)
+border outer(t=pi,2*pi){
+  x = R1*cos(t);
+  y = R1*sin(t);
+  label = 101;
+}
+
+// -------------------- inner arc --------------------
+
+// Then go along outer arc from (-R2,0) back to (R2,0)
+border inner(t=2*pi,pi){     // reverse direction (clockwise)
+  x = R2*cos(t);
+  y = R2*sin(t);
+  label = 102;
+}
+
+// -------------------- build mesh --------------------
+int Nmesh = 10;
+int nOut = round(pi*4 * Nmesh); 
+int nIn  = round(pi*3 * Nmesh);
+
+mesh Th = buildmesh( outer(nOut)
+                   + rightL((1-percentage)*0.5*Nmesh) + rightC(percentage*Nmesh) + rightR((1-percentage)*0.5*Nmesh)
+                   + inner(nIn)
+                   + leftL((1-percentage)*0.5*Nmesh) + leftC(percentage*Nmesh) + leftR((1-percentage)*0.5*Nmesh) );
+
+// plot(Th, wait=true, cmm="unifromly adapted Half-ring with split borders");
+
+/* 
+  savemesh(Th, "Th.mesh");
+  
+  puis dans un terminal, on peut faire : 
+    gmsh Th.mesh
+  ou
+    gmsh Th.mesh \
+  -setnumber Mesh.Lines 1 \
+  -setnumber Mesh.Triangles 0 \
+  -setnumber Mesh.ColorCarousel 1
+  la derniere option permet d'avoir des couleurs differentes pour chaque bord
+*/
+

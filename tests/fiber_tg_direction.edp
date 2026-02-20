@@ -1,0 +1,123 @@
+include "fiber_src.edp"
+
+// --------------------------------------------------------------------------
+
+real R1 = 1.0;    // outer radius
+real R2 = 0.75;    // outer radius
+int Nmesh = 20; // mesh refinement parameter
+
+// Start at (-R1,0) -> go along outer arc to (R1,0)
+border outer(t=pi,2*pi){
+    x = R1*cos(t);
+    y = R1*sin(t);
+}
+
+// Then go from (-R2,0) to (-R1,0) upward in x
+border left(t=0,1){
+    x = -R2 - (R1-R2)*t;
+    y = 0;
+}
+
+// Then go along outer arc from (-R2,0) back to (R2,0)
+border inner(t=2*pi,pi){     // reverse direction (clockwise)
+    x = R2*cos(t);
+    y = R2*sin(t);
+}
+
+// Finally go from (R1,0) back to (R2,0) 
+border right(t=0,1){
+    x = R1 - (R1-R2)*t;
+    y = 0;
+}
+
+mesh Th = buildmesh( outer(6*Nmesh)
+                    + left(2*Nmesh)
+                    + inner(4*Nmesh)
+                    + right(2*Nmesh) );
+                    
+// --------------------------------------------------------------------------
+
+fespace Vh(Th, P1);
+Vh ax, ay, n;
+
+ax =  y;
+ay = -x;
+
+// plot([ax,ay], wait=true, cmm="Champ tangent a");
+
+// normalisation 
+n  = sqrt(ax^2 + ay^2);
+ax = ax / n;
+ay = ay / n;
+
+// plot([ax,ay], wait=true, cmm="Champ tangent unitaire a");
+
+// --------------------------------------------------------------------------
+// Test 1: no deformation -> W should be constant C2
+// --------------------------------------------------------------------------
+
+cout << "------------------ Test 1: no deformation ------------------\n" << endl;
+
+Vh u=0., v=0.;
+Vh detC, UU, W;
+Vh II4;
+
+II4 = I4([u,v], [ax,ay]);
+detC = I2d([u,v])[1];
+
+cout << "I4 min = " << II4[].min << " , I4 max = " << II4[].max << endl;
+cout << "detC min = " << detC[].min << ", detC max = " << detC[].max << "\n" << endl;
+
+real C2 = 10.0;
+real C3 = 2.0;
+
+UU   = UUfibre( I2d([u,v]), II4 );
+W    = WExpFiber( I2d([u,v]), II4 );
+
+cout << "UU min = " << UU[].min << ", UU max = " << UU[].max << "\n";
+cout << "W min = " << W[].min << ", W max = " << W[].max << " should be equal to " << C2 << ", " << C2 << " \n" << endl;
+
+// plot(W, fill=true, value=true, wait=true, cmm="WExpFiber test1 (should be constant C2)");
+
+real res = int2d(Th)(  W2d([u,v], [ax,ay]) );
+cout << "Total energy = " << res << " should be equal to " << C2 * int2d(Th)(1.) << "\n" << endl;
+
+// --------------------------------------------------------------------------
+// Test 2: x-stretch -> W should vary according to lambda
+// --------------------------------------------------------------------------
+
+cout << "------------------ Test 2: x-stretch ------------------\n" << endl;
+
+real lambda = 2;
+u = (lambda-1.)*x;
+v = 0.;
+
+II4 = I4([u,v], [ax,ay]);
+detC = I2d([u,v])[1];
+
+cout << "I4 min = " << II4[].min << " , I4 max = " << II4[].max << endl;
+cout << "detC min = " << detC[].min << ", detC max = " << detC[].max << "\n" << endl;
+
+// plot(II4, wait=true, cmm="I4 for x-stretch");
+
+/*
+    I4 min = 1 , I4 max = 1.43999 corresponds to the x-stretch test  u=(lambda-1)*x, v=0
+    I4 = lambda^2 ax^2 + ay^2 
+    since ax^2 + ay^2 = 1 -> I4 = (lambda^2 - 1) ax^2 + 1
+    I4 est constant le long des rayons (car il ne dépend pas de r)
+    -> les lignes de niveau sont des segments radiaux 
+*/
+
+UU   = UUfibre( I2d([u,v]), II4 );
+W    = WExpFiber( I2d([u,v]), II4 );
+
+cout << "UU min = " << UU[].min << ", UU max = " << UU[].max << "\n";
+cout << "W min = " << W[].min << ", W max = " << W[].max << " should be equal to " << C2 << ", " << 10*exp(C3) << " \n" << endl;
+
+// plot(W, fill=true, value=true, wait=true, cmm="WExpFiber test2 (x-stretch)");
+
+res = int2d(Th)(  W2d([u,v], [ax,ay]) );
+cout << "Total energy = " << res << " should be equal to " << 17.51 << "\n" << endl;
+
+// --------------------------------------------------------------------------
+

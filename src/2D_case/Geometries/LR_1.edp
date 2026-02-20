@@ -1,0 +1,53 @@
+real R1 = 1.0;    // outer radius
+real R2 = 0.75;    // outer radius
+
+// -------------------- outer arc --------------------
+
+// Start at (-R1,0) -> go along outer arc to (R1,0)
+border outer(t=pi,2*pi){
+    x = R1*cos(t);
+    y = R1*sin(t);
+    label = 101;
+}
+
+// -------------------- inner arc --------------------
+
+// Then go along inner arc from (-R2,0) back to (R2,0)
+border inner(t=2*pi,pi){     // reverse direction (clockwise)
+    x = R2*cos(t);
+    y = R2*sin(t);
+    label = 102;
+}
+
+// -------------------- Left --------------------
+
+// Then go from (-R2,0) to (-R1,0) upward in x
+border left(t=0,1){
+    x = -R2 - (R1-R2)*t;
+    y = 0;
+    label = 103;
+}
+
+// -------------------- Right --------------------
+
+// Finally go from (R1,0) back to (R2,0) 
+border right(t=0,1){
+    x = R1 - (R1-R2)*t;
+    y = 0;
+    label = 104;
+}
+
+// -------------------- build mesh --------------------
+int Nmesh = 10;
+int nOut = round(pi*4 * Nmesh); 
+int nIn  = round(pi*3 * Nmesh);
+
+mesh Th = buildmesh( outer(nOut)
+                    + left(Nmesh)
+                    + inner(nIn)
+                    + right(Nmesh) );
+
+// real h = (R1 - R2)/Nmesh;
+// Th = adaptmesh(Th, iso=1, hmin=h, hmax=h, nbvx=50000);
+// plot(Th, wait=true, cmm="Adapted half-ring domain");
+

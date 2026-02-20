@@ -1,0 +1,16 @@
+
+////////// W(I_3) = k ( I2^0.5 - 1 )^2  for quasi-incompressibility //////////
+
+macro WQuasiIncomp(I) ( I[1] - 2. * I[1]^(0.5) + 1.  ) //
+
+macro dWQuasiIncomp(I, dI) ( dI[1] - ( I[1]^(-0.5) ) * dI[1] )  //
+
+macro ddWQuasiIncomp(I, dI, ddI) ( (0.5) * (I[1]^(-1.5)) * dI[1] * ddI[1] ) //
+
+////////// W(I_3) = k ( I2^0.5 - 1 - ln (I2^0.5) )  for quasi-incompressibility //////////
+
+macro WQuasiIncompln(I) ( sqrt(I[1]) - 1. - log( sqrt(I[1]) ) ) //
+
+macro dWQuasiIncompln(I, dI) ( (0.5*I[1]^(-0.5) - 0.5*I[1]^(-1)) * dI[1] ) //
+
+macro ddWQuasiIncompln(I, dI, ddI) ( (-0.25*I[1]^(-1.5) + 0.5*I[1]^(-2)) * dI[1] * ddI[1] ) //

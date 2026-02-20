@@ -1,0 +1,27 @@
+///////// W(I) = C2 * exp ( C3 * ( I4 * I2^(-1/2) - 1 )^2 ) /////////
+
+/////// Tools ////////
+
+macro UUfibre(I, I4) ( I4 * (I[1]^(-0.5)) - 1. ) //
+
+macro dUUfibre(I, dI, I4, dI4) (  dI4 * (I[1]^(-0.5)) 	
+								- 0.5 * I4 * (I[1]^(-1.5)) * dI[1] ) //
+
+macro ddUUfibre(I, dI, ddI, I4, dI4, ddI4) ( - 0.5  * dI4  * (I[1]^(-1.5)) * ddI[1]
+	 										 - 0.5  * ddI4 * (I[1]^(-1.5)) * dI[1]
+											 + 0.75 * I4   * (I[1]^(-2.5)) * dI[1] * ddI[1] ) //
+
+macro dWWfibre(I, ddI, I4, ddI4)( 2. * C3 * UUfibre(I, I4) * dUUfibre(I, ddI, I4, ddI4) * exp( C3 * ( UUfibre(I, I4) )^2 ) ) //
+
+/////// END Tools /////////
+
+macro WExpFiber(I, I4) ( exp ( C3 * ( UUfibre(I, I4) )^2 ) ) //
+
+macro dWExpFiber(I, dI, I4, dI4) ( 2. * C3 * UUfibre(I, I4) * dUUfibre(I, dI, I4, dI4) * exp( C3 * ( UUfibre(I, I4) )^2 ) ) //
+
+macro ddWExpFiber(I, dI, ddI, I4, dI4, ddI4) ( 2. * C3 * ( 
+															  dUUfibre(I, ddI, I4, ddI4) * dUUfibre(I, dI, I4, dI4) 		    * exp( C3 * ( UUfibre(I, I4) )^2 )
+				    						 				+ UUfibre(I, I4) 	       	 * ddUUfibre(I, dI, ddI, I4, dI4, ddI4) * exp( C3 * ( UUfibre(I, I4) )^2 )
+											 				+ UUfibre(I, I4) 	       	 * dUUfibre(I, dI, I4, dI4) 			* dWWfibre(I, ddI, I4, ddI4) 
+														 )
+											 ) //

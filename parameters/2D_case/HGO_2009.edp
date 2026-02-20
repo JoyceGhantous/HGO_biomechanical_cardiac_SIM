@@ -1,0 +1,23 @@
+/*
+    Parameters for the HGO model
+    nu1, nu2, C0, C1, C2, C3 and kappa are used in EnergyDef.edp
+    
+    They are given in the paper of HGO 2009  page 28, as follows:
+    c0 = a/2b KPa
+    c1 = b
+    c2 = a_f/2b_f KPa
+    c3 = b_f
+    nu1 and nu2 are not defined in this paper
+
+    nu1, nu2, C1, C3 and kappa are in Pa
+    C0 and C2 are adimensional
+*/
+
+nu1 = 0.5;
+// nu2 = 0.5;
+C0 = 3.125;
+C1 = 8;
+C2 = 625;
+C3 = 16;
+kappa = 100;
+caseId = 2009;

@@ -1,0 +1,240 @@
+string testId = "1";
+string case = ARGV[2];
+
+include "param.edp"
+include "src/2D_case/HyperElastic_2d.idp"
+include "src/2D_case/HyperElastic_Energy.idp"
+include "src/tools.idp"
+
+mesh Th = gmshload("src/2D_case/Geometries/LR_gmsh_2.msh"); 
+
+real t0 = clock();
+
+// -----------------------------
+// FE spaces and unknowns
+// -----------------------------
+
+fespace Vh(Th, [P1, P1]);
+
+Vh [dun, dvn] = [0, 0];     // Delta u_n       
+Vh [un, vn] = [0, 0];   // u_n at the n-th iteration 
+
+// -----------------------------------
+// Fiber tangential and normal vectors
+// -----------------------------------
+
+fespace Sh(Th,P0);
+Sh ax, ay, n, bx, by;
+
+n  = sqrt(x^2 + y^2);
+
+ax = y / n;
+ay = -x / n;
+
+bx = x / n;
+by = y / n;
+
+// -----------------------------
+// Macros for the energy
+// -----------------------------
+
+macro WNH(d)    ( int2d(Th)( WNeoHook(I2d(d)) ) )           // EOM
+macro WEX(d)    ( int2d(Th)( WExp(I2d(d)) ) )               // EOM
+macro WFB(d, a) ( int2d(Th)( WExpFiber(I2d(d), I4(d, a))) ) // EOM
+macro VOL(d)    ( int2d(Th)( WQuasiIncompln(I2d(d)) ))      // EOM
+macro EXTF(d)   (   int2d(Th)( f1*d[0] + f2*d[1] )
+                  + int1d(Th, 1040)( g1*d[0] + g2*d[1] ))  // EOM
+
+macro ENERGY(d, a) ( 
+       nu1 * WNH(d)    + C0 * WEX(d) 
+      + C2 * WFB(d, a) + kappa * VOL(d) 
+      - EXTF(d)
+) //
+
+macro dENERGY(d, dd, a) ( int2d(Th)( dW2d(d, dd, a) ) - EXTF(dd) ) //
+
+// ------------------------------
+// R(un; v) = dE(un)[v] - Fext[v]
+// ------------------------------
+
+Vh [v1,v2], [w1,w2];
+varf vRes([w1,w2],[v1,v2], solver=sparsesolver) =
+        int2d(Th)( dW2d([un, vn], [v1, v2], [ax,ay]) )
+      - int2d(Th)( f1*v1 + f2*v2 )
+      - int1d(Th, 1040)( g1*v1 + g2*v2 )
+      + on(1030, w1=0, w2=0);  
+
+// -----------------------------
+// Mass matrix for L2 norm 
+// -----------------------------
+
+varf vmass ([v1,v2], [w1,w2], solver=sparsesolver) = int2d(Th)(v1*w1 + v2*w2);
+matrix M = vmass(Vh, Vh);
+
+// -----------------------------
+// Newton Pb :
+//    D2W = - (Dw - Fext)
+//    => D2W + Dw - Fext = 0
+// -----------------------------
+
+problem NonLin([dun, dvn], [v1, v2], solver=sparsesolver)
+      = int2d(Th)( ddW2d([un, vn], [dun, dvn], [v1, v2], [ax,ay]))  // D2W
+      + int2d(Th)( dW2d([un, vn], [v1, v2], [ax,ay]) )              // DW
+      - int2d(Th)( f1*v1 + f2*v2 )                                  // - Fext
+      - int1d(Th, 1040)( g1*v1 + g2*v2 )
+      + on(1030, dun=0, dvn=0);
+
+// -----------------------------
+// Newton Algo
+// -----------------------------
+
+for (int i = 0; i < Nbmax; i++){
+      
+      cout << "---------------------------------------- \n" << endl;
+      cout << "Iteration " << i << " : \n" << endl;
+      info << "---------------------------------------- \n" << endl;
+      info << "Iteration " << i << " : \n" << endl;
+
+      // -------------------------------------------------
+      // - Print the enrgy, its derivatives and each part of the energy seperatly 
+      // - Compute Jacobian determinant of the deformation
+      // - Compute the deformation of the tangential fiber direction
+      // -------------------------------------------------
+      real En = ENERGY([un, vn], [ax, ay]);   
+      real W1, W2, W3, vol, dEn;
+      W1 = WNH([un,vn]);
+      W2 = WEX([un,vn]);
+      W3 = WFB([un,vn], [ax, ay]);
+      vol = VOL([un,vn]);
+      dEn = dENERGY([un, vn], [dun, dvn], [ax, ay]);
+
+      cout << "----------------------------------------" << endl;
+      cout << "Iteration = " << i << " : " << endl;
+      info << "The total energy E(un) = " << En << " and it derivative DE(un)[dun] = " << dEn << endl;
+      cout << "The total energy E(un) = " << En << " and it derivative DE(un)[dun] = " << dEn << endl;
+      cout << "Energy parts without physical coefficients" << endl;
+      cout << "  int W_linear = " << W1 << endl;
+      cout << "  int W_expo = " << W2 << endl;
+      cout << "  int W_fiber = " << W3 << endl;
+      cout << "  int W_quasiIncomp_ln = " << vol << endl;
+      cout << "----------------------------------------" << endl;
+      en << i << " " << En << " " << W1 << " " << W2 << " " << W3 << " " << vol << " " << dEn << " " << endl;
+   
+      Jacobian([un, vn]);
+      FiberDeformation(i, [ax, ay], [bx, by], [un, vn], "res/2D_case/fiber/Fa_" + testId + "_" + caseId + "_" + i + ".vtu" );
+
+      // -------------------------------------------------
+      // Solve Newton system -> get dun, dvn
+      // -------------------------------------------------
+      NonLin;    
+      
+      // -----------------------------
+      // Stopping criterias
+      // -----------------------------
+      Vh [d1eff, d2eff] = alpha * [dun, dvn];
+      real duInf = max( max(abs(d1eff[].min), abs(d1eff[].max)),
+                        max(abs(d2eff[].min), abs(d2eff[].max)) );
+      if (duInf < tol) {
+            cout << "Converged: step*du norm below tol and is =  " << duInf << endl;
+            info << "Converged: step*du norm below tol and is =  " << duInf << endl;
+            break;
+      }
+
+      // --------------------------------------------------
+      // Compute the L2 norm of the derivative of the energy
+      // --------------------------------------------------
+      real[int] G = vRes(0, Vh);   
+      real[int] z = M^-1 * G;       
+      real gradL2 = sqrt( G' * z );
+
+      cout << " ||grad E||_L2 = " << gradL2 << endl;
+      LGe << i << " " << gradL2 << endl;
+
+      if (gradL2 < tol) {
+          cout << "Converged: gradient below tol.\n"<< endl;
+          info << "Converged: gradient below tol.\n"<< endl;
+          break;
+      }
+
+      // Energy evaluation
+
+      [un, vn] = [un, vn] + alpha * [dun, dvn];
+      real En1  = ENERGY([un, vn], [ax, ay]);
+      cout << "The new total energy = " << En1 << endl;
+    
+      if (abs(En1)>1e20){
+            cout << "------------- ERROR --------------------" << endl;
+            break;
+      }
+
+      if (En1 <= En + tol*abs(En)){ 
+            cout << " Energy decreased "<< endl;
+            info << " Energy decreased "<< endl;
+            alpha = min(alphaMax,1.2*alpha);
+            cout << "Up Step = " << alpha << endl;
+            info << "Up Step = " << alpha << endl;
+      }
+      else {
+            cout << " Energy went up "<< endl;
+            info << " Energy went up "<< endl;
+            alpha  = max(alphaMin,0.8*alpha);
+            cout << "Down Step = " << alpha << endl;
+            info << "Down Step = " << alpha << endl;
+      }
+      
+      cout << "---------------------------------------- \n" << endl;
+      info << "---------------------------------------- \n" << endl;
+}
+
+// ---------------------------------------------------------------
+// Mesh movement based on the displacement field
+// ---------------------------------------------------------------
+
+mesh Th0 = Th; 
+
+for (int ii = 0; ii < Nsteps; ii++) {
+    vol << ii << " " << Area(Th) << endl;
+
+    real step = 1.0 / Nsteps;
+    real minS = checkmovemesh(Th, [x + step*un, y + step*vn]);
+
+    while (minS < tol) {
+      // si minS < 0, il y a des triangles inverses
+      if (verbosity > 0) cout << "minS = " << minS << endl;
+      step *= 0.5;
+      minS = checkmovemesh(Th, [x + step*un, y + step*vn]);
+      if (step < tol) { 
+            cout << "Step too small, stop moving mesh.\n"; 
+            break; 
+      }
+    }
+
+    Th = movemesh(Th, [x + step*un, y + step*vn]);
+    plot(Th);
+}
+
+string path = "res/2D_case/Mesh/Final_mesh_" + testId + "_" + caseId + ".eps";
+plot(Th, ps = path);
+
+// -----------------------------
+// Post-processing
+// -----------------------------
+string fiberpath = "res/2D_case/fiber/Fa_final_" + testId + "_" + caseId + ".vtu";
+FiberDeformation(Nbmax, [ax, ay], [bx, by], [un, vn], fiberpath);
+
+SaveMesh(Th, 2);
+
+SaveMesh(Th0, 2);
+
+real p = AreaVariation(Th0, Th);
+info << "\n";
+info << "Area variation = " << p << " % \n" << endl;
+info << "V0 = " << Area(Th0) << "\n" << endl;
+info << "V1 = " << Area(Th) << "\n" << endl;
+
+real mind = un[].min;
+cout << "The minimum value of the displacement = " << mind << endl;
+real maxd = un[].max;
+cout << "The maximum value of the displacement = " << maxd << "\n" << endl;
+
+SaveTime(clock(), t0);

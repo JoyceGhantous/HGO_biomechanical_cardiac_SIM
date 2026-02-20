@@ -1,0 +1,113 @@
+include "../src/2D_case/HyperElastic_2d.idp"
+include "../src/2D_case/HyperElastic_Energy.idp"
+include "../src/tools.idp"
+
+load "gmsh"
+load "iovtk"
+load "Element_P3" 
+
+real optQuasiIncomp = 0.;
+
+real nu1 = 2.;
+
+real C0 = 4.;
+real C1 = 10.;
+real C2 = 1.;
+real C3 = 1.;
+
+real kappa = 100.; 
+
+border bottom(t=0,1){ x=t;   y=0; }
+border right (t=0,1){ x=1;   y=t; }
+border top   (t=0,1){ x=1-t; y=1; }
+border left  (t=0,1){ x=0;   y=1-t;}
+
+// --- Maillage ---
+// n = nb de segments par cote (augmente pour raffiner)
+int nmesh = 40;
+mesh Th = buildmesh( bottom(nmesh) + right(nmesh) + top(nmesh) + left(nmesh) );
+
+fespace Vh(Th, [P1, P1]);
+
+// -----------------------------------
+// Fiber tangential and normal vectors
+// -----------------------------------
+
+fespace Sh(Th,P1);
+Sh ax, ay;
+
+ax = y;
+ay = -x; 
+// -----------------------------
+// Macros for the energy
+// -----------------------------
+
+macro WNH(d)    ( int2d(Th)( WNeoHook(I2d(d)) ) )           // EOM
+macro WEX(d)    ( int2d(Th)( WExp(I2d(d)) ) )               // EOM
+macro WFB(d, a) ( int2d(Th)( WExpFiber(I2d(d), I4(d, a))) ) // EOM
+macro VOL(d)    ( int2d(Th)( WQuasiIncompln(I2d(d)) ))      // EOM
+
+macro ENERGY(d, a) ( 
+       nu1 * WNH(d)    + C0 * WEX(d) 
+      + C2 * WFB(d, a) + kappa * VOL(d) 
+) //
+
+macro dENERGY(d, dd, a) ( int2d(Th)( dW2d(d, dd, a) ) ) //
+
+macro ddENERGY(d, dd, ddd, a) ( int2d(Th)( ddW2d(d, dd, ddd, a) ) ) //
+
+Vh [un, vn], [d1u,d1v], [d2u,d2v];
+[un, vn]  = [x + 0.2*y, -0.3*x + y];  
+[d1u,d1v] = [ x*(1-x)*(1-y)*y^2, x*(1-x)*(x-0.5)*y*(1-y) ];
+[d2u,d2v] = [ x*(1-x)*(x-0.3)*y*(1-y), (1-x)*(y-0.7)*y*x^2*(1-y) ];
+
+cout << "Test 1 : DF pour tester DE " << endl;
+
+real DE = dENERGY([un,vn],[d2u,d2v],[ax,ay]);
+
+for (int k=0; k<5; k++) {
+  real eps = pow(10., -(k+2)); 
+  
+  Vh [Up,Vp] = [un + eps*d2u, vn + eps*d2v];
+  Vh [Um,Vm] = [un - eps*d2u, vn - eps*d2v];
+
+  real Ep = ENERGY([Up,Vp],[ax,ay]);
+  real Em = ENERGY([Um,Vm],[ax,ay]);
+
+  real FD = (Ep - Em)/(2.*eps);
+  
+  real  err = abs(FD-DE)/max(1e-30,FD);
+  if (err > 1e-3){
+    cout << "DE = " << DE << endl;
+    cout << "eps=" << eps << "  FD=" << FD << endl;
+    cout << "rel err   = " << err << "\n" << endl;
+  }
+
+}
+cout << "Test 1 : OK \n " << endl;
+
+cout << "Test 2 : DF centree pour tester D2E " << endl;
+
+real D2E = ddENERGY([un,vn],[d1u,d1v],[d2u,d2v],[ax,ay]);
+
+for (int k=0; k<5; k++){
+  real eps = pow(10., -(k+2)); // 1e-2..1e-8
+
+  Vh [Up,Vp] = [un + eps*d2u, vn + eps*d2v];
+  Vh [Um,Vm] = [un - eps*d2u, vn - eps*d2v];
+
+  real DEp = dENERGY([Up,Vp],[d1u,d1v],[ax,ay]);
+  real DEm = dENERGY([Um,Vm],[d1u,d1v],[ax,ay]);
+
+  real FD2 = (DEp - DEm)/(2*eps); // approx de D^2E(u)[d1,d2]
+
+  real err = abs(FD2-D2E)/max(1e-30,abs(D2E));
+  if (err > 1e-5){
+    cout << "eps=" << eps << "  FD2=" << FD2 << endl;
+    cout << "D2E via la formule = " << D2E << endl;
+    cout << "  rel=" << err << endl;
+  }
+}
+cout << "Test 2 : OK \n " << endl;
+
+

@@ -1,0 +1,10 @@
+load "gmsh"
+mesh Th = gmshload("../src/2D_case/Geometries/LR_gmsh_2.msh"); 
+fespace Ph(Th, P0);
+Ph h = hTriangle;
+cout << "size of mesh = " << h[].max << endl;
+
+/*
+    hTriangle donne une mesure de taille locale des triangles
+    et h[].max affiche la plus grande taille des triangles du maillage.
+*/

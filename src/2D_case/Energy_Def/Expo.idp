@@ -1,0 +1,26 @@
+///////// W(I) = C0 * exp ( C1 * ( I1 * I2^(-1/2) - 2 )^2 ) /////////
+
+
+/////// Tools ////////
+
+macro UU(I) ( I[0] * (I[1]^(-0.5)) - 2. ) //
+
+macro dUU(I, dI) ( dI[0] * (I[1]^(-0.5)) 
+				   - 0.5 * I[0] * (I[1]^(-1.5)) * dI[1] ) //
+
+macro ddUU(I, dI, ddI) ( - 0.5 * (I[1]^(-1.5)) * dI[0] * ddI[1]
+		  				 - 0.5 * (I[1]^(-1.5)) * dI[1] * ddI[0]
+		  				 + 0.75 * I[0] * (I[1]^(-2.5)) * dI[1] * ddI[1] ) //
+
+/////// END Tools /////////
+
+macro WExp(I) ( exp( C1 * ( UU(I) )^2 ) ) //
+
+macro dWExp(I, dI) ( 2. * C1 * UU(I)  * dUU(I, dI) * WExp(I) ) //
+
+macro ddWExp(I, dI, ddI) ( 2. * C1 * ( dUU(I, ddI) * dUU(I, dI) 		* WExp(I)
+				    	 				+ UU(I) 	* ddUU(I, dI, ddI)  * WExp(I) 
+						 				+ UU(I) 	* dUU(I, dI) 		* ( 2. * C1 * UU(I) * dUU(I, ddI) * WExp(I) )
+ 									 ) 
+						  ) //
+

@@ -1,0 +1,83 @@
+/*
+   Building the Green–Lagrange strain (via right Cauchy–Green tensor) 
+   C2d(d) =F^T F, where F = I + grad(d) is the deformation gradient
+   and d = [u,v] is the displacement field
+*/
+macro C2d(d)
+[
+	1. + 2.*dx(d[0]) + dx(d[0])*dx(d[0]) + dx(d[1])*dx(d[1]),
+	1. + 2.*dy(d[1]) + dy(d[0])*dy(d[0]) + dy(d[1])*dy(d[1]),
+	dy(d[0]) + dx(d[1]) + dx(d[0])*dy(d[0]) + dx(d[1])*dy(d[1])
+] //
+
+macro dC2d(d, dd)
+[
+	2.*dx(dd[0]) + 2.*dx(dd[0])*dx(d[0]) + 2.*dx(dd[1])*dx(d[1]),
+	2.*dy(dd[1]) + 2.*dy(dd[0])*dy(d[0]) + 2.*dy(dd[1])*dy(d[1]),
+	dy(dd[0]) + dx(dd[1]) + dx(d[0])*dy(dd[0]) + dx(dd[0])*dy(d[0]) + dy(d[1])*dx(dd[1]) + dy(dd[1])*dx(d[1])
+] //
+
+macro ddC2d(dd, ddd)
+[
+	2.*dx(dd[0])*dx(ddd[0]) + 2.*dx(dd[1])*dx(ddd[1]),
+	2.*dy(dd[0])*dy(ddd[0]) + 2.*dy(dd[1])*dy(ddd[1]),
+	dx(dd[0])*dy(ddd[0]) + dx(ddd[0])*dy(dd[0]) + dy(dd[1])*dx(ddd[1]) + dy(ddd[1])*dx(dd[1])
+] //
+
+/*
+	I2C(C) computes the three invariants of C, where
+	C = [C11, C22, C12] is the right Cauchy–Green tensor
+	
+	I2C(C) = [I1, I2, I3] where
+	I1 = tr(C)= C11 + C22
+	I2 = C11 * C22 − C12^2 = det C
+	I3 = det⁡(C) = C11 * C22 − C12^2
+	
+	dI2C and ddI2C are the corresponding derivatives
+*/
+macro I2C(C)
+[
+	C[0] + C[1], 
+	C[0] * C[1] - C[2]*C[2]
+] //EOM
+
+macro dI2C(C, dC)
+[
+	dC[0] + dC[1] ,
+	dC[0]*C[1] + C[0]*dC[1] - 2.*C[2]*dC[2]
+] //
+
+macro  ddI2C(C, dC, ddC)
+[
+	0.*dC[0]*ddC[0],
+	dC[0]*ddC[1] + ddC[0]*dC[1] - 2.*ddC[2]*dC[2]
+] //
+
+// I4 = a^T C a 
+macro I4C(C, a)
+(
+	C[0] * a[0]^2 + C[1]*a[1]^2 + 2.*a[0]*C[2]*a[1] 
+) //
+
+// dI4C derivative with respect to the unknown field d in direction dd
+// a(x,y) is independent of d
+macro dI4C(C, dC, a)
+(
+	dC[0] * a[0]^2 + dC[1]*a[1]^2 + 2.*a[0]*dC[2]*a[1] 
+) //
+
+macro ddI4C(C, dC, ddC, a)
+(
+	0. 
+)//
+
+// shortcuts for formulas
+macro I2d(d) (I2C(C2d(d)))  //
+macro dI2d(d, dd) (dI2C(C2d(d), dC2d(d, dd))) //
+macro ddI2d(d, dd, ddd) (ddI2C(C2d(d), dC2d(d, dd), dC2d(d, ddd)) + dI2C(C2d(d), ddC2d((dd), (ddd)))) //
+
+macro I4(d, a) (I4C(C2d(d), a)) //
+macro dI4(d, dd, a) (dI4C(C2d(d), dC2d(d, dd), a)) //
+macro ddI4(d, dd, ddd, a) (dI4C(C2d(d), ddC2d((dd), (ddd)), a)) //
+
+// ddI4C(C2d(d), dC2d(d, dd), dC2d(d, ddd), a)  = 0. so we do not include it in ddI4

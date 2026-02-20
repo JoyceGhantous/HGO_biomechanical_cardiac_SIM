@@ -1,0 +1,109 @@
+/*
+  This script loads two different Gmsh meshes of a lower half-annulus
+  with different boundary labels and solves a Poisson problem on each.
+
+  It illustrates how to use boundary labels defined in Gmsh for applying
+  boundary conditions in FreeFEM.
+*/
+
+load "gmsh"
+
+mesh Th = gmshload("../LR_gmsh_1.msh");
+
+plot(Th, wait=1, cmm="Lower half-annulus (labels: 101 outer, 102 inner, 103 left, 104 right)");
+
+// Example: show how you would use the labels in BCs
+fespace Vh(Th, P1);
+Vh u, v;
+real f = 1.0;
+
+problem Poisson(u, v)
+  = int2d(Th, 200)( dx(u)*dx(v) + dy(u)*dy(v) )
+  - int2d(Th)( f*v )  // ce n'est pas necessaire de mettre de label pour le domaine complet 
+  + on(101, u=0)      // outer arc
+  + on(102, u=10)      // inner arc
+  + on(103, u=0)      // left segment
+  + on(104, u=0);     // right segment
+
+Poisson;
+
+plot(u, wait=1, cmm="Solution u");
+
+mesh Th2 = gmshload("../LR_gmsh_2.msh");
+
+plot(Th2, wait=1, cmm="Lower half-annulus");
+
+// Example: show how you would use the labels in BCs
+fespace Vh2(Th2, P1);
+Vh2 u2, v2;
+real f2 = 2.0;
+
+problem Poisson2(u2, v2)
+  = int2d(Th2, 200)( dx(u2)*dx(v2) + dy(u2)*dy(v2) )
+  - int2d(Th2)( f2*v2 )  // ce n'est pas necessaire de mettre de label pour le domaine complet 
+  + on(101, u2=0)        // outer arc
+  + on(102, u2=10)       // inner arc
+  + on(103, u2=0)        // left segment
+  + on(104, u2=0)        // right segment
+  + on(1030, u2=40)      // middle left segment
+  + on(1040, u2=100);    // middle right segment
+
+Poisson2;
+
+plot(u2, wait=1, cmm="Solution u2");
+
+mesh Th3 = gmshload("../LR_gmsh_3.msh");
+
+plot(Th3, wait=1, cmm="Lower half-annulus + 2 holes (domain 3)");
+
+// P1 space
+fespace Vh3(Th3, P1);
+Vh3 u3, v3;
+real f3 = 2.0;
+
+problem Poisson3(u3, v3)
+  = int2d(Th3, 200)( dx(u3)*dx(v3) + dy(u3)*dy(v3) )
+  - int2d(Th3)( f3*v3 )
+  + on(101, u3=0)       // outer arc
+  + on(102, u3=10)      // inner arc
+  + on(103, u3=0)       // left segment (vertical parts)
+  + on(104, u3=0)       // right segment (vertical parts)
+  + on(103, u3=40)      // middle left (small horizontal cut)
+  + on(104, u3=100)     // middle right (small horizontal cut)
+  + on(105, u3=0)       // hole right
+  + on(106, u3=0);      // hole left
+
+Poisson3;
+
+plot(u3, wait=1, cmm="Solution u3 (domain 3)");
+
+
+mesh Th4 = gmshload("LowerRing_4.msh");
+plot(Th4, wait=1, cmm="Lower half-annulus + 2 holes (domain 4)");
+
+// P1 space
+fespace Vh4(Th4, P1);
+Vh4 u4, v4;
+
+problem Poisson4(u4, v4)
+  = int2d(Th4, 200)( dx(u4)*dx(v4) + dy(u4)*dy(v4) )
+  - int2d(Th4)( f3*v4 )
+  + on(101, u4=0)       // outer arc
+  + on(102, u4=10)      // inner arc
+  + on(103, u4=0)       // left segment (vertical parts)
+  + on(104, u4=0)       // right segment (vertical parts)
+  + on(103, u4=40)      // middle left (small horizontal cut)
+  + on(104, u4=100)     // middle right (small horizontal cut)
+  + on(105, u4=0)       // hole right
+  + on(106, u4=0);      // hole left
+
+Poisson4; 
+plot(u4, wait=1, cmm="Solution u4 (domain 4)");
+
+real A3 = int2d(Th3)(1.0);
+cout << "Area 3 = " << A3 << endl;
+real A4 = int2d(Th4)(1.0);
+cout << "Area 4 = " << A4 << endl;
+real rr = A4 / A3;
+cout << "Ratio A4/A3 = " << rr << endl;
+

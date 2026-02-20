@@ -1,0 +1,139 @@
+load "msh3";
+load "medit";
+
+// 
+// Volume and Area calculations
+// 
+
+func real Area(mesh Th)
+{
+    return int2d(Th)( 1.0 );
+}
+
+func real AreaVariation(mesh Th0, mesh Th1)
+{
+    real V0 = Area(Th0);
+    real V1 = Area(Th1);
+    real p = 100.0 * abs(V1 - V0) / V0 ;
+
+    cout << "\n";
+    cout << "Area variation = " << p << " % \n" << endl;
+    cout << "V0 = " << Area(Th0) << "\n" << endl;
+    cout << "V1 = " << Area(Th1) << "\n" << endl;
+    
+    return p;
+}
+
+func real Volume(mesh3 Th)
+{
+    return int3d(Th)( 1.0 );
+}
+
+func real VolumeVariation(mesh3 Th0, mesh3 Th1)
+{
+    real V0 = Volume(Th0);
+    real V1 = Volume(Th1);
+    return 100.0 * abs(V1 - V0) / V0;
+}
+
+// 
+// Save mesh information 
+//
+
+func int SaveMesh(mesh &Th, int dim)
+{
+    cout << "Sommets (nv)        = " << Th.nv  << endl;
+    cout << "Triangles (nt)      = " << Th.nt  << endl;
+    cout << "Aretes frontiere    = " << Th.nbe << endl;
+
+    fespace Ph(Th, P0);
+    Ph h = hTriangle;
+    cout << "size of mesh = " << h[].max << endl;
+
+    if (dim == 3) {
+        savemesh(Th, "res/3D_case/Mesh/Final_mesh_" + testId + "_" + caseId + ".mesh");
+    }
+    
+    savemesh(Th, "res/2D_case/Mesh/Final_mesh_" + testId + "_" + caseId + ".mesh");
+
+    return 0;
+}
+
+// 
+// Save computation time
+//
+
+macro SaveTime(t1, t0)
+{
+  real dt = t1 - t0;
+  int h = dt/3600;
+  int m = (dt - 3600*h)/60;
+  real s = dt - 3600*h - 60*m;
+
+  info.precision(2);
+  info << "Computational time = " << h << " h " << m << " min " << s << " s \n" << endl;
+  cout << "Computational time = " << h << " h " << m << " min " << s << " s \n" << endl;
+
+}
+
+
+// 
+// Compute and save the jacobian  
+// 
+
+macro Jacobian(d)
+{
+    Sh J = (1.0 + dx(d[0]))*(1.0 + dy(d[1])) - dx(d[1])*dy(d[0]);
+
+    real JL2 = sqrt( int2d(Th)( (J-1.0)^2 ) / int2d(Th)(1.0) ); 
+    
+    if (verbosity > 0) cout << "min(J) = " << J[].min << "   max(J) = " << J[].max << endl;
+    Jac << i << " " << J[].min << " " << J[].max << endl;
+    
+    if (J[].min <= 0) {
+        cout << "Inverted elements likely! min(J) = " << J[].min << endl;
+        break;
+    }
+
+    if (JL2 > 0.05) cout << "WARNING: JL2 = " << JL2 << " > 0.05 " << endl;
+
+    if ( JL2 > 0.1 ) {
+        cout << "Error! ||J-1||_L2 / aire = " << JL2 << " > 0.11 \n" << endl;
+        break;
+    }
+} //
+
+// 
+// Compute and save the fiber tangential vector   
+// 
+
+macro FiberDeformation(i, a, b, d, Fiber)  
+{
+    Sh Fax = a[0] + dx(d[0]) * a[0] + dy(d[0]) * a[1]; 
+    Sh Fay = a[1] + dx(d[1]) * a[0] + dy(d[1]) * a[1]; 
+
+    savevtk(Fiber, Th, [Fax, Fay], dataname="Fa");
+  
+    if (verbosity > 0) {
+        string fnA = "res/2D_case/fiber/Deformed_tg_vec_" + testId + "_" + caseId + "_" + i + ".eps"; 
+        plot([Fax, Fay], wait=1, cmm="Fa = (Fax,Fay)", ps=fnA);
+    }
+
+    if (verbosity > 1) {     
+        Sh Fbx, Fby, ps; 
+        Fbx = bx + dx(un)*bx + dy(un)*by;
+        Fby = dx(vn)*bx + by + dy(vn)*by; 
+
+        string fnB = "res/2D_case/fiber/Deformed_normal_vec_" + testId + "_" + caseId + "_" + i + ".eps"; 
+        plot([Fbx, Fby], wait=1, cmm="Fb = (Fbx,Fby)", ps=fnB);
+
+        Sh II4;
+        II4 = I4([un,vn], [ax,ay]);
+        cout << "I4 min = " << II4[].min << " , I4 max = " << II4[].max << endl;
+
+        ps = Fax*Fbx + Fay*Fby; 
+        cout << "min(Fa . F(a^orth)) = " << ps[].min << " and max(Fa . F(a^orth)) = " << ps[].max << endl; 
+        cout << "----------------------------------------" << endl;
+    }
+
+} //

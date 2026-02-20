@@ -1,0 +1,80 @@
+include "fiber_src.edp"
+
+/*
+    ==========================================================
+    Test script for macro: dI4(d, dd, a)
+    ==========================================================
+        Purpose : Verify that the macro dI4(d,dd,a) correctly computes the
+        *directional derivative* of I4(d,a) with respect to the
+        displacement field d = [u,v] in the direction dd = [du,dv].
+
+        dI4([u,v],[du,dv],a) ~ ( I4([u+eps*du, v+eps*dv],a)- I4([u-eps*du, v-eps*dv],a) ) / (2 eps)
+
+    Expected result
+    ---------------
+        The error should be small; typically it decreases when eps is reduced.
+*/
+
+// --------------------------------------------------------------------------
+// Mesh definition
+// --------------------------------------------------------------------------
+
+mesh Th = square(40,40);   // unit square [0,1]x[0,1]
+
+// --------------------------------------------------------------------------
+// Finite element space and fibre direction field a = (ax,ay)
+// --------------------------------------------------------------------------
+
+fespace Vh(Th, P1);
+Vh ax, ay, n;
+
+ax =  y;
+ay = -x;
+
+n  = sqrt(ax^2 + ay^2) + 1e-10;
+ax = ax / n;
+ay = ay / n;
+
+// --------------------------------------------------------------------------
+
+real eps = 1e-7;
+
+Vh u=x, v=1+y;
+Vh du = y, dv = 10*x;
+Vh up, vp, um, vm;
+
+up = u + eps*du;   vp = v + eps*dv;
+um = u - eps*du;   vm = v - eps*dv;
+
+Vh I40, I4p, I4m;
+Vh dI4ana, dI4fd, err;
+
+// --------------------------------------------------------------------------
+// Compute I4 and its derivatives (analytic and finite difference) and the error
+// --------------------------------------------------------------------------
+
+I40 = I4([u,v], [ax,ay]);
+
+I4p = I4([up,vp], [ax,ay]);
+I4m = I4([um,vm], [ax,ay]);
+
+// analytic vs FD (central)
+dI4ana = dI4([u,v], [du,dv], [ax,ay]);
+dI4fd  = (I4p - I4m) / (2.0*eps);
+
+err = abs(dI4fd - dI4ana);
+
+// --------------------------------------------------------------------------
+// Output
+// --------------------------------------------------------------------------
+
+
+cout << "\n" << endl;
+cout << "------------ dI4 test (u=v=0) ------------------\n" << endl;
+cout << "I40 min = " << I40[].min << " , max = " << I40[].max << "\n";
+cout << "dI4ana min = " << dI4ana[].min << " , max = " << dI4ana[].max << "\n";
+cout << "dI4fd  min = " << dI4fd[].min  << " , max = " << dI4fd[].max  << "\n";
+cout << "err    min = " << err[].min    << " , max = " << err[].max    << "\n";
+cout << "err L2      = " << sqrt(int2d(Th)(err^2)) << "\n" << endl;
+
+// --------------------------------------------------------------------------

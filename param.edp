@@ -1,0 +1,142 @@
+load "gmsh"
+load "iovtk"
+load "Element_P3" 
+
+/*
+    Parameters for the HGO transversely isotropic hyperelastic model
+    used in Resolution.edp and EnergyDef.edp
+*/
+
+verbosity = 0; 
+
+// ----------------------------------------------------------------
+
+// options: 0 = quasi-incompressibility with ln
+//          1 = quasi-incompressibility without ln
+
+real optQuasiIncomp = 0.;
+
+// Parameters for the HGO model
+// nu1, nu2, C0, C1, C2, C3 and kappa are used in EnergyDef.edp
+// There is not a nu2 in the 2D case
+real nu1, C0, C1, C2, C3, kappa;
+int caseId;
+
+if (case == "0"){
+    include "parameters/2D_case/test0.edp"
+    }
+if (case == "1"){
+    include "parameters/2D_case/test1.edp"
+    }
+if (case == "2"){
+    include "parameters/2D_case/test2.edp"
+}
+if (case == "3"){
+    include "parameters/2D_case/test3.edp"
+}
+if (case == "4"){
+    include "parameters/2D_case/test4.edp"
+}
+if (case == "5"){
+    include "parameters/2D_case/test5.edp"
+}
+if (case == "2009"){
+    include "parameters/2D_case/HGO_2009.edp"
+}
+if (case == "2025"){
+    include "parameters/2D_case/Chapelle-Fernandez_2025.edp"
+}
+if (case == "6"){
+    include "parameters/2D_case/test6.edp"
+    }
+if (case == "7"){
+    include "parameters/2D_case/test7.edp"
+    }
+if (case == "8"){
+    include "parameters/2D_case/test8.edp"
+}
+if (case == "9"){
+    include "parameters/2D_case/test9.edp"
+}
+if (case == "10"){
+    include "parameters/2D_case/test10.edp"
+}
+if (case == "11"){
+    include "parameters/2D_case/test11.edp"
+}
+if (case == "12"){
+    include "parameters/2D_case/test12.edp"
+}
+if (case == "13"){
+    include "parameters/2D_case/test13.edp"
+}
+if (case == "14"){
+    include "parameters/2D_case/test14.edp"
+}
+if (case == "15"){
+    include "parameters/2D_case/test15.edp"
+}
+if (case == "16"){
+    include "parameters/2D_case/test16.edp"
+}
+if (case == "17"){
+    include "parameters/2D_case/test17.edp"
+}
+
+
+
+// ----------------------------------------------------------------
+
+// Border conditions
+real g0 = 0.;
+
+real g = 1.;
+real theta = 0.25 * pi;
+
+real g1 = g * cos(theta);
+real g2 = - g * sin(theta);
+
+// body forces
+real f1 = 0.;
+real f2 = 0.;
+
+// optimization parameters for the Newton method
+
+real alpha = 0.5;
+real alphaMax = 0.6;
+real alphaMin = 0.005;
+
+int Nbmax = 500;
+real tol = 1e-6;
+
+// for movemesh
+int Nsteps = 100;
+
+// end of parameters
+
+string res = "res/2D_case/Saved_values/Test_" + testId + "/";
+
+// Crée les sous-dossiers (le -p évite l'erreur si ça existe déjà)
+exec("mkdir -p " + res + "en");
+exec("mkdir -p " + res + "grad");
+exec("mkdir -p " + res + "vol");
+exec("mkdir -p " + res + "jac");
+exec("mkdir -p " + res + "info");
+
+ofstream en   (res + "en/energy"         + caseId + ".txt");
+ofstream LGe  (res + "grad/L2Gradenergy"   + caseId + ".txt");
+ofstream vol  (res + "vol/volume"         + caseId + ".txt");
+ofstream Jac  (res + "jac/jacobian"       + caseId + ".txt");
+ofstream info (res + "info/Info"           + caseId + ".txt");
+
+info << "Test case " + caseId + " : \n " << endl;
+info << "nu1 = " << nu1 << endl; 
+info << "C0 = " << C0 << ", C1 = " << C1 << endl; 
+info << "C2 = " << C2 << ", C3 = " << C3 << endl; 
+info << "kappa = " << kappa << " \n " << endl;  
+
+cout << "Test case " + caseId + " : \n " << endl;
+cout << "nu1 = " << nu1 << endl; 
+cout << "C0 = " << C0 << ", C1 = " << C1 <<  endl; 
+cout << "C2 = " << C2 << ", C3 = " << C3 <<  endl; 
+cout << "kappa = " << kappa << " \n " << endl;  

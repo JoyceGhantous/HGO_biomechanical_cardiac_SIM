@@ -1,0 +1,145 @@
+/*
+   Building the Green–Lagrange strain (via right Cauchy–Green tensor) 
+   C3d(d) =F^T F, where F = I + grad(d) is the deformation gradient
+   and d = [u,v,w] is the displacement field
+
+   the right Cauchy–Green tensor is given by,
+	C 	= [ C[0] C[3] C[5]
+		  	C[3] C[1] C[4]
+		  	C[5] C[4] C[2] ] 
+		= [ C[0]
+			C[1]
+			C[2]
+			C[3]
+			C[4]
+			C[5] ]
+*/
+
+macro C3d(d)
+[
+  1. + 2.*dx(d[0]) + dx(d[0])^2 + dx(d[1])^2 + dx(d[2])^2,
+  1. + 2.*dy(d[1]) + dy(d[1])^2 + dy(d[0])^2 + dy(d[2])^2,
+  1. + 2.*dz(d[2]) + dz(d[2])^2 + dz(d[0])^2 + dz(d[1])^2,
+  dy(d[0]) + dx(d[0])*dy(d[0]) + dx(d[1]) + dx(d[1])*dy(d[1]) + dx(d[2])*dy(d[2]),
+  dy(d[0])*dz(d[0]) + dz(d[1]) + dy(d[1])*dz(d[1]) + dy(d[2]) + dy(d[2])*dz(d[2]),
+  dz(d[0]) + dx(d[0])*dz(d[0]) + dx(d[1])*dz(d[1]) + dx(d[2]) + dx(d[2])*dz(d[2])
+] //
+
+macro dC3d(d, dd)
+[ 
+  2.*(1. + dx(d[0]))*dx(dd[0]) + 2.*dx(d[1])*dx(dd[1]) + 2.*dx(d[2])*dx(dd[2]), 
+  2.*dy(d[0])*dy(dd[0]) + 2.*(1. + dy(d[1]))*dy(dd[1]) + 2.*dy(d[2])*dy(dd[2]),
+  2.*dz(d[0])*dz(dd[0]) + 2.*dz(d[1])*dz(dd[1]) + 2.*(1. + dz(d[2]))*dz(dd[2]),
+  dx(dd[0])*dy(d[0]) + (1. + dx(d[0]))*dy(dd[0]) + dx(dd[1])*(1. + dy(d[1])) + dx(d[1])*dy(dd[1]) + dx(dd[2])*dy(d[2]) + dx(d[2])*dy(dd[2]), 
+  dy(dd[0])*dz(d[0]) + dy(d[0])*dz(dd[0]) + dy(dd[1])*dz(d[1]) + (1. + dy(d[1]))*dz(dd[1]) + dy(dd[2])*(1. + dz(d[2])) + dy(d[2])*dz(dd[2]), 
+  dx(dd[0])*dz(d[0]) + (1. + dx(d[0]))*dz(dd[0]) + dx(dd[1])*dz(d[1]) + dx(d[1])*dz(dd[1]) + dx(dd[2])*(1. + dz(d[2])) + dx(d[2])*dz(dd[2]) 
+] //
+
+macro ddC3d(dd, ddd) 
+[ 
+  2.*( dx(dd[0])*dx(ddd[0]) + dx(dd[1])*dx(ddd[1]) + dx(dd[2])*dx(ddd[2]) ), 
+  2.*( dy(dd[0])*dy(ddd[0]) + dy(dd[1])*dy(ddd[1]) + dy(dd[2])*dy(ddd[2]) ), 
+  2.*( dz(dd[0])*dz(ddd[0]) + dz(dd[1])*dz(ddd[1]) + dz(dd[2])*dz(ddd[2]) ),
+  dx(dd[0])*dy(ddd[0]) + dx(ddd[0])*dy(dd[0]) + dx(dd[1])*dy(ddd[1]) + dx(ddd[1])*dy(dd[1]) + dx(dd[2])*dy(ddd[2]) + dx(ddd[2])*dy(dd[2]), 
+  dy(dd[0])*dz(ddd[0]) + dy(ddd[0])*dz(dd[0]) + dy(dd[1])*dz(ddd[1]) + dy(ddd[1])*dz(dd[1]) + dy(dd[2])*dz(ddd[2]) + dy(ddd[2])*dz(dd[2]),
+  dx(dd[0])*dz(ddd[0]) + dx(ddd[0])*dz(dd[0]) + dx(dd[1])*dz(ddd[1]) + dx(ddd[1])*dz(dd[1]) + dx(dd[2])*dz(ddd[2]) + dx(ddd[2])*dz(dd[2])
+] //
+
+/*
+	I3C(C) computes the three invariants of C,
+	the right Cauchy–Green tensor given by,
+	C = [ C11 C12 C13
+		  C21 C22 C23 
+		  C31 C32 C33 ] 
+		= [ C[0] C[3] C[5]
+		  	C[3] C[1] C[4]
+		  	C[5] C[4] C[2] ] 
+		= [ C[0]
+			C[1]
+			C[2]
+			C[3]
+			C[4]
+			C[5] ]		
+		
+	I3C(C) = [I1, I2, I3] where
+
+	I1 = tr(C)= C11 + C22 + C33
+
+	I2 = 0.5 * ( I1^2 - tr(C^2) ) = C11 ∗ C22 
+								  + C11 ∗ C33 
+								  + C22 ∗ C33 
+								  - C12 ^ 2
+								  - C23 ^ 2 
+								  - C13 ^ 2 
+
+	I3 = det⁡(C) =   C11 * C22 * C33 
+				  - C23^2 * C11
+				  - C13^2 * C22
+				  - C12^2 * C33
+				  + 2 * C13 * C12 * C23
+	
+	dI3C and ddI3C are the corresponding derivatives
+*/
+macro I3C(C)
+[
+	C[0] + C[1] + C[2], 
+	C[0] * C[1] + C[0] * C[2] + C[1] * C[2] - C[3] * C[3]- C[4] * C[4] - C[5] * C[5],
+	C[0] * C[1] * C[2] - C[0] * C[4]^2 - C[3]^2 * C[2] + 2. * C[3] * C[5] * C[4] - C[5]^2 * C[1]
+] //EOM
+
+macro dI3C(C, dC)
+[
+	dC[0] + dC[1] + dC[2],
+	dC[0] * C[1] + C[0] * dC[1] + dC[0] * C[2] + C[0] * dC[2] 
+		+ dC[1] * C[2] + C[1] * dC[2] - 2.* (C[3] * dC[3] + C[4] * dC[4] + C[5] * dC[5]),
+	dC[0] * C[1] * C[2] + C[0] * dC[1] * C[2] + C[0] * C[1] * dC[2] 
+	    - dC[0] * C[4]^2 - 2. * C[0] * C[4] * dC[4] 
+		- dC[2] * C[3]^2 - 2. * C[2] * C[3] * dC[3]
+		+ 2. * ( dC[3] * C[5] * C[4] + C[3] * dC[5] * C[4]  + C[3] * C[5] * dC[4] ) 
+		- dC[1] * C[5]^2 - C[1] * 2. * C[5] * dC[5]
+] //
+
+macro  ddI3C(C, dC, ddC)
+[
+	0.*dC[0]*ddC[0],
+	dC[0] * ddC[1] + ddC[0] * dC[1] + dC[0] * ddC[2] + ddC[0] * dC[2] 
+		+ dC[1] * ddC[2] + ddC[1] * dC[2] - 2.* (ddC[3] * dC[3] + ddC[4] * dC[4] + ddC[5] * dC[5]),
+	dC[0] * ( ddC[1] * C[2] + C[1] * ddC[2] ) 
+		+ ddC[0] * dC[1] * C[2]  + C[0] * dC[1] * ddC[2] 
+		+ ddC[0] * C[1] * dC[2] + C[0] * ddC[1] * dC[2] 
+	    - 2. * dC[0] * C[4] * ddC[4] - 2. * ( ddC[0] * C[4] + C[0] * ddC[4] ) * dC[4] 
+		- 2. * dC[2] * C[3] * ddC[3] - 2. * ( ddC[2] * C[3] + C[2] * ddC[3] ) * dC[3]
+		+ 2. * ( dC[3] * (ddC[5] * C[4] + C[5] * ddC[4]) + ddC[3] * dC[5] * C[4] + C[3] * dC[5] * ddC[4]  + (ddC[3] * C[5] + C[3] * ddC[5]) * dC[4] ) 
+		- 2. * dC[1] * C[5] * ddC[5] - ddC[1] * 2. * C[5] * dC[5] - C[1] * 2. * ddC[5] * dC[5]
+] //
+
+// I4 = a^T C a 
+macro I4C(C, a)
+(
+	a[0]*C[0]*a[0] + a[1]*C[1]*a[1] + a[2]*C[2]*a[2]
+	+ 2.*a[0]*C[3]*a[1] + 2.*a[0]*C[5]*a[2] + 2.*a[1]*C[4]*a[2]
+    
+) //  
+
+macro dI4C(C, dC, a)
+(
+	a[0]*dC[0]*a[0] + a[1]*dC[1]*a[1] + a[2]*dC[2]*a[2]
+	+ 2.*a[0]*dC[3]*a[1] + 2.*a[0]*dC[5]*a[2] + 2.*a[1]*dC[4]*a[2]
+	
+) // 
+
+macro ddI4C(C, dC, ddC, a)
+(
+	0. 
+)//
+
+// shortcuts for formulas
+macro I3d(d) (I3C(C3d(d)))  //
+macro dI3d(d, dd) (dI3C(C3d(d), dC3d(d, dd))) //
+macro ddI3d(d, dd, ddd) (ddI3C(C3d(d), dC3d(d, dd), dC3d(d, ddd)) + dI3C(C3d(d), ddC3d((dd), (ddd)))) //
+
+macro I4(d, a) (I4C(C3d(d), a)) //
+macro dI4(d, dd, a) (dI4C(C3d(d), dC3d(d, dd), a)) //
+macro ddI4(d, dd, ddd, a) (dI4C(C3d(d), ddC3d((dd), (ddd)), a)) //
+
+// ddI4C(C2d(d), dC2d(d, dd), dC2d(d, ddd), a)  = 0. so we do not include it in ddI4

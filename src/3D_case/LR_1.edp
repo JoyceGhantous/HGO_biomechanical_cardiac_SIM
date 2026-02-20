@@ -1,0 +1,80 @@
+// Parameters
+real R1 = 1.;     // outer radius
+real R2 = 0.75;   // inner radius
+real H  = 2.0;    // height of the cylinder
+
+// -------------------- outer arc --------------------
+
+// Start at (-R1,0) -> go along outer arc to (R1,0)
+border outer(t=pi,2*pi){
+    x = R1*cos(t);
+    y = R1*sin(t);
+    label = 101;
+}
+
+// -------------------- inner arc --------------------
+
+// Then go along inner arc from (-R2,0) back to (R2,0)
+border inner(t=2*pi,pi){     // reverse direction (clockwise)
+    x = R2*cos(t);
+    y = R2*sin(t);
+    label = 102;
+}
+
+// -------------------- Left --------------------
+
+// Then go from (-R2,0) to (-R1,0) upward in x
+border left(t=0,1){
+    x = -R2 - (R1-R2)*t;
+    y = 0;
+    label = 103;
+}
+
+// -------------------- Right --------------------
+
+// Finally go from (R1,0) back to (R2,0) 
+border right(t=0,1){
+    x = R1 - (R1-R2)*t;
+    y = 0;
+    label = 104;
+}
+
+// -------------------- build mesh --------------------
+
+// int Nmesh = 10 ;
+
+int nOut = round(pi*4 * Nmesh); 
+int nIn  = round(pi*3 * Nmesh);
+
+mesh Th2D = buildmesh( outer(nOut)
+                    + left(Nmesh)
+                    + inner(nIn)
+                    + right(Nmesh) );
+
+// ---------- 3D HALF-CYLINDRICAL SHELL BY EXTRUSION ----------
+
+int[int] rdown = [0, 20];  // rdown[0] = 20
+int[int] rup   = [0, 10];  // rup[0]   = 10
+int Nz = round( H * Nmesh / (R1 - R2) );
+
+mesh3 Th3 = buildlayers(
+    Th2D,
+    Nz,  // number of layers in z for extrusion - le rafinement dans la direction de l'axe des z
+    zbound   = [0, H], 
+    labelup  = rup,
+    labeldown= rdown
+);
+
+
+// // Visualize
+// plot(Th2D, wait = 1, cmm = "2D half-annulus, y <= 0");
+// plot(Th3,  wait = 1, cmm = "3D half-cylindrical shell, y <= 0");
+
+// To use this domain : see example:
+// fespace Vh(Th3, P1);
+// Vh u, v;
+
+// solve pb(u, v)
+//     = int3d(Th3)( dx(u)*dx(v) + dy(u)*dy(v) + dz(u)*dz(v) )
+//     + on(20, u = 0)   // fond
+//     + on(10, u = 1);  // haut

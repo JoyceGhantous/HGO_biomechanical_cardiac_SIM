@@ -1,0 +1,27 @@
+include "Energy_Def/Linear.idp"
+include "Energy_Def/Expo.idp"
+include "Energy_Def/Fiber.idp"
+include "Energy_Def/QuasiIncomp.idp"
+
+// macros for the Hyperelastic energy density and its derivatives 
+
+macro W2d(d) (WNeoHook(I3d(d)) 
+			 + WMooneyRivlin(I3d(d)) 
+ 			 + WExp(I3d(d)) 
+			 + WExpFiber(I3d(d), I4(d, a))
+ 			 + (optQuasiIncomp + 1.) * WQuasiIncompln(I3d(d)) 
+			 + optQuasiIncomp * WQuasiIncomp(I3d(d)) ) //
+
+macro dW2d(d, dd) ( dWNeoHook(I3d(d), dI3d(d, dd))  
+					+ dWMooneyRivlin(I3d(d), dI3d(d, dd)) 
+				  	+ dWExp(I3d(d), dI3d(d, dd)) 
+					+ dWExpFiber(I3d(d), dI3d(d, dd), I4(d, a), dI4(d, dd, a))
+				  	+ (optQuasiIncomp + 1.) * dWQuasiIncompln(I3d(d), dI3d(d, dd)) 
+					+ optQuasiIncomp * dWQuasiIncomp(I3d(d), dI3d(d, dd)) ) //
+
+macro ddW2d(d, dd, ddd) (ddWNeoHook(I3d(d), dI3d(d, dd), dI3d(d, ddd)) + dWNeoHook(I3d(d), ddI3d(d, dd, ddd))  
+					   + ddWMooneyRivlin(I3d(d), dI3d(d, dd), dI3d(d, ddd))  + dWMooneyRivlin(I3d(d), ddI3d(d, dd, ddd)) 
+					   + ddWExp(I3d(d), dI3d(d, dd), dI3d(d, ddd))  + dWExp(I3d(d), ddI3d(d, dd, ddd)) 
+					   + ddWExpFiber(I3d(d), dI3d(d, dd), dI3d(d, ddd), I4(d, a), dI4(d, dd, a), dI4(d, ddd, a)) + dWExpFiber(I3d(d), ddI3d(d, dd, ddd), I4(d, a), ddI4(d, dd, ddd, a))
+					   + (optQuasiIncomp + 1.) * ddWQuasiIncompln(I3d(d), dI3d(d, dd), dI3d(d, ddd)) + (optQuasiIncomp + 1.) * dWQuasiIncompln(I3d(d), ddI3d(d, dd, ddd)) 
+					   + optQuasiIncomp * ddWQuasiIncomp(I3d(d), dI3d(d, dd), dI3d(d, ddd)) + optQuasiIncomp * dWQuasiIncomp(I3d(d), ddI3d(d, dd, ddd)) ) //

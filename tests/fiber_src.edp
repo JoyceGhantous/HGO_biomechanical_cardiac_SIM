@@ -1,0 +1,43 @@
+macro C2d(d)
+[
+	1. + 2.*dx(d[0]) + dx(d[0])*dx(d[0]) + dx(d[1])*dx(d[1]),
+	1. + 2.*dy(d[1]) + dy(d[0])*dy(d[0]) + dy(d[1])*dy(d[1]),
+	dy(d[0]) + dx(d[1]) + dx(d[0])*dy(d[0]) + dx(d[1])*dy(d[1])
+] //
+macro dC2d(d, dd)
+[
+	2.*dx(dd[0]) + 2.*dx(dd[0])*dx(d[0]) + 2.*dx(dd[1])*dx(d[1]),
+	2.*dy(dd[1]) + 2.*dy(dd[0])*dy(d[0]) + 2.*dy(dd[1])*dy(d[1]),
+	dy(dd[0]) + dx(dd[1]) + dx(d[0])*dy(dd[0]) + dx(dd[0])*dy(d[0]) + dy(d[1])*dx(dd[1]) + dy(dd[1])*dx(d[1])
+] //
+
+macro I2C(C)
+[
+	C[0] + C[1], 
+	C[0] * C[1] - C[2]*C[2]
+] //EOM
+macro I2d(d) (I2C(C2d(d)))  //
+
+macro dI2C(C, dC)
+[
+	dC[0] + dC[1] ,
+	dC[0]*C[1] + C[0]*dC[1] - 2.*C[2]*dC[2]
+] //
+
+macro dI2d(d, dd) (dI2C(C2d(d), dC2d(d, dd))) //
+
+macro I4C(C, a) ( C[0]*a[0]^2 + C[1]*a[1]^2 + 2.*C[2]*a[0]*a[1] ) //
+macro I4(d, a) (I4C(C2d(d), a)) //
+
+macro UUfibre(I, I4) ( I4 * (I[1]^(-0.5)) - 1. ) //
+macro WExpFiber(I, I4) ( C2 * exp ( C3 * ( UUfibre(I, I4) )^2 ) ) //
+macro W2d(d, a) ( WExpFiber(I2d(d), I4(d, a)) ) //
+
+macro dI4C(C, dC, a) (dC[0] * a[0]^2 + dC[1]*a[1]^2 + 2.*a[0]*dC[2]*a[1]) //
+macro dI4(d, dd, a) (dI4C(C2d(d), dC2d(d, dd), a)) //
+
+macro dUUfibre(I, dI, I4, dI4) (  dI4 * (I[1]^(-0.5)) 	
+								- 0.5 * I4 * (I[1]^(-1.5)) * dI[1] ) //
+macro dWExpFiber(I, dI, I4, dI4) ( 2. * C2 * C3 * UUfibre(I, I4) * dUUfibre(I, dI, I4, dI4) * exp( C3 * ( UUfibre(I, I4) )^2 ) ) //
+
+macro dW2d(d, dd, a) ( dWExpFiber(I2d(d), dI2d(d, dd), I4(d, a), dI4(d, dd, a)) )//
