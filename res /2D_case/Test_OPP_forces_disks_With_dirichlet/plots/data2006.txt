@@ -1,0 +1,180 @@
+Test case 2006 : 
+ 
+nu1 = 1
+C0 = 1803.99, C1 = 9.242
+C2 = 580.23, C3 = 15.972
+kappa = 1e+06 
+ 
+Border conditions : g = 1-> Right & g = -1-> Left 
+No body force 
+
+Optimization parameters for the Newton method : 
+
+Jtol     = 1e-06
+alpha    = 0.1
+alphaMax = 1
+alphaMin = 0.0001
+Nbmax    = 500
+tol      = 1e-07
+For movemesh : Nsteps = 100
+----------------------------------------
+The total energy E(un) = 1033.43
+Energy parts without physical coefficients
+  int W_linear = 0
+  int W_expo = 0.433447
+  int W_fiber = 0.433447
+  int W_quasiIncomp_ln = 0
+----------------------------------------
+ ||grad E||_L2 = 0.0441439
+---------------------------------------- 
+
+Iteration 0 : 
+
+DE(un)[dun] = -0.0292421
+Accepted alpha = 0.1
+The new total energy = 1033.43
+min(J) = 0.999914   max(J) = 1.00012
+ ||grad E||_L2 = 2167.24
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 1 : 
+
+DE(un)[dun] = -0.00329616
+Accepted alpha = 0.125
+The new total energy = 1033.43
+min(J) = 0.999884   max(J) = 1.00011
+ ||grad E||_L2 = 1897.33
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 2 : 
+
+DE(un)[dun] = -0.00114743
+Accepted alpha = 0.3125
+The new total energy = 1033.43
+min(J) = 0.999853   max(J) = 1.00013
+ ||grad E||_L2 = 1317.96
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 3 : 
+
+DE(un)[dun] = -0.000584827
+Accepted alpha = 0.390625
+The new total energy = 1033.43
+min(J) = 0.999831   max(J) = 1.00015
+ ||grad E||_L2 = 824.78
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 4 : 
+
+DE(un)[dun] = -0.000254322
+Accepted alpha = 0.488281
+The new total energy = 1033.43
+min(J) = 0.999815   max(J) = 1.00016
+ ||grad E||_L2 = 445.904
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 5 : 
+
+DE(un)[dun] = -8.32501e-05
+Accepted alpha = 0.610352
+The new total energy = 1033.43
+min(J) = 0.999806   max(J) = 1.00016
+ ||grad E||_L2 = 195.066
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 6 : 
+
+DE(un)[dun] = -1.85772e-05
+Accepted alpha = 0.762939
+The new total energy = 1033.43
+min(J) = 0.999806   max(J) = 1.00016
+ ||grad E||_L2 = 78.3185
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 7 : 
+
+DE(un)[dun] = -4.28506e-06
+Accepted alpha = 0.953674
+The new total energy = 1033.43
+min(J) = 0.999814   max(J) = 1.00015
+ ||grad E||_L2 = 70.5351
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 8 : 
+
+DE(un)[dun] = -1.55781e-06
+Accepted alpha = 1
+The new total energy = 1033.43
+min(J) = 0.999818   max(J) = 1.00014
+ ||grad E||_L2 = 20.2916
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 9 : 
+
+DE(un)[dun] = -4.74541e-07
+Accepted alpha = 1
+The new total energy = 1033.43
+min(J) = 0.999823   max(J) = 1.00013
+ ||grad E||_L2 = 17.9386
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 10 : 
+
+DE(un)[dun] = -8.21261e-08
+Accepted alpha = 1
+The new total energy = 1033.43
+min(J) = 0.999825   max(J) = 1.00013
+ ||grad E||_L2 = 1.43145
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 11 : 
+
+DE(un)[dun] = -2.93498e-09
+Accepted alpha = 1
+The new total energy = 1033.43
+min(J) = 0.999825   max(J) = 1.00013
+ ||grad E||_L2 = 0.152867
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 12 : 
+
+DE(un)[dun] = -5.43027e-12
+Converged: gradient below tol = 1e-07
+
+
+Area variation = 0.00686682 % 
+
+Volume of the reference domain Omega_0 = 0.433447
+
+Volume of the deformed domain Omega    = 0.433417
+
+int_{Omega0} J dx = 0.401784
+
+The minimum value of the displacement = -0.0188976
+The maximum value of the displacement = 0.0216376
+
+Computational time = 0 h 3 min 45.2119 s 

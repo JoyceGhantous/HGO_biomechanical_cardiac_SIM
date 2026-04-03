@@ -1,0 +1,65 @@
+load "gmsh"
+load "iovtk"
+load "Element_P3"
+include "getARGV.idp"
+
+verbosity = 0;
+
+real optQuasiIncomp = 0.;
+real nu1, C0, C1, C2, C3, kappa;
+int caseId;
+
+if (case == "0"){
+    nu1 = 1.;
+    C0 = 10.;
+    C1 = 0.5;
+    C2 = 15.;
+    C3 = 0.9;
+    kappa = 800.; 
+    caseId = 0;
+}
+if (case == "8"){ include "parameters/2D_case/test8.edp" }
+
+
+real g = 1.;
+
+real alpha = 0.1, alphaMax = 1., alphaMin = 0.0001;
+int  Nbmax = 500;
+real tol = 1e-7, Jtol = 1e-6;
+int  Nsteps = 100;
+
+string res = "res/2D_case_MPI/Test_" + testId + "/";
+
+// ---- Uniquement le proc 0 crée les dossiers et fichiers ----
+if (mpirank == 0) {
+    exec("mkdir -p " + res + "en");
+    exec("mkdir -p " + res + "grad");
+    exec("mkdir -p " + res + "vol");
+    exec("mkdir -p " + res + "jac");
+    exec("mkdir -p " + res + "mesh");
+    exec("mkdir -p " + res + "data");
+    exec("mkdir -p " + res + "fiber");
+
+    cout << "Test case " + caseId + " : \n " << endl;
+    cout << "nu1 = " << nu1 << endl;
+    cout << "C0 = " << C0 << ", C1 = " << C1 << endl;
+    cout << "C2 = " << C2 << ", C3 = " << C3 << endl;
+    cout << "kappa = " << kappa << " \n " << endl;
+
+    cout << "Border conditions : g = "<< g << "-> Right & g = "<<  -g << "-> Left " << endl;
+    cout << "No body force \n" << endl;
+    cout << "Optimization parameters for the Newton method : \n" << endl;
+    cout << "Jtol     = " << Jtol     << endl;
+    cout << "alpha    = " << alpha    << endl;
+    cout << "alphaMax = " << alphaMax << endl;
+    cout << "alphaMin = " << alphaMin << endl;
+    cout << "Nbmax    = " << Nbmax    << endl;
+    cout << "tol      = " << tol      << endl;
+    cout << "For movemesh : Nsteps = " << Nsteps <<endl;
+}
+// Les ofstream aussi : déclarés seulement sur proc 0
+// (on les utilise ensuite avec "if (mpirank==0) en << ...")
+ofstream en  (res + "en/energy"         + caseId + ".txt");
+ofstream LGe (res + "grad/L2Gradenergy" + caseId + ".txt");
+ofstream vol (res + "vol/volume"        + caseId + ".txt");
+ofstream Jac (res + "jac/jacobian"      + caseId + ".txt");

@@ -1,0 +1,320 @@
+// testId can be as follows : 
+// - "Dirichlet_and_Neumann" (one bd condition on each side of the domain)
+// - "OPP_forces_disks" (no dirichlet)
+// - "OPP_forces_disks_With_dirichlet"
+// One has to adapt the energy expression following the test case and bd condition chosen
+
+string testId = "OPP_forces_disks_With_dirichlet";
+
+// case choses the set of material parameters for the energy W
+string case = "2009"; 
+
+// ---------------------------------------------------------------------
+
+include "param.edp"
+include "src/2D_case/HyperElastic_2d.idp"
+include "src/2D_case/HyperElastic_Energy.idp"
+include "src/tools.idp"
+
+// ---------------------------------------------------------------------
+
+// forces on internal disks with symmetric meshes : 
+// - LR_gmsh_6.msh -> Dirichlet on 105 
+// - lower_half_from_quarter -> Dirichlet on 105 et 106
+mesh Th = gmshload("src/2D_case/Geometries/LR_gmsh_6.msh"); 
+
+real t0 = clock();
+
+// ---------------------------------------------------------------------
+
+// FE spaces and unknowns
+
+fespace Vh(Th, [P1, P1]);
+
+Vh [dun, dvn] = [0, 0]; // Delta u_n       
+Vh [un, vn] = [0, 0];   // u_n at the n-th iteration 
+
+// Fiber tangential and normal vectors
+
+fespace Sh(Th,P0);
+Sh ax, ay, n, bx, by;
+
+n  = sqrt(x^2 + y^2);
+
+ax = y / n;
+ay = -x / n;
+
+bx = x / n;
+by = y / n;
+
+// ---------------------------------------------------------------------
+
+// Macros for the energy
+
+macro WNH(d)    ( int2d(Th)( WNeoHook(I2d(d)) ) )           // EOM
+macro WEX(d)    ( int2d(Th)( WExp(I2d(d)) ) )               // EOM
+macro WFB(d, a) ( int2d(Th)( WExpFiber(I2d(d), I4(d, a))) ) // EOM
+macro VOL(d)    ( int2d(Th)( WQuasiIncompln(I2d(d)) ))      // EOM
+macro EXTF(d)   (   int1d(Th, 1040)(   g*d[0] )
+                  + int1d(Th, 1030)( - g*d[0] ))  // EOM
+
+macro ENERGY(d, a) ( 
+       nu1 * WNH(d)    + C0 * WEX(d) 
+      + C2 * WFB(d, a) + kappa * VOL(d) 
+      - EXTF(d)
+) //
+
+macro dENERGY(d, dd, a) ( int2d(Th)( dW2d(d, dd, a) ) - EXTF(dd) ) //
+
+// ---------------------------------------------------------------------
+
+// R(un; v) = dE(un)[v] - Fext[v]
+
+Vh [v1,v2], [w1,w2];
+varf vRes([w1,w2],[v1,v2], solver=sparsesolver) =
+        int2d(Th)( dW2d([un, vn], [v1, v2], [ax,ay]) )
+      - int1d(Th, 1040)(   g*v1 )
+      - int1d(Th, 1030)( - g*v1 )
+      + on(105, w1=0, w2=0);  
+
+// Mass matrix for L2 norm 
+
+varf vmass ([v1,v2], [w1,w2], solver=sparsesolver) = int2d(Th)(v1*w1 + v2*w2);
+matrix M = vmass(Vh, Vh);
+
+// -----------------------------
+// Newton Pb :
+//    D2W = - (Dw - Fext)
+//    => D2W + Dw - Fext = 0
+// -----------------------------
+
+problem NonLin([dun, dvn], [v1, v2], solver=sparsesolver)
+      = int2d(Th)( ddW2d([un, vn], [dun, dvn], [v1, v2], [ax,ay]))  // D2W
+      + int2d(Th)( dW2d([un, vn], [v1, v2], [ax,ay]) )              // DW
+      - int1d(Th, 1040)(   g*v1 )
+      - int1d(Th, 1030)( - g*v1 )
+      + on(105, dun=0, dvn=0);  
+
+
+// ---------------------------------------------------------------------
+
+// Newton Algo with Goldstein linesearch
+
+real En  = ENERGY([un, vn], [ax, ay]);
+real W1  = WNH([un,vn]);
+real W2  = WEX([un,vn]);
+real W3  = WFB([un,vn], [ax, ay]);
+real W4  = VOL([un,vn]);
+real dEn0 = 0.0;
+
+cout << "----------------------------------------" << endl;
+cout << "The total energy E(un) = " << En << endl;
+cout << "Energy parts without physical coefficients" << endl;
+cout << "  int W_linear = " << W1 << endl;
+cout << "  int W_expo = " << W2 << endl;
+cout << "  int W_fiber = " << W3 << endl;
+cout << "  int W_quasiIncomp_ln = " << W4 << endl;
+cout << "----------------------------------------" << endl;
+
+real[int] G = vRes(0, Vh);    
+real gradL2 = sqrt( G' * G );
+cout << " ||grad E||_L2 = " << gradL2 << endl;
+
+for (int i = 0; i < Nbmax; i++){
+
+      cout << "---------------------------------------- \n" << endl;
+      cout << "Iteration " << i << " : \n" << endl;
+
+      // -------------------------------------------------
+
+      // Solve Newton system -> get dun, dvn
+      NonLin;
+
+      // Critère d'arret : du est trop petit
+      real duInf0 = max( max(abs(dun[].min), abs(dun[].max)),
+                         max(abs(dvn[].min), abs(dvn[].max)) );
+      if (duInf0 < tol) {
+            cout << "Converged: ||du||_inf below tol = " << duInf0 << endl;
+            break;
+      }
+
+      // D E(un)[dun] : dérivée de l'énergie dans la direction du pas de Newton
+      // elle doit etres < 0
+      dEn0 = dENERGY([un, vn], [dun, dvn], [ax, ay]);
+      cout << "DE(un)[dun] = " << dEn0 << endl;
+
+      // -------------------------------------------------
+
+      // Goldstein linesearch
+
+      real ArmijoCst1 = 1e-4, ArmijoCst2 = 0.9;   
+      real alphaT = alpha;
+      real Ent, Jmin, Jmax;
+
+      // accepted indique si un pas a été validé ou pas encore
+      bool accepted = false;
+      Vh [ut, vt];
+      Sh J;
+
+      while (alphaT >= alphaMin) {
+
+            [ut, vt] = [un, vn] + alphaT * [dun, dvn];
+
+            // ------------------------------------------------
+
+            // Jacobien (J = det(F) en 2D avec F = I + grad u)
+            J = (1.0 + dx(ut))*(1.0 + dy(vt)) - dx(vt)*dy(ut);
+            Jmin = J[].min; Jmax = J[].max;
+            Jac << i << " " << Jmin << " " << Jmax << endl;
+
+            if (Jmin <= Jtol) {
+                  // alphaT pas acceptable -> on réduit
+                  cout << "Reduce alpha = " << alphaT << " because Jmin = " << Jmin << " <= Jtol = " << Jtol << endl;
+                  alphaT *= 0.5;
+                  continue; // continue -> reste dans la boucle, mais passe au tour suivant.
+            }
+
+            // ------------------------------------------------
+
+            Ent = ENERGY([ut, vt], [ax, ay]);
+
+            if (Ent != Ent || abs(Ent) > 1e14) {  // NaN ou trop grand
+                  alphaT *= 0.5;
+                  continue;
+            }
+
+            if (dEn0 < 0) {
+                  bool armijo   = (Ent <= En + ArmijoCst1 * alphaT * dEn0);
+                  bool goldstein= (Ent >= En + ArmijoCst2 * alphaT * dEn0);
+
+                  if (!armijo) {
+                        // Pas trop grand -> réduire
+                        alphaT  *= 0.5;
+                  } else if (!goldstein) {
+                        // Pas trop petit -> augmenter
+                        alphaT  *= 2.;
+                  } else {
+                        // Les deux satisfaites
+                        accepted = true;
+                        break;
+                  }
+            }else {
+                  if (Ent <= En) { 
+                        accepted = true; 
+                        break; 
+                  }
+                  alphaT  *= 0.5;
+            }
+      }
+
+      if (!accepted) {
+            cout << "Line-search failed: alphaT = " << alphaT << endl;
+            break;
+      }
+
+      // ------------------------------------------------
+      // ---- Step accepted ----
+                 
+      cout << "Accepted alpha = " << alphaT << endl;
+      cout << "The new total energy = " << Ent << endl;
+      cout << "min(J) = " << Jmin << "   max(J) = " << Jmax << endl;
+
+      W1 = WNH([ut,vt]);
+      W2 = WEX([ut,vt]);
+      W3 = WFB([ut,vt], [ax, ay]);
+      W4 = VOL([ut,vt]);
+
+      if (verbosity > 0) {
+            cout << "Energy parts without physical coefficients" << endl;
+            cout << "  int W_linear = " << W1 << endl;
+            cout << "  int W_expo = " << W2 << endl;
+            cout << "  int W_fiber = " << W3 << endl;
+            cout << "  int W_quasiIncomp_ln = " << W4 << endl;
+      }
+
+      en << i+1 << " " << Ent << " " << W1 << " " << W2 << " " << W3 << " " << W4 << " " << dEn0 << endl;
+      
+      // ------------------------------------------------
+      // update
+      [un, vn] = [ut, vt];
+      En = Ent;
+
+      // update alpha pour l'itération suivante
+      alpha = min(alphaMax, 1.25 * alphaT);
+
+      // ------------------------------------------------
+      // Criteres d'arret 
+
+      real[int] G = vRes(0, Vh);   
+      real[int] z = M^-1 * G;       
+      real gradL2 = sqrt( G' * z );
+
+      cout << " ||grad E||_L2 = " << gradL2 << endl;
+      LGe << i << " " << gradL2 << endl;
+
+      if (gradL2 < tol) {
+          cout << "Converged: gradient below tol = " << tol << "\n" << endl;
+          break;
+      }
+
+      Vh [d1eff, d2eff] = alphaT * [dun, dvn];
+      real duInf = max( max(abs(d1eff[].min), abs(d1eff[].max)),
+                        max(abs(d2eff[].min), abs(d2eff[].max)) );
+      if (duInf < tol) {
+            cout << "Converged: ||alpha*du||_inf = " << duInf << " < tol = " << tol << "\n" << endl;
+            break;
+      }
+
+      cout << "---------------------------------------- \n" << endl;
+}
+
+// ---------------------------------------------------------------
+
+// Mesh movement 
+
+mesh Th0 = Th; // mesh of the reference domain Omega_0  
+
+for (int ii = 0; ii < Nsteps; ii++) {
+    vol << ii << " " << Area(Th) << endl;
+
+    real step = 1.0 / Nsteps;
+    real minS = checkmovemesh(Th, [x + step*un, y + step*vn]);
+
+    while (minS < tol) {
+      // si minS < 0, il y a des triangles inverses
+      if (verbosity > 0) cout << "minS = " << minS << endl;
+      step *= 0.5;
+      minS = checkmovemesh(Th, [x + step*un, y + step*vn]);
+      if (step < tol) { 
+            cout << "Step too small, stop moving mesh.\n"; 
+            break; 
+      }
+    }
+
+    Th = movemesh(Th, [x + step*un, y + step*vn]);
+    plot(Th);
+}
+
+string path = res + "mesh/Final_mesh_" + testId + "_" + caseId + ".eps";
+plot(Th, ps = path); // mesh of the deformed domain Omega := phi (Omega_0)  
+
+// ---------------------------------------------------------------
+
+// Post-processing
+
+string fiberpath = res + "fiber/Fa_final_" + testId + "_" + caseId + ".vtu";
+FiberDeformation2d(Nbmax, [ax, ay], [bx, by], [un, vn], fiberpath);
+
+real p = AreaVariation(Th0, Th);
+
+Sh J = (1.0 + dx(un))*(1.0 + dy(vn)) - dx(vn)*dy(un);
+real integral = int2d(Th0)(J);
+cout << "int_{Omega0} J dx = " << integral << "\n" << endl;
+// Integral has to be less than the volume of the deformed domain to garanty injectivity property
+
+real mind = un[].min;
+cout << "The minimum value of the displacement = " << mind << endl;
+real maxd = un[].max;
+cout << "The maximum value of the displacement = " << maxd << "\n" << endl;
+
+SaveTime(clock(), t0);

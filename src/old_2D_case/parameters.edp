@@ -1,0 +1,54 @@
+/*
+    Parameters for the HGO transversely isotropic hyperelastic model
+    used in Resolution.edp and EnergyDef.edp
+*/
+
+// options: 0 = quasi-incompressibility with ln
+//          1 = quasi-incompressibility without ln
+
+real optQuasiIncomp = 0.;
+
+// Parameters for the HGO model
+// nu1, nu2, C0, C1, C2, C3 and kappa are used in EnergyDef.edp
+
+real nu1 = 0.;
+real nu2 = 0.;
+real C0 = 10.;
+real C1 = 0.11;
+real C2 = C0;
+real C3 = 0.11;
+
+// bulk modulus for quasi-incompressibility
+real kappa = 100.;
+
+// Mesh refinement 
+int Nmesh = 20; 
+
+// Border conditions
+real g0 = 0.;
+
+real g = 20.;
+real theta = 0.25 * pi;
+
+real g1 = g * cos(theta);
+real g2 = - g * sin(theta);
+
+// body forces
+real f1 = 0.;
+real f2 = 0.;
+
+// unitairy tangent vector along the fiber direction 
+real[int] a = [1., 1.];
+real n = sqrt(a'*a);   // dot product
+a /= n;                // now ||a||2 = 1
+
+// optimization parameters for the Newton method
+
+int Nbmax = 1000;
+int maxLS = 40;
+real tol = 1e-8;
+
+// for movemesh
+int Nsteps = 100;
+
+// end of parameters

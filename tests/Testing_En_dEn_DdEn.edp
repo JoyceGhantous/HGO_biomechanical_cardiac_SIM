@@ -1,0 +1,176 @@
+// ============================================================
+//  TEST de En, DEn, DDEn
+// ============================================================
+
+include "../src/2D_case/HyperElastic_2d.idp"
+include "../src/2D_case/HyperElastic_Energy.idp"
+
+real optQuasiIncomp = 0.;
+real nu1, C0, C1, C2, C3, kappa;
+nu1 = 1.0;
+C0 = 1.0; C1 = 1.0;
+C2 = 1.0; C3 = 1.0;
+kappa = 1.0;
+
+// ---------- Maillage / espaces ----------
+mesh Th = square(20,20);
+fespace Sh(Th,P2);
+fespace Vh(Th,[P2,P2]);
+
+// --------------------------------------
+Sh ax = 1.0;
+Sh ay = 0.0;
+
+macro WNH(d)    ( int2d(Th)( WNeoHook(I2d(d)) ) )           // EOM
+macro WEX(d)    ( int2d(Th)( WExp(I2d(d)) ) )               // EOM
+macro WFB(d, a) ( int2d(Th)( WExpFiber(I2d(d), I4(d, a))) ) // EOM
+macro VOL(d)    ( int2d(Th)( WQuasiIncompln(I2d(d)) ))      // EOM
+
+macro ENERGY(d, a) ( 
+       nu1 * WNH(d)    + C0 * WEX(d) 
+      + C2 * WFB(d, a) + kappa * VOL(d) 
+      ) //
+
+macro dENERGY(d, dd, a) ( int2d(Th)( dW2d(d, dd, a) ) ) //
+macro ddENERGY(d, dd, ddd, a) ( int2d(Th)( ddW2d(d, dd, ddd, a) ) ) //
+
+// ---------- Variables ----------
+real pi   = acos(-1.0);
+real tiny = 1e-30;
+real[int] epsList = [1e-2, 5e-3, 1e-3, 5e-4, 1e-4, 5e-5, 1e-5, 1e-6];
+
+Vh [u0,v0], [up,vp], [um,vm];
+Vh [h1,h2], [k1,k2];
+
+[u0,v0] = [0.01*sin(pi*x)*sin(pi*y), -0.008*sin(2*pi*x)*sin(pi*y)];
+
+[h1, h2] = [sin(pi*x)*sin(2.0*pi*y) + 0.3*x*(1.0-x), cos(2.0*pi*x)*sin(pi*y) + 0.2*y*(1.0-y)];
+[k1, k2] = [sin(2.0*pi*x)*sin(pi*y) + 0.1*x*y, -cos(pi*x)*sin(2.0*pi*y) + 0.15*x*(1.0-y)];
+
+// Normalisation
+real nH = sqrt( int2d(Th)( h1^2 + h2^2 ) );
+real nK = sqrt( int2d(Th)( k1^2 + k2^2 ) );
+
+if (nH < tiny) {
+    cout << "ERREUR : la direction H est quasi nulle." << endl;
+    exit(1);
+}
+if (nK < tiny) {
+    cout << "ERREUR : la direction K est quasi nulle." << endl;
+    exit(1);
+}
+
+h1[] /= nH;
+h2[] /= nH;
+
+k1[] /= nK;
+k2[] /= nK;
+
+// Valeurs de référence
+real E0      = ENERGY([u0,v0],[ax,ay]);
+real dEH    = dENERGY([u0,v0],[h1,h2],[ax,ay]);
+real dEK    = dENERGY([u0,v0],[k1,k2],[ax,ay]);
+real ddEKH  = ddENERGY([u0,v0],[k1,k2],[h1,h2],[ax,ay]);
+real ddEHK  = ddENERGY([u0,v0],[h1,h2],[k1,k2],[ax,ay]);
+
+cout << "TEST" << endl;
+cout << "------------------------------------------------" << endl;
+cout << "E(U)              = " << E0     << endl;
+cout << "dE(U)[H]          = " << dEH   << endl;
+cout << "dE(U)[K]          = " << dEK   << endl;
+cout << "ddE(U)[K,H]       = " << ddEKH << endl;
+cout << "ddE(U)[H,K]       = " << ddEHK << endl;
+cout << "|ddE[K,H]-ddE[H,K]| = " << abs(ddEKH-ddEHK) << endl;
+
+cout << "-------------------------------------------------" << endl;
+cout << "TEST DE dENERGY : compare FD centree et dE(U)[H]" << endl;
+cout << "-------------------------------------------------" << endl;
+
+real errPrev1 = -1.0;
+real epsPrev1 = -1.0;
+
+for (int j = 0; j < epsList.n; ++j) {
+
+    real eps = epsList[j];
+
+    [up,vp] = [u0,v0] + eps*[h1,h2];
+    [um,vm] = [u0,v0] - eps*[h1,h2];
+
+    real Ep = ENERGY([up,vp],[ax,ay]);
+    real Em = ENERGY([um,vm],[ax,ay]);
+
+    real fd1     = (Ep - Em)/(2.0*eps);
+    real absErr1 = abs(fd1 - dEH);
+    real scale1  = max(1.0, max(abs(fd1), abs(dEH)));
+    real relErr1 = absErr1/scale1;
+
+    real slope1 = -999.0;
+    if (errPrev1 > 0.0 && absErr1 > 0.0) {
+        slope1 = log(errPrev1/absErr1) / log(epsPrev1/eps);
+    }
+
+    cout << "eps = " << eps
+         << "   FD = " << fd1
+         << "   exact = " << dEH
+         << "   absErr = " << absErr1
+         << "   relErr = " << relErr1;
+
+    if (slope1 > -100.0) cout << "   slope = " << slope1;
+    cout << endl;
+
+    errPrev1 = absErr1;
+    epsPrev1 = eps;
+}
+
+cout << "-------------------------------------------------" << endl;
+cout << "TEST DE ddENERGY : compare FD centree et ddE(U)[K,H]" << endl;
+cout << "-------------------------------------------------" << endl;
+
+real errPrev2 = -1.0;
+real epsPrev2 = -1.0;
+
+for (int j = 0; j < epsList.n; ++j) {
+
+    real eps = epsList[j];
+
+    [up,vp] = [u0,v0] + eps*[k1,k2];
+    [um,vm] = [u0,v0] - eps*[k1,k2];
+
+    real dEp = dENERGY([up,vp],[h1,h2],[ax,ay]);
+    real dEm = dENERGY([um,vm],[h1,h2],[ax,ay]);
+
+    real fd2     = (dEp - dEm)/(2.0*eps);
+    real absErr2 = abs(fd2 - ddEKH);
+    real scale2  = max(1.0, max(abs(fd2), abs(ddEKH)));
+    real relErr2 = absErr2/scale2;
+
+    real slope2 = -999.0;
+    if (errPrev2 > 0.0 && absErr2 > 0.0) {
+        slope2 = log(errPrev2/absErr2) / log(epsPrev2/eps);
+    }
+
+    cout << "eps = " << eps
+         << "   FD2 = " << fd2
+         << "   exact = " << ddEKH
+         << "   absErr = " << absErr2
+         << "   relErr = " << relErr2;
+
+    if (slope2 > -100.0) cout << "   slope = " << slope2;
+    cout << endl;
+
+    errPrev2 = absErr2;
+    epsPrev2 = eps;
+}
+
+
+cout << "-------------------------------------------------" << endl;
+cout << "TEST DE SYMETRIE DE LA HESSIENNE" << endl;
+cout << "-------------------------------------------------" << endl;
+
+real symAbs = abs(ddEKH - ddEHK);
+real symRel = symAbs / max(1.0, max(abs(ddEKH), abs(ddEHK)));
+
+cout << "ddE(U)[K,H] = " << ddEKH << endl;
+cout << "ddE(U)[H,K] = " << ddEHK << endl;
+cout << "Erreur = "  << symAbs << endl;
+cout << "Erreur = " << symRel << endl;

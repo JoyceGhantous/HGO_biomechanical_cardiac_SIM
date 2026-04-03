@@ -1,0 +1,111 @@
+Test case 9 : 
+ 
+nu1 = 1
+C0 = 10, C1 = 0.01
+C2 = 10, C3 = 0.01
+kappa = 400 
+ 
+---------------------------------------- 
+
+Iteration 0 : 
+
+The total energy E(un) = 13.7445 and it derivative DE(un)[dun] = 0
+The new value of the total energy = 14.479
+ Energy went up 
+Down Step = 0.006
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 1 : 
+
+The total energy E(un) = 14.479 and it derivative DE(un)[dun] = 291.841
+The new value of the total energy = 14.4699
+ Energy decreased 
+Up Step = 0.0072
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 2 : 
+
+The total energy E(un) = 14.4699 and it derivative DE(un)[dun] = -1.51257
+The new value of the total energy = 14.4591
+ Energy decreased 
+Up Step = 0.00864
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 3 : 
+
+The total energy E(un) = 14.4591 and it derivative DE(un)[dun] = -1.49229
+The new value of the total energy = 14.4464
+ Energy decreased 
+Up Step = 0.010368
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 4 : 
+
+The total energy E(un) = 14.4464 and it derivative DE(un)[dun] = -1.46826
+The new value of the total energy = 14.4314
+ Energy decreased 
+Up Step = 0.0124416
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 5 : 
+
+The total energy E(un) = 14.4314 and it derivative DE(un)[dun] = -1.43995
+The new value of the total energy = 14.4138
+ Energy decreased 
+Up Step = 0.0149299
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 6 : 
+
+The total energy E(un) = 14.4138 and it derivative DE(un)[dun] = -1.40058
+The new value of the total energy = 14.3931
+ Energy decreased 
+Up Step = 0.0179159
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 7 : 
+
+The total energy E(un) = 14.3931 and it derivative DE(un)[dun] = -1.37481
+The new value of the total energy = 14.3695
+ Energy decreased 
+Up Step = 0.0214991
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 8 : 
+
+The total energy E(un) = 14.3695 and it derivative DE(un)[dun] = -1.25657
+The new value of the total energy = 14.3423
+ Energy decreased 
+Up Step = 0.0257989
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 9 : 
+
+The total energy E(un) = 14.3423 and it derivative DE(un)[dun] = -1.20657
+
+Area variation = 0.690488 % 
+
+V0 = 0.687224
+
+V1 = 0.682478
+
+Temps calc = 0 h 4 min 39 s 
+

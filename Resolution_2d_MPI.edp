@@ -1,0 +1,368 @@
+// testId can be as follows : 
+// - "Dirichlet_and_Neumann" (one bd condition on each side of the domain)
+// - "OPP_forces_disks" (no dirichlet)
+// - "OPP_forces_disks_With_dirichlet"
+// One has to adapt the energy expression following the test case and bd condition chosen
+
+string testId = "OPP_forces_disks_With_dirichlet";
+
+// case choses the set of material parameters for the energy W
+string case = "0"; 
+
+// ---------------------------------------------------------------------
+
+macro dimension() 2 // EOM
+
+// For help, see /usr/local/lib/ff++/4.15/idp for the hpddm source files
+load "hpddm"
+include "ffddm.idp"
+include "macro_ddm.idp"  
+include "param_parallele.edp"
+include "src/2D_case/HyperElastic_2d.idp"
+include "src/2D_case/HyperElastic_Energy.idp"
+include "src/tools.idp"
+
+// ----------------------------------------------------------
+real t0 = clock();
+
+// forces on internal disks with symmetric meshes : 
+// - LR_gmsh_6.msh -> Dirichlet on 105 
+// - lower_half_from_quarter -> Dirichlet on 105 et 106
+mesh ThGlobal = gmshload("src/2D_case/Geometries/LR_gmsh_6.msh");
+broadcast(processor(0, mpiCommWorld), ThGlobal); 
+
+// Mesh decomposition
+ffddmoverlap = 1;     // number of halo 
+ffddmprecond = "ras"; // Restricted Additive Schwarz = ras
+ffddmbuildDmesh(M, ThGlobal, mpiCommWorld);
+
+// Distributed FE space
+
+macro def(u)  [u, u#B] // EOM
+macro init(u) [u, u]   // EOM
+ffddmbuildDfespace(Vh, M, real, def, init, [P1, P1]);
+
+macro defs(u) u // EOM
+macro inits(u) u   // EOM
+ffddmbuildDfespace(Sh, M, real, defs, inits, P0);
+
+// Test Fct
+
+VhVhi def(un), def(dun), def(vn); 
+[un , unB ] = [0, 0];
+[dun, dunB] = [0, 0]; 
+
+// Fibres
+ShVhi defs(ax), defs(ay), defs(n), defs(bx), defs(by);
+n  = sqrt(x^2 + y^2);
+ax = y / n;   ay = -x / n;
+bx = x / n;   by = y / n;
+
+// ----------------------------------------------------------
+
+// Macro of Newthon method
+macro Varf(varfNewton, meshName, VhName)
+    varf varfNewton([dun, dunB], [vn, vnB]) =
+          int2d(meshName)( ddW2d([un, unB], [dun, dunB], [vn, vnB], [ax, ay]) )
+        + int2d(meshName)( dW2d([un, unB], [vn, vnB], [ax, ay]) )
+        - int1d(meshName, 1040)(  g * vn)
+        - int1d(meshName, 1030)( -g * vn)
+        + on(105, dun=0, dunB=0);
+// EOM
+
+// ----------------------------------------------------------
+
+if (mpirank == 0 && verbosity > 0) {
+  // Afficher la taille de maillage
+  cout << "M#Thi.nt         = " << MThi.nt << endl;
+  cout << "M#Thglob.nt      = " << MThglob.nt << endl;
+  cout << "M#aTh[0].nt      = " << MaTh[0].nt << endl;
+  cout << "M#aThborder[0].nt= " << MaThborder[0].nt << endl;
+  cout << "Th.nt global      = " << ThGlobal.nt << endl;
+}
+
+if (verbosity > 0) {
+  medit("Th"+mpirank, MThi);              // visualisation de chaque partie du domaine
+  savemesh(MThi, "Th"+mpirank+".msh");    // sauvegarde
+  // To display the partition it is enought to add -wg to the freefem command in thge terminal
+  // Save mesh partition
+  {
+      fespace ShLoc(MThi, P0);
+      ShLoc rankF = mpirank;
+      int[int] order = [0];
+      savevtk(res + "data/partition.vtu",   // même nom pour tous
+              MThi, rankF, order=order);
+  }
+}
+
+// ----------------------------------------------------------
+
+// Macros génériques — le maillage est passé en argument
+
+macro WNH(d, msh, di)    ( int2d(msh)( di * WNeoHook(I2d(d)) ) )            //
+macro WEX(d, msh, di)    ( int2d(msh)( di * WExp(I2d(d)) ) )                //
+macro WFB(d, a, msh, di) ( int2d(msh)( di * WExpFiber(I2d(d), I4(d, a))) )  //
+macro VOL(d, msh, di)    ( int2d(msh)( di * WQuasiIncompln(I2d(d)) ))       //
+macro EXTF(d, msh, di)   (    int1d(msh, 1040)( di * g*d[0] )
+                        + int1d(msh, 1030)( di * (-g) *d[0] ))             //
+macro ENERGY(d, a, msh, di) (
+       nu1 * WNH(d, msh, di)   + C0 * WEX(d, msh, di)
+     + C2 * WFB(d, a, msh, di) + kappa * VOL(d, msh, di)
+     - EXTF(d, msh, di)
+) //
+macro dENERGY(d, dd, a, msh, di) ( int2d(msh)( di * dW2d(d, dd, a) ) - EXTF(dd, msh, di) ) //
+
+// ----------------------------------------------------------
+// BOUCLE NEWTON
+// ----------------------------------------------------------
+VhVhi def(di);
+di[] = VhDk[mpirank];  // poids locaux
+
+for (int i = 0; i < Nbmax; i++) {
+
+  if (mpirank == 0) cout << "\n--- Newton iteration " << i << " ---" << endl;   
+
+  ffddmsetupOperator(M, Vh, Varf);
+
+  real[int] rhsi(VhVhi.ndof);
+  ffddmbuildrhs(M, Varf, rhsi);
+  rhsi *= -1;
+
+  int[int] lparams(42);
+  lparams = 0;
+
+  lparams[5]  = 2;   // ICNTL(4)
+  lparams[8]  = 5;   // ICNTL(7)
+  // lparams[15] = 40;  // ICNTL(14)
+  // lparams[29] = 2;   // ICNTL(28)
+  // lparams[30] = 2;   // ICNTL(29)
+
+  dun[] = Mdirectsolve(rhsi, lparams= lparams);
+
+  // ----------------------------------------------------------
+
+  real EnLoc = ENERGY([un, unB], [ax, ay], MThi, di);
+  real W1loc = WNH([un, unB], MThi, di);
+  real W2loc = WEX([un, unB], MThi, di);
+  real W3loc = WFB([un, unB], [ax, ay], MThi, di);
+  real W4loc = VOL([un, unB], MThi, di);
+  real dEnLoc = dENERGY([un, unB], [dun, dunB], [ax, ay], MThi, di);
+
+  real[int] locs = [EnLoc, W1loc, W2loc, W3loc, W4loc, dEnLoc];
+  real[int] globs(6);
+  globs = 0.;
+  
+  for (int k = 0; k < 6; k++)
+    mpiAllReduce(locs[k], globs[k], mpiCommWorld, mpiSUM);
+  real En = globs[0], dEn = globs[5];
+  if (mpirank == 0) en << i << " " << En 
+                        << " " << globs[1] 
+                        << " " << globs[2] 
+                        << " " << globs[3]
+                        << " " << globs[4]
+                        << " " << dEn << endl;
+      
+
+  real gradL2 = sqrt(Vhscalprod(rhsi, rhsi)); 
+  // MVhscalprod retourne le PS distribue globale des vecteur locaux
+
+  if (mpirank == 0) {
+    cout << "----------------------------------------" << endl;
+    cout << "The total energy E(un) = " << En << endl;
+    cout << "Energy parts without physical coefficients" << endl;
+    cout << "  int W_linear = " << globs[1] << endl;
+    cout << "  int W_expo = " << globs[2] << endl;
+    cout << "  int W_fiber = " << globs[3] << endl;
+    cout << "  int W_quasiIncomp_ln = " << globs[4] << endl;
+    cout << " ||grad E|| = " << gradL2 << " & dEn(un)[dun] = " << dEn << endl;
+    cout << "----------------------------------------" << endl;
+  }
+
+  // ----------------------------------------------------------
+  // Goldstein linesearch
+
+  real ArmijoCst1 = 1e-4, ArmijoCst2 = 0.9 ;
+  real alphaT = alpha;
+  real Ent = 0, Jmin = 0, Jmax = 0;
+
+  bool accepted = false;
+  VhVhi def(ut);
+  ShVhi J;
+
+  while (alphaT >= alphaMin) {
+
+    [ut, utB] = [un, unB] + alphaT * [dun, dunB];
+
+    // ------------------------------------------------
+
+    J = (1.0 + dx(ut))*(1.0 + dy(utB)) - dx(utB)*dy(ut);
+    real JminLoc = J[].min, JmaxLoc = J[].max;
+    mpiAllReduce(JminLoc, Jmin, mpiCommWorld, mpiMIN);
+    mpiAllReduce(JmaxLoc, Jmax, mpiCommWorld, mpiMAX);
+
+    if (Jmin <= Jtol) {
+      if (mpirank == 0) {
+        cout << "Reduce alpha = " << alphaT << " Jmin = " << Jmin << endl;
+        cout << "Jmin = " << Jmin << " & Jmax = " << Jmax << endl;
+      }
+      mpiBarrier(mpiCommWorld);
+      alphaT *= 0.5;
+      continue;
+    }
+
+    // ------------------------------------------------
+
+    real EnLoct = ENERGY([ut, utB], [ax, ay], MThi, di);
+    mpiAllReduce(EnLoct, Ent, mpiCommWorld, mpiSUM);
+
+    if (Ent != Ent || abs(Ent) > 1e14) { 
+      alphaT *= 0.5; 
+      continue; 
+    }
+
+    if (dEn < 0) {
+      bool armijo   = (Ent <= En + ArmijoCst1 * alphaT * dEn);
+      bool goldstein= (Ent >= En + ArmijoCst2 * alphaT * dEn);
+      if (!armijo) {
+        // Pas trop grand -> réduire
+        mpiBarrier(mpiCommWorld);
+        alphaT  *= 0.5;
+      } else if (!goldstein && alphaT < alphaMax) {
+        // Pas trop petit -> augmenter
+        mpiBarrier(mpiCommWorld);
+        alphaT  *= 2.;
+      } else {
+        // Les deux satisfaites
+        mpiBarrier(mpiCommWorld);
+        accepted = true;
+        break;
+      }
+    }else {
+      if (Ent <= En) { 
+        mpiBarrier(mpiCommWorld);
+        accepted = true; 
+        break; 
+      }
+      mpiBarrier(mpiCommWorld);
+      alphaT  *= 0.5;
+    }
+  }
+
+  if (!accepted) {
+    cout << "Line-search failed: alphaT = " << alphaT << endl;
+    mpiBarrier(mpiCommWorld); 
+    break;
+  }
+
+  // -------- accepted step --------
+
+  if (mpirank == 0) {
+    cout << "Accepted alpha = " << alphaT << endl;
+    cout << "New Energy = " << Ent << endl;
+    cout << "min(J) = " << Jmin << "   max(J) = " << Jmax << endl;
+    Jac << i << " " << Jmin << " " << Jmax << endl;
+  }
+
+  // ------------------------------------------------
+  // update
+  mpiBarrier(mpiCommWorld);
+
+  [un, unB] = [ut, utB];
+  Vhupdate(un[],true);
+
+  En = Ent;
+  alpha = min(alphaMax, 1.25 * alphaT);
+
+  // ------------------------------------------------
+  // Criteres d'arret 
+  ffddmbuildrhs(M, Varf, rhsi);
+  gradL2 = sqrt(Vhscalprod(rhsi, rhsi));
+
+  if (mpirank == 0) LGe << i << " " << gradL2 << " " << dEn << endl;
+
+  if (gradL2 < tol) {
+    if (mpirank == 0) cout << "Converged at iteration " << i << endl;
+    mpiBarrier(mpiCommWorld); 
+    break;
+  }
+
+  real duInf0loc = alphaT * max(abs(dun[].min), abs(dun[].max));
+  real duInf0 = 0.0;
+  mpiAllReduce(duInf0loc, duInf0, mpiCommWorld, mpiMAX);
+
+  if (duInf0 < tol) {
+    if (mpirank == 0) cout << "Converged: ||du||_inf below tol = " << duInf0 << endl;
+    mpiBarrier(mpiCommWorld); 
+    break;
+  }
+
+}
+
+mpiBarrier(mpiCommWorld);
+
+plotMPI(ThGlobal, def(un), [P1, P1], def, real, cmm = "Global solution");
+
+// ---------------------------------------------------------------
+// Mesh movement based on the displacement field (rang 0 uniquement)
+// ---------------------------------------------------------------
+mesh ThMoved = ThGlobal; // domaine de référence Omega_0
+
+// if (mpirank == 0) {
+//     for (int ii = 0; ii < Nsteps; ii++) {
+//         vol << ii << " " << Area(ThMoved) << endl;
+
+//         real step = 1.0 / Nsteps;
+//         real minS = checkmovemesh(ThMoved, [x + step*un, y + step*unB]);
+
+//         while (minS < tol) {
+//             if (verbosity > 0)
+//                 cout << "minS = " << minS << endl;
+//             step *= 0.5;
+//             minS = checkmovemesh(ThMoved, [x + step*un, y + step*unB]);
+//             if (step < tol) {
+//                 cout << "Step too small, stop moving mesh.\n";
+//                 break;
+//             }
+//         }
+//         ThMoved = movemesh(ThMoved, [x + step*un, y + step*unB]);
+//         plot(ThMoved);
+//     }
+
+//     string path = res + "mesh/Final_mesh_" + testId + "_" + caseId + ".eps";
+//     plot(ThMoved, ps = path);
+// }
+
+// ---------------------------------------------------------------
+// Post-processing
+// ---------------------------------------------------------------
+
+// Global moved solution
+ShVhi defs(u);
+u = mpirank;
+plotMPI(ThMoved, u, P0, defs, real, cmm = "Global moved solution");
+
+// fiber on new domain
+exec("mkdir -p " + res + "fiber");
+string fiberpath = res + "fiber/Fa_final_" + testId + "_" + caseId + ".vtu";
+FiberDeformationMPI(ThMoved, [ax, ay], [bx, by], [un, unB], fiberpath);
+
+// Jacobien 
+
+real integralLocal = int2d(MThi)( di * ((1.0 + dx(un))*(1.0 + dy(unB)) - dx(unB)*dy(un) ) );
+real integral = 0.0;
+mpiAllReduce(integralLocal, integral, mpiCommWorld, mpiSUM);
+
+// Min/max 
+real mindLocal = un[].min;   
+real maxdLocal = un[].max;
+real mind = 0.0, maxd = 0.0;
+mpiAllReduce(mindLocal, mind, mpiCommWorld, mpiMIN);
+mpiAllReduce(maxdLocal, maxd, mpiCommWorld, mpiMAX);
+
+if (mpirank == 0) { 
+  real p = AreaVariation(ThGlobal, ThMoved); 
+  cout << "The minimum value of the displacement = " << mind << endl;
+  cout << "The maximum value of the displacement = " << maxd << "\n" << endl;
+  cout << "int_{Omega0} J dx = " << integral << "\n" << endl;
+  SaveTime(clock(), t0);
+}

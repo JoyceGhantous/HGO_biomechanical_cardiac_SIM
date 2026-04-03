@@ -1,0 +1,721 @@
+
+Test case 8 : 
+ 
+nu1 = 1
+C0 = 20, C1 = 0.5
+C2 = 10, C3 = 1
+kappa = 800 
+ 
+Border conditions : g = 1-> Right & g = -1-> Left 
+No body force 
+
+Optimization parameters for the Newton method : 
+
+Jtol     = 1e-06
+alpha    = 0.5
+alphaMax = 1
+alphaMin = 0.001
+Nbmax    = 500
+tol      = 1e-07
+For movemesh : Nsteps = 100
+----------------------------------------
+The total energy E(un) = 13.0034
+Energy parts without physical coefficients
+  int W_linear = 0
+  int W_expo = 0.433447
+  int W_fiber = 0.433447
+  int W_quasiIncomp_ln = 0
+----------------------------------------
+---------------------------------------- 
+
+Iteration 0 : 
+
+DE(un)[dun] = -0.65642
+Accepted alpha = 0.00390625
+The new total energy = 13.0023
+min(J) = 1.00123   max(J) = 1.00442
+Energy parts without physical coefficients
+  int W_linear = 9.20259e-07
+  int W_expo = 0.433447
+  int W_fiber = 0.433447
+  int W_quasiIncomp_ln = 1.83352e-06
+ ||grad E||_L2 = 122.938
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 1 : 
+
+DE(un)[dun] = -0.0879507
+Accepted alpha = 0.00488281
+The new total energy = 13.0019
+min(J) = 1.00121   max(J) = 1.00442
+Energy parts without physical coefficients
+  int W_linear = 4.92218e-06
+  int W_expo = 0.433447
+  int W_fiber = 0.433447
+  int W_quasiIncomp_ln = 1.81602e-06
+ ||grad E||_L2 = 122.273
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 2 : 
+
+DE(un)[dun] = -0.0849223
+Accepted alpha = 0.00610352
+The new total energy = 13.0014
+min(J) = 1.00116   max(J) = 1.00442
+Energy parts without physical coefficients
+  int W_linear = 1.53972e-05
+  int W_expo = 0.433447
+  int W_fiber = 0.433447
+  int W_quasiIncomp_ln = 1.7943e-06
+ ||grad E||_L2 = 121.44
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 3 : 
+
+DE(un)[dun] = -0.0812137
+Accepted alpha = 0.00762939
+The new total energy = 13.0008
+min(J) = 1.0011   max(J) = 1.00445
+Energy parts without physical coefficients
+  int W_linear = 3.53714e-05
+  int W_expo = 0.433447
+  int W_fiber = 0.433447
+  int W_quasiIncomp_ln = 1.76761e-06
+ ||grad E||_L2 = 120.405
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 4 : 
+
+DE(un)[dun] = -0.0769295
+Accepted alpha = 0.00953674
+The new total energy = 13
+min(J) = 1.00102   max(J) = 1.00448
+Energy parts without physical coefficients
+  int W_linear = 6.8212e-05
+  int W_expo = 0.433447
+  int W_fiber = 0.433447
+  int W_quasiIncomp_ln = 1.73523e-06
+ ||grad E||_L2 = 119.134
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 5 : 
+
+DE(un)[dun] = -0.0722982
+Accepted alpha = 0.0119209
+The new total energy = 12.9992
+min(J) = 1.00093   max(J) = 1.0045
+Energy parts without physical coefficients
+  int W_linear = 0.00011731
+  int W_expo = 0.433447
+  int W_fiber = 0.433448
+  int W_quasiIncomp_ln = 1.69652e-06
+ ||grad E||_L2 = 117.594
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 6 : 
+
+DE(un)[dun] = -0.0675958
+Accepted alpha = 0.0149012
+The new total energy = 12.9982
+min(J) = 1.00081   max(J) = 1.00453
+Energy parts without physical coefficients
+  int W_linear = 0.000185921
+  int W_expo = 0.433447
+  int W_fiber = 0.433448
+  int W_quasiIncomp_ln = 1.65098e-06
+ ||grad E||_L2 = 115.753
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 7 : 
+
+DE(un)[dun] = -0.0630355
+Accepted alpha = 0.0186265
+The new total energy = 12.997
+min(J) = 1.00066   max(J) = 1.00458
+Energy parts without physical coefficients
+  int W_linear = 0.000277297
+  int W_expo = 0.433447
+  int W_fiber = 0.433448
+  int W_quasiIncomp_ln = 1.59825e-06
+ ||grad E||_L2 = 113.576
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 8 : 
+
+DE(un)[dun] = -0.0587045
+Accepted alpha = 0.0232831
+The new total energy = 12.9957
+min(J) = 1.00049   max(J) = 1.00465
+Energy parts without physical coefficients
+  int W_linear = 0.000394966
+  int W_expo = 0.433447
+  int W_fiber = 0.433449
+  int W_quasiIncomp_ln = 1.53828e-06
+ ||grad E||_L2 = 111.036
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 9 : 
+
+DE(un)[dun] = -0.0545738
+Accepted alpha = 0.0291038
+The new total energy = 12.9941
+min(J) = 1.00029   max(J) = 1.00474
+Energy parts without physical coefficients
+  int W_linear = 0.000542941
+  int W_expo = 0.433448
+  int W_fiber = 0.43345
+  int W_quasiIncomp_ln = 1.47157e-06
+ ||grad E||_L2 = 108.115
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 10 : 
+
+DE(un)[dun] = -0.0505484
+Accepted alpha = 0.0363798
+The new total energy = 12.9923
+min(J) = 1.00006   max(J) = 1.00485
+Energy parts without physical coefficients
+  int W_linear = 0.00072562
+  int W_expo = 0.433448
+  int W_fiber = 0.433451
+  int W_quasiIncomp_ln = 1.39949e-06
+ ||grad E||_L2 = 104.823
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 11 : 
+
+DE(un)[dun] = -0.0465281
+Accepted alpha = 0.0454747
+The new total energy = 12.9902
+min(J) = 0.99981   max(J) = 1.00498
+Energy parts without physical coefficients
+  int W_linear = 0.000947255
+  int W_expo = 0.433449
+  int W_fiber = 0.433453
+  int W_quasiIncomp_ln = 1.32469e-06
+ ||grad E||_L2 = 101.214
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 12 : 
+
+DE(un)[dun] = -0.0424615
+Accepted alpha = 0.0568434
+The new total energy = 12.9879
+min(J) = 0.999537   max(J) = 1.00514
+Energy parts without physical coefficients
+  int W_linear = 0.00121091
+  int W_expo = 0.43345
+  int W_fiber = 0.433457
+  int W_quasiIncomp_ln = 1.25149e-06
+ ||grad E||_L2 = 97.4146
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 13 : 
+
+DE(un)[dun] = -0.0383805
+Accepted alpha = 0.0710543
+The new total energy = 12.9852
+min(J) = 0.999252   max(J) = 1.00534
+Energy parts without physical coefficients
+  int W_linear = 0.00151698
+  int W_expo = 0.433452
+  int W_fiber = 0.433462
+  int W_quasiIncomp_ln = 1.18623e-06
+ ||grad E||_L2 = 93.6536
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 14 : 
+
+DE(un)[dun] = -0.034392
+Accepted alpha = 0.0888178
+The new total energy = 12.9823
+min(J) = 0.998964   max(J) = 1.00558
+Energy parts without physical coefficients
+  int W_linear = 0.00186153
+  int W_expo = 0.433454
+  int W_fiber = 0.433469
+  int W_quasiIncomp_ln = 1.13741e-06
+ ||grad E||_L2 = 90.2974
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 15 : 
+
+DE(un)[dun] = -0.0306221
+Accepted alpha = 0.111022
+The new total energy = 12.9791
+min(J) = 0.998685   max(J) = 1.00587
+Energy parts without physical coefficients
+  int W_linear = 0.00223468
+  int W_expo = 0.433456
+  int W_fiber = 0.433479
+  int W_quasiIncomp_ln = 1.11573e-06
+ ||grad E||_L2 = 87.8713
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 16 : 
+
+DE(un)[dun] = -0.0271468
+Accepted alpha = 0.138778
+The new total energy = 12.9756
+min(J) = 0.998286   max(J) = 1.00624
+Energy parts without physical coefficients
+  int W_linear = 0.00261938
+  int W_expo = 0.43346
+  int W_fiber = 0.433493
+  int W_quasiIncomp_ln = 1.13321e-06
+ ||grad E||_L2 = 87.0137
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 17 : 
+
+DE(un)[dun] = -0.0239595
+Accepted alpha = 0.173472
+The new total energy = 12.9718
+min(J) = 0.997641   max(J) = 1.00667
+Energy parts without physical coefficients
+  int W_linear = 0.00299122
+  int W_expo = 0.433463
+  int W_fiber = 0.433512
+  int W_quasiIncomp_ln = 1.20045e-06
+ ||grad E||_L2 = 88.2775
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 18 : 
+
+DE(un)[dun] = -0.0210097
+Accepted alpha = 0.21684
+The new total energy = 12.9677
+min(J) = 0.997187   max(J) = 1.00726
+Energy parts without physical coefficients
+  int W_linear = 0.00332058
+  int W_expo = 0.433467
+  int W_fiber = 0.433539
+  int W_quasiIncomp_ln = 1.32058e-06
+ ||grad E||_L2 = 91.7633
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 19 : 
+
+DE(un)[dun] = -0.0182896
+Accepted alpha = 0.271051
+The new total energy = 12.9634
+min(J) = 0.996928   max(J) = 1.00793
+Energy parts without physical coefficients
+  int W_linear = 0.00357883
+  int W_expo = 0.43347
+  int W_fiber = 0.433573
+  int W_quasiIncomp_ln = 1.48211e-06
+ ||grad E||_L2 = 96.8515
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 20 : 
+
+DE(un)[dun] = -0.0158596
+Accepted alpha = 0.338813
+The new total energy = 12.9588
+min(J) = 0.996692   max(J) = 1.00856
+Energy parts without physical coefficients
+  int W_linear = 0.00374722
+  int W_expo = 0.433472
+  int W_fiber = 0.433615
+  int W_quasiIncomp_ln = 1.66046e-06
+ ||grad E||_L2 = 102.46
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 21 : 
+
+DE(un)[dun] = -0.0137579
+Accepted alpha = 0.423516
+The new total energy = 12.9541
+min(J) = 0.996564   max(J) = 1.00913
+Energy parts without physical coefficients
+  int W_linear = 0.00382369
+  int W_expo = 0.433473
+  int W_fiber = 0.433668
+  int W_quasiIncomp_ln = 1.83118e-06
+ ||grad E||_L2 = 107.681
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 22 : 
+
+DE(un)[dun] = -0.0119345
+Accepted alpha = 0.529396
+The new total energy = 12.9491
+min(J) = 0.996523   max(J) = 1.00965
+Energy parts without physical coefficients
+  int W_linear = 0.0038249
+  int W_expo = 0.433473
+  int W_fiber = 0.433733
+  int W_quasiIncomp_ln = 1.97919e-06
+ ||grad E||_L2 = 112.054
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 23 : 
+
+DE(un)[dun] = -0.0102989
+Accepted alpha = 0.661744
+The new total energy = 12.9441
+min(J) = 0.996569   max(J) = 1.0101
+Energy parts without physical coefficients
+  int W_linear = 0.00378076
+  int W_expo = 0.433472
+  int W_fiber = 0.433812
+  int W_quasiIncomp_ln = 2.09294e-06
+ ||grad E||_L2 = 115.221
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 24 : 
+
+DE(un)[dun] = -0.00878239
+Accepted alpha = 0.827181
+The new total energy = 12.939
+min(J) = 0.996681   max(J) = 1.01045
+Energy parts without physical coefficients
+  int W_linear = 0.0037188
+  int W_expo = 0.433471
+  int W_fiber = 0.433909
+  int W_quasiIncomp_ln = 2.15787e-06
+ ||grad E||_L2 = 116.65
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 25 : 
+
+DE(un)[dun] = -0.00734258
+Accepted alpha = 1
+The new total energy = 12.9342
+min(J) = 0.996294   max(J) = 1.01055
+Energy parts without physical coefficients
+  int W_linear = 0.00365073
+  int W_expo = 0.43347
+  int W_fiber = 0.434023
+  int W_quasiIncomp_ln = 2.05966e-06
+ ||grad E||_L2 = 112.033
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 26 : 
+
+DE(un)[dun] = -0.00596302
+Accepted alpha = 1
+The new total energy = 12.9303
+min(J) = 0.995953   max(J) = 1.01009
+Energy parts without physical coefficients
+  int W_linear = 0.0035837
+  int W_expo = 0.433469
+  int W_fiber = 0.434135
+  int W_quasiIncomp_ln = 1.64854e-06
+ ||grad E||_L2 = 93.3838
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 27 : 
+
+DE(un)[dun] = -0.00476169
+Accepted alpha = 1
+The new total energy = 12.9272
+min(J) = 0.99566   max(J) = 1.01034
+Energy parts without physical coefficients
+  int W_linear = 0.00351194
+  int W_expo = 0.433468
+  int W_fiber = 0.434256
+  int W_quasiIncomp_ln = 1.79472e-06
+ ||grad E||_L2 = 98.65
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 28 : 
+
+DE(un)[dun] = -0.00374532
+Accepted alpha = 1
+The new total energy = 12.9247
+min(J) = 0.99538   max(J) = 1.00915
+Energy parts without physical coefficients
+  int W_linear = 0.00345421
+  int W_expo = 0.433467
+  int W_fiber = 0.434361
+  int W_quasiIncomp_ln = 1.25146e-06
+ ||grad E||_L2 = 65.7659
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 29 : 
+
+DE(un)[dun] = -0.00289497
+Accepted alpha = 1
+The new total energy = 12.923
+min(J) = 0.995108   max(J) = 1.01028
+Energy parts without physical coefficients
+  int W_linear = 0.00337952
+  int W_expo = 0.433467
+  int W_fiber = 0.434487
+  int W_quasiIncomp_ln = 1.7973e-06
+ ||grad E||_L2 = 97.7766
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 30 : 
+
+DE(un)[dun] = -0.00230304
+Accepted alpha = 1
+The new total energy = 12.9215
+min(J) = 0.994939   max(J) = 1.00828
+Energy parts without physical coefficients
+  int W_linear = 0.00334516
+  int W_expo = 0.433466
+  int W_fiber = 0.434569
+  int W_quasiIncomp_ln = 1.00435e-06
+ ||grad E||_L2 = 32.6859
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 31 : 
+
+DE(un)[dun] = -0.00178252
+Accepted alpha = 1
+The new total energy = 12.9211
+min(J) = 0.994713   max(J) = 1.01146
+Energy parts without physical coefficients
+  int W_linear = 0.00326049
+  int W_expo = 0.433466
+  int W_fiber = 0.434713
+  int W_quasiIncomp_ln = 2.44417e-06
+ ||grad E||_L2 = 137.337
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 32 : 
+
+DE(un)[dun] = -0.00227947
+Accepted alpha = 1
+The new total energy = 12.9198
+min(J) = 0.99463   max(J) = 1.00862
+Energy parts without physical coefficients
+  int W_linear = 0.00324259
+  int W_expo = 0.433465
+  int W_fiber = 0.434756
+  int W_quasiIncomp_ln = 9.82897e-07
+ ||grad E||_L2 = 6.4975
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 33 : 
+
+DE(un)[dun] = -0.00111366
+Accepted alpha = 0.5
+The new total energy = 12.9195
+min(J) = 0.994524   max(J) = 1.00875
+Energy parts without physical coefficients
+  int W_linear = 0.00319892
+  int W_expo = 0.433465
+  int W_fiber = 0.434843
+  int W_quasiIncomp_ln = 1.30701e-06
+ ||grad E||_L2 = 59.7586
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 34 : 
+
+DE(un)[dun] = -0.000481463
+Accepted alpha = 0.625
+The new total energy = 12.9193
+min(J) = 0.994482   max(J) = 1.0088
+Energy parts without physical coefficients
+  int W_linear = 0.00320339
+  int W_expo = 0.433465
+  int W_fiber = 0.434872
+  int W_quasiIncomp_ln = 1.11783e-06
+ ||grad E||_L2 = 25.5351
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 35 : 
+
+DE(un)[dun] = -0.000239877
+Accepted alpha = 0.78125
+The new total energy = 12.9192
+min(J) = 0.994423   max(J) = 1.00887
+Energy parts without physical coefficients
+  int W_linear = 0.00319372
+  int W_expo = 0.433466
+  int W_fiber = 0.434919
+  int W_quasiIncomp_ln = 1.11707e-06
+ ||grad E||_L2 = 17.9878
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 36 : 
+
+DE(un)[dun] = -0.000122851
+Accepted alpha = 0.976562
+The new total energy = 12.9191
+min(J) = 0.994371   max(J) = 1.00893
+Energy parts without physical coefficients
+  int W_linear = 0.00318352
+  int W_expo = 0.433466
+  int W_fiber = 0.434963
+  int W_quasiIncomp_ln = 1.12758e-06
+ ||grad E||_L2 = 13.7081
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 37 : 
+
+DE(un)[dun] = -4.10804e-05
+Accepted alpha = 1
+The new total energy = 12.9191
+min(J) = 0.994342   max(J) = 1.00896
+Energy parts without physical coefficients
+  int W_linear = 0.0031786
+  int W_expo = 0.433466
+  int W_fiber = 0.434989
+  int W_quasiIncomp_ln = 1.12417e-06
+ ||grad E||_L2 = 4.59754
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 38 : 
+
+DE(un)[dun] = -7.26951e-06
+Accepted alpha = 1
+The new total energy = 12.9191
+min(J) = 0.994327   max(J) = 1.00898
+Energy parts without physical coefficients
+  int W_linear = 0.00317607
+  int W_expo = 0.433466
+  int W_fiber = 0.435003
+  int W_quasiIncomp_ln = 1.12836e-06
+ ||grad E||_L2 = 1.56274
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 39 : 
+
+DE(un)[dun] = -3.88659e-07
+Accepted alpha = 1
+The new total energy = 12.9191
+min(J) = 0.994324   max(J) = 1.00898
+Energy parts without physical coefficients
+  int W_linear = 0.00317552
+  int W_expo = 0.433466
+  int W_fiber = 0.435005
+  int W_quasiIncomp_ln = 1.12866e-06
+ ||grad E||_L2 = 0.0768168
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 40 : 
+
+DE(un)[dun] = -1.75104e-09
+Accepted alpha = 1
+The new total energy = 12.9191
+min(J) = 0.994324   max(J) = 1.00898
+Energy parts without physical coefficients
+  int W_linear = 0.00317548
+  int W_expo = 0.433466
+  int W_fiber = 0.435005
+  int W_quasiIncomp_ln = 1.12873e-06
+ ||grad E||_L2 = 0.000625536
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 41 : 
+
+DE(un)[dun] = -5.16982e-14
+Accepted alpha = 1
+The new total energy = 12.9191
+min(J) = 0.994324   max(J) = 1.00898
+Energy parts without physical coefficients
+  int W_linear = 0.00317548
+  int W_expo = 0.433466
+  int W_fiber = 0.435005
+  int W_quasiIncomp_ln = 1.12873e-06
+ ||grad E||_L2 = 1.37721e-08
+Converged: gradient below tol = 1e-07
+
+Sommets (nv)        = 5642
+Triangles (nt)      = 10640
+Aretes frontiere    = 646
+size of mesh = 0.020537
+Sommets (nv)        = 5642
+Triangles (nt)      = 10640
+Aretes frontiere    = 646
+size of mesh = 0.0139963
+
+Area variation = 9.96136 % 
+
+V0 = 0.433447
+
+V1 = 0.39027
+
+The minimum value of the displacement = -0.0316734
+The maximum value of the displacement = 1.48587
+
+Computational time = 0 h 12 min 42.9504 s 
+
+La deformation marchait bien jusqu'a un peu avant la fin ou le domaine s'est trop elargie

@@ -1,0 +1,299 @@
+Test case 0 : 
+ 
+nu1 = 1
+C0 = 10, C1 = 0.5
+C2 = 15, C3 = 0.9
+kappa = 800 
+ 
+Border conditions : g = 1-> Right & g = -1-> Left 
+No body force 
+
+Optimization parameters for the Newton method : 
+
+Jtol     = 1e-06
+alpha    = 0.1
+alphaMax = 1
+alphaMin = 0.0001
+Nbmax    = 500
+tol      = 1e-07
+For movemesh : Nsteps = 100
+----------------------------------------
+The total energy E(un) = 10.8833
+Energy parts without physical coefficients
+  int W_linear = 0
+  int W_expo = 0.43533
+  int W_fiber = 0.43533
+  int W_quasiIncomp_ln = 0
+----------------------------------------
+ ||grad E||_L2 = 0.0306147
+---------------------------------------- 
+
+Iteration 0 : 
+
+DE(un)[dun] = -0.124943
+Accepted alpha = 0.05
+The new total energy = 10.8792
+min(J) = 0.998944   max(J) = 1.00605
+ ||grad E||_L2 = 154.121
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 1 : 
+
+DE(un)[dun] = -0.0362521
+Accepted alpha = 0.125
+The new total energy = 10.8767
+min(J) = 0.994611   max(J) = 1.00362
+ ||grad E||_L2 = 84.2873
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 2 : 
+
+DE(un)[dun] = -0.0221951
+Accepted alpha = 0.15625
+The new total energy = 10.8741
+min(J) = 0.998341   max(J) = 1.0059
+ ||grad E||_L2 = 92.3466
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 3 : 
+
+DE(un)[dun] = -0.00946189
+Accepted alpha = 0.390625
+The new total energy = 10.8711
+min(J) = 0.997349   max(J) = 1.00537
+ ||grad E||_L2 = 72.8526
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 4 : 
+
+DE(un)[dun] = -0.00667368
+Accepted alpha = 0.488281
+The new total energy = 10.8685
+min(J) = 0.996361   max(J) = 1.00578
+ ||grad E||_L2 = 73.8128
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 5 : 
+
+DE(un)[dun] = -0.00541081
+Accepted alpha = 0.610352
+The new total energy = 10.866
+min(J) = 0.995377   max(J) = 1.00663
+ ||grad E||_L2 = 77.9735
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 6 : 
+
+DE(un)[dun] = -0.00452868
+Accepted alpha = 0.762939
+The new total energy = 10.8635
+min(J) = 0.994397   max(J) = 1.00708
+ ||grad E||_L2 = 77.3206
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 7 : 
+
+DE(un)[dun] = -0.00382069
+Accepted alpha = 0.953674
+The new total energy = 10.8611
+min(J) = 0.993402   max(J) = 1.00766
+ ||grad E||_L2 = 81.1361
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 8 : 
+
+DE(un)[dun] = -0.00314097
+Accepted alpha = 1
+The new total energy = 10.859
+min(J) = 0.992575   max(J) = 1.0071
+ ||grad E||_L2 = 59.7813
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 9 : 
+
+DE(un)[dun] = -0.00255148
+Accepted alpha = 1
+The new total energy = 10.8575
+min(J) = 0.991742   max(J) = 1.00804
+ ||grad E||_L2 = 81.2443
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 10 : 
+
+DE(un)[dun] = -0.00212405
+Accepted alpha = 1
+The new total energy = 10.8561
+min(J) = 0.99116   max(J) = 1.00633
+ ||grad E||_L2 = 33.4814
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 11 : 
+
+DE(un)[dun] = -0.00178418
+Accepted alpha = 1
+The new total energy = 10.8556
+min(J) = 0.990352   max(J) = 1.00947
+ ||grad E||_L2 = 123.511
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 12 : 
+
+DE(un)[dun] = -0.00239434
+Accepted alpha = 1
+The new total energy = 10.8543
+min(J) = 0.990043   max(J) = 1.00638
+ ||grad E||_L2 = 9.08258
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 13 : 
+
+DE(un)[dun] = -0.0016374
+Accepted alpha = 0.5
+The new total energy = 10.854
+min(J) = 0.989498   max(J) = 1.00782
+ ||grad E||_L2 = 81.4522
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 14 : 
+
+DE(un)[dun] = -0.0010403
+Accepted alpha = 0.625
+The new total energy = 10.8536
+min(J) = 0.989334   max(J) = 1.00681
+ ||grad E||_L2 = 32.4603
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 15 : 
+
+DE(un)[dun] = -0.000431861
+Accepted alpha = 0.78125
+The new total energy = 10.8533
+min(J) = 0.989039   max(J) = 1.00698
+ ||grad E||_L2 = 20.2563
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 16 : 
+
+DE(un)[dun] = -0.000287361
+Accepted alpha = 0.976562
+The new total energy = 10.8531
+min(J) = 0.988718   max(J) = 1.00717
+ ||grad E||_L2 = 24.6819
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 17 : 
+
+DE(un)[dun] = -0.000160677
+Accepted alpha = 1
+The new total energy = 10.853
+min(J) = 0.98852   max(J) = 1.00728
+ ||grad E||_L2 = 8.05052
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 18 : 
+
+DE(un)[dun] = -7.01343e-05
+Accepted alpha = 1
+The new total energy = 10.853
+min(J) = 0.98832   max(J) = 1.00739
+ ||grad E||_L2 = 11.647
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 19 : 
+
+DE(un)[dun] = -2.40096e-05
+Accepted alpha = 1
+The new total energy = 10.853
+min(J) = 0.988249   max(J) = 1.00743
+ ||grad E||_L2 = 1.32096
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 20 : 
+
+DE(un)[dun] = -3.09473e-06
+Accepted alpha = 1
+The new total energy = 10.853
+min(J) = 0.988198   max(J) = 1.00746
+ ||grad E||_L2 = 0.840908
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 21 : 
+
+DE(un)[dun] = -1.02339e-07
+Accepted alpha = 1
+The new total energy = 10.853
+min(J) = 0.988193   max(J) = 1.00747
+ ||grad E||_L2 = 0.00731121
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 22 : 
+
+DE(un)[dun] = -8.74019e-11
+Accepted alpha = 1
+The new total energy = 10.853
+min(J) = 0.988193   max(J) = 1.00747
+ ||grad E||_L2 = 2.67363e-05
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 23 : 
+
+Converged: ||du||_inf below tol = 1.01714e-08
+
+Area variation = 9.62202 % 
+
+Volume of the reference domain Omega_0 = 0.43533
+
+Volume of the deformed domain Omega    = 0.393443
+
+int_{Omega0} J dx = 0.129663
+
+The minimum value of the displacement = -0.524802
+The maximum value of the displacement = 0.432303
+
+Computational time = 0 h 6 min 52.8882 s 

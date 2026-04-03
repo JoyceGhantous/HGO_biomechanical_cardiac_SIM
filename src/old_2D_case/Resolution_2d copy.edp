@@ -1,0 +1,228 @@
+// include "parameters/2D_case/Chapelle-Fernandez.edp"
+// include "parameters/2D_case/HGO_2009.edp"
+include "parameters/2D_case/test1.edp"
+
+include "src/2D_case/HyperElastic_2d.idp"
+include "src/2D_case/HyperElastic_Energy.idp"
+
+include "src/2D_case/Geometries/LR_1.edp"
+
+include "src/tools.idp"
+
+string res = "res/2D_case/Saved_values/";
+ofstream en (res + "energy.txt");
+ofstream LGe(res + "L2Gradenergy.txt");
+ofstream vol(res + "volume.txt");
+ofstream Jac(res + "jacobian.txt");
+
+real t0 = clock();
+
+// -----------------------------
+// Espace et inconnues
+// -----------------------------
+
+PrintMesh(Th, 2);
+
+fespace Vh(Th, [P1, P1]);
+Vh [du1, du2] = [0, 0]; // increment Delta u 
+Vh [v1, v2];            // test function
+Vh [un, vn] = [0, 0];   // u_n at the n-th iteration 
+
+// -----------------------------
+// Fiber direction
+// -----------------------------
+
+fespace Sh(Th,P1);
+Sh ax, ay, n;
+ax =  y;
+ay = -x;
+
+n  = sqrt(ax^2 + ay^2);
+ax = ax / n;
+ay = ay / n;
+
+// -----------------------------
+// Macro énergie
+// -----------------------------
+
+macro ENERGY(u1,u2) ( 
+      int2d(Th)( W2d([u1,u2], [ax,ay]) ) 
+    - int2d(Th)( f1*(u1) + f2*(u2) ) 
+    - int1d(Th, right)( g1*(u1) + g2*(u2) ) 
+    - int1d(Th, inner)( g0*(u1) + g0*(u2) ) 
+    - int1d(Th, outer)( g0*(u1) + g0*(u2) ) 
+) //
+
+// -----------------------------
+// Problème Newton 
+// -----------------------------
+
+problem NonLin([du1, du2], [v1, v2], solver = sparsesolver, master = -1)
+      = int2d(Th)( ddW2d([un, vn], [du1, du2], [v1, v2], [ax,ay])) 
+      + int2d(Th)( dW2d([un, vn], [v1, v2], [ax,ay]) )
+      - int2d(Th)( f1*v1 + f2*v2 )
+      - int1d(Th, right)( g1*v1 + g2*v2 )
+      - int1d(Th, inner)( g0*v1 + g0*v2 )
+      - int1d(Th, outer)( g0*v1 + g0*v2 )
+      + on(left, du1=0, du2=0);
+
+// -----------------------------
+// Résidu : R(un; v) = dE(un)[v] - Fext[v]
+// -----------------------------
+
+Vh [w1,w2];
+
+varf vRes([w1,w2],[v1,v2], solver = sparsesolver, master = -1) =
+        int2d(Th)( dW2d([un, vn], [v1, v2], [ax,ay]) )
+      - int2d(Th)( f1*v1 + f2*v2 )
+      - int1d(Th, right)( g1*v1 + g2*v2 )
+      - int1d(Th, inner)( g0*v1 + g0*v2 )
+      - int1d(Th, outer)( g0*v1 + g0*v2 )
+      + on(left, w1=0, w2=0);  
+
+// -----------------------------
+// norme L2
+// -----------------------------
+
+varf vmass([du1, du2], [v1, v2],  solver = sparsesolver, master = -1) = int2d(Th)(du1*v1 + du2*v2);
+matrix M = vmass(Vh, Vh);
+
+// -----------------------------
+// Newton + line-search
+// -----------------------------
+
+for (int i = 0; i < Nbmax; i++){
+      
+      cout << "---------------------------------------- \n" << endl;
+      cout << "Iteration " << i << endl;
+
+      // Compute energy
+      real En = ENERGY(un, vn);
+      cout << "The energy functional = " << En << endl;
+      en << i << " " << En << endl;
+
+      // Compute Jacobian determinant
+      
+      Sh J;
+      J = (1.0 + dx(un))*(1.0 + dy(vn)) - dx(vn)*dy(un);
+      if (J[].min < 0) {
+            cout << "Negative Jacobian determinant detected! min(J) = " << J[].min << endl;
+            break;
+      }
+      cout << "  min(J) = " << J[].min << "   max(J) = " << J[].max << endl;
+      Jac << i << " " << J[].min << " " << J[].max << endl;
+
+      // Solve Newton system -> gives du1,du2
+      NonLin;
+
+      real[int] R = vRes(0, Vh);   // assemble le vecteur résidu
+      real[int] y = M^-1 * R;            // résout M y = R
+      real ResL2 = sqrt( R' * y );
+
+      cout << "Residual L2 = " << ResL2 << endl;
+      LGe <<  i << " " << ResL2 << endl;
+
+      // Backtracking line-search
+      Vh [ut, vt];
+      real alphaLoc = 1.0;
+      real EnTry;
+      int kls = 0;
+
+      while (alphaLoc > tol && kls < maxLS)
+      {
+        [ut, vt] = [un, vn] + alphaLoc * [du1, du2];
+
+        EnTry = ENERGY(ut, vt);
+
+        // décroissance
+        if ( (EnTry==EnTry) && (abs(EnTry) < 1e300) && (EnTry < En) )
+        {
+          [un, vn] = [ut, vt];
+          break;
+        }
+
+        alphaLoc *= 0.5;
+        kls++;
+      }
+
+      if (alphaLoc <= tol || kls >= maxLS)
+      {
+        cout << "Line-search failed: cannot find a decreasing finite energy step." << endl;
+        break;
+      }
+
+      cout << "  alpha accepted = " << alphaLoc << "   E = " << EnTry << endl;
+
+      // Critère d'arrêt 
+      // real diffEn = abs(EnTry - En);
+      // if (diffEn < tol*(abs(En)))
+      // {
+      //   cout << "Small difference between En and En+1 = " << diffEn << endl;
+      //   cout << "Converged after " << i << " iterations." << endl;
+      //   break;
+      // }
+
+      real duInf = max( max(abs(du1[].min), abs(du1[].max)),
+                        max(abs(du2[].min), abs(du2[].max)) );
+
+      if (alphaLoc*duInf < tol)  {
+            cout << " Small alphaLoc * duInf = " << alphaLoc*duInf << endl;
+             cout << "Converged after " << i << " iterations." << endl;
+            break;
+      }
+
+      if (ResL2 < tol) {
+            cout << "Small residual = " << ResL2 << endl;
+            cout << "Converged after " << i << " iterations." << endl;
+            break;
+      }
+
+
+      // old code without line-search --- IGNORE ---
+      // [du1, du2] = alpha * [du1, du2];
+      
+      // [un, vn] = [un, vn] + [du1, du2];
+
+      // // disp << i << " " << du1 << " " << du2 << endl;
+
+      // real Enp1 = ENERGY(un, vn);
+
+      // if ( abs(Enp1 - En) < tol ) {
+      //       cout << abs(Enp1 - En) << endl;
+      //       cout << "Converged after " << i << " iterations." << endl;
+      //       break;
+      // }
+      
+}
+   
+// Mesh adaptation and movement based on the displacement field
+mesh Thm= adaptmesh(Th, 1./Nmesh, IsMetric=1, nbvx=10000);
+//adaptmesh(Th, [un, vn], hmin = 0.0001, hmax = 0.05, err=0.01);
+
+for (int ii = 0; ii < Nsteps; ii++) {
+      vol << ii << " " << Area(Thm) << endl;
+      real step = 1.0 / Nsteps;
+      real minS = checkmovemesh(Thm,[x+step*un,y+step*vn]);
+      while(minS<1e-12){ 
+        // si minS < 0, il y a des triangles inverses
+        cout<<"minS = "<<minS<<endl;
+        step*=0.9;
+        minS = checkmovemesh(Thm,[x+step*un,y+step*vn]);
+        cout<<"minS = "<<minS<<endl;
+        }
+      Thm = movemesh(Thm, [x + step*un, y + step*vn]);
+      plot(Thm);
+}
+plot(Thm, ps ="res/2D_case/Mesh/Final_mesh.eps");
+
+PrintMesh(Thm, 2);
+// Compute and print area variation and displacement extrema
+PercentageAreaVariation(Th, Thm);
+
+real mind = un[].min;
+cout << "The minimum value of the displacement = " << mind << endl;
+real maxd = un[].max;
+cout << "The maximum value of the displacement = " << maxd << "\n" << endl;
+
+real t1 = clock();
+PrintTime(t1, t0);

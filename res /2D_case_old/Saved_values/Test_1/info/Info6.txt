@@ -1,0 +1,532 @@
+Test case 6 : 
+ 
+nu1 = 1
+C0 = 20, C1 = 0.5
+C2 = 10, C3 = 1
+kappa = 400 
+ 
+---------------------------------------- 
+
+Iteration 0 : 
+
+The total energy E(un) = 20.6167 and it derivative DE(un)[dun] = 0
+The new value of the total energy = 20.6172
+ Energy went up 
+Down Step = 0.006
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 1 : 
+
+The total energy E(un) = 20.6172 and it derivative DE(un)[dun] = 1.77154
+The new value of the total energy = 20.6171
+ Energy decreased 
+Up Step = 0.0072
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 2 : 
+
+The total energy E(un) = 20.6171 and it derivative DE(un)[dun] = -0.0189945
+The new value of the total energy = 20.6169
+ Energy decreased 
+Up Step = 0.00864
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 3 : 
+
+The total energy E(un) = 20.6169 and it derivative DE(un)[dun] = -0.0185969
+The new value of the total energy = 20.6168
+ Energy decreased 
+Up Step = 0.010368
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 4 : 
+
+The total energy E(un) = 20.6168 and it derivative DE(un)[dun] = -0.0181414
+The new value of the total energy = 20.6166
+ Energy decreased 
+Up Step = 0.0124416
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 5 : 
+
+The total energy E(un) = 20.6166 and it derivative DE(un)[dun] = -0.0176239
+The new value of the total energy = 20.6164
+ Energy decreased 
+Up Step = 0.0149299
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 6 : 
+
+The total energy E(un) = 20.6164 and it derivative DE(un)[dun] = -0.0170417
+The new value of the total energy = 20.6161
+ Energy decreased 
+Up Step = 0.0179159
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 7 : 
+
+The total energy E(un) = 20.6161 and it derivative DE(un)[dun] = -0.0163939
+The new value of the total energy = 20.6159
+ Energy decreased 
+Up Step = 0.0214991
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 8 : 
+
+The total energy E(un) = 20.6159 and it derivative DE(un)[dun] = -0.0156819
+The new value of the total energy = 20.6155
+ Energy decreased 
+Up Step = 0.0257989
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 9 : 
+
+The total energy E(un) = 20.6155 and it derivative DE(un)[dun] = -0.0149093
+The new value of the total energy = 20.6152
+ Energy decreased 
+Up Step = 0.0309587
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 10 : 
+
+The total energy E(un) = 20.6152 and it derivative DE(un)[dun] = -0.0140826
+The new value of the total energy = 20.6147
+ Energy decreased 
+Up Step = 0.0371504
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 11 : 
+
+The total energy E(un) = 20.6147 and it derivative DE(un)[dun] = -0.0132104
+The new value of the total energy = 20.6143
+ Energy decreased 
+Up Step = 0.0445805
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 12 : 
+
+The total energy E(un) = 20.6143 and it derivative DE(un)[dun] = -0.012303
+The new value of the total energy = 20.6138
+ Energy decreased 
+Up Step = 0.0534966
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 13 : 
+
+The total energy E(un) = 20.6138 and it derivative DE(un)[dun] = -0.0113727
+The new value of the total energy = 20.6132
+ Energy decreased 
+Up Step = 0.0641959
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 14 : 
+
+The total energy E(un) = 20.6132 and it derivative DE(un)[dun] = -0.010433
+The new value of the total energy = 20.6126
+ Energy decreased 
+Up Step = 0.0770351
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 15 : 
+
+The total energy E(un) = 20.6126 and it derivative DE(un)[dun] = -0.00949974
+The new value of the total energy = 20.6119
+ Energy decreased 
+Up Step = 0.0924421
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 16 : 
+
+The total energy E(un) = 20.6119 and it derivative DE(un)[dun] = -0.00859174
+The new value of the total energy = 20.6111
+ Energy decreased 
+Up Step = 0.110931
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 17 : 
+
+The total energy E(un) = 20.6111 and it derivative DE(un)[dun] = -0.00773216
+The new value of the total energy = 20.6103
+ Energy decreased 
+Up Step = 0.133117
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 18 : 
+
+The total energy E(un) = 20.6103 and it derivative DE(un)[dun] = -0.00694876
+The new value of the total energy = 20.6094
+ Energy decreased 
+Up Step = 0.15974
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 19 : 
+
+The total energy E(un) = 20.6094 and it derivative DE(un)[dun] = -0.00627207
+The new value of the total energy = 20.6084
+ Energy decreased 
+Up Step = 0.191688
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 20 : 
+
+The total energy E(un) = 20.6084 and it derivative DE(un)[dun] = -0.00572817
+The new value of the total energy = 20.6073
+ Energy decreased 
+Up Step = 0.230026
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 21 : 
+
+The total energy E(un) = 20.6073 and it derivative DE(un)[dun] = -0.00531987
+The new value of the total energy = 20.606
+ Energy decreased 
+Up Step = 0.276031
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 22 : 
+
+The total energy E(un) = 20.606 and it derivative DE(un)[dun] = -0.0049888
+The new value of the total energy = 20.6046
+ Energy decreased 
+Up Step = 0.331237
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 23 : 
+
+The total energy E(un) = 20.6046 and it derivative DE(un)[dun] = -0.00458835
+The new value of the total energy = 20.603
+ Energy decreased 
+Up Step = 0.397484
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 24 : 
+
+The total energy E(un) = 20.603 and it derivative DE(un)[dun] = -0.00400659
+The new value of the total energy = 20.6013
+ Energy decreased 
+Up Step = 0.476981
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 25 : 
+
+The total energy E(un) = 20.6013 and it derivative DE(un)[dun] = -0.00335546
+The new value of the total energy = 20.5995
+ Energy decreased 
+Up Step = 0.572377
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 26 : 
+
+The total energy E(un) = 20.5995 and it derivative DE(un)[dun] = -0.00277493
+The new value of the total energy = 20.5976
+ Energy decreased 
+Up Step = 0.686853
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 27 : 
+
+The total energy E(un) = 20.5976 and it derivative DE(un)[dun] = -0.0022701
+The new value of the total energy = 20.5956
+ Energy decreased 
+Up Step = 0.824223
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 28 : 
+
+The total energy E(un) = 20.5956 and it derivative DE(un)[dun] = -0.00182367
+The new value of the total energy = 20.5935
+ Energy decreased 
+Up Step = 0.989068
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 29 : 
+
+The total energy E(un) = 20.5935 and it derivative DE(un)[dun] = -0.00140707
+The new value of the total energy = 20.5914
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 30 : 
+
+The total energy E(un) = 20.5914 and it derivative DE(un)[dun] = -0.00102945
+The new value of the total energy = 20.5894
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 31 : 
+
+The total energy E(un) = 20.5894 and it derivative DE(un)[dun] = -0.00115868
+The new value of the total energy = 20.5877
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 32 : 
+
+The total energy E(un) = 20.5877 and it derivative DE(un)[dun] = -0.000581254
+The new value of the total energy = 20.5861
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 33 : 
+
+The total energy E(un) = 20.5861 and it derivative DE(un)[dun] = -0.00109856
+The new value of the total energy = 20.585
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 34 : 
+
+The total energy E(un) = 20.585 and it derivative DE(un)[dun] = 0.000707074
+The new value of the total energy = 20.5836
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 35 : 
+
+The total energy E(un) = 20.5836 and it derivative DE(un)[dun] = -0.000853704
+The new value of the total energy = 20.5861
+ Energy went up 
+Down Step = 0.6
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 36 : 
+
+The total energy E(un) = 20.5861 and it derivative DE(un)[dun] = 0.0154786
+The new value of the total energy = 20.5823
+ Energy decreased 
+Up Step = 0.72
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 37 : 
+
+The total energy E(un) = 20.5823 and it derivative DE(un)[dun] = -0.00371509
+The new value of the total energy = 20.5814
+ Energy decreased 
+Up Step = 0.864
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 38 : 
+
+The total energy E(un) = 20.5814 and it derivative DE(un)[dun] = -0.000713869
+The new value of the total energy = 20.5809
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 39 : 
+
+The total energy E(un) = 20.5809 and it derivative DE(un)[dun] = -8.15869e-05
+The new value of the total energy = 20.5804
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 40 : 
+
+The total energy E(un) = 20.5804 and it derivative DE(un)[dun] = -0.000327219
+The new value of the total energy = 20.5802
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 41 : 
+
+The total energy E(un) = 20.5802 and it derivative DE(un)[dun] = 0.00048786
+The new value of the total energy = 20.5799
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 42 : 
+
+The total energy E(un) = 20.5799 and it derivative DE(un)[dun] = -0.000131077
+The new value of the total energy = 20.5802
+ Energy went up 
+Down Step = 0.6
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 43 : 
+
+The total energy E(un) = 20.5802 and it derivative DE(un)[dun] = 0.00218752
+The new value of the total energy = 20.5797
+ Energy decreased 
+Up Step = 0.72
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 44 : 
+
+The total energy E(un) = 20.5797 and it derivative DE(un)[dun] = -0.000486273
+The new value of the total energy = 20.5796
+ Energy decreased 
+Up Step = 0.864
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 45 : 
+
+The total energy E(un) = 20.5796 and it derivative DE(un)[dun] = -6.67e-05
+The new value of the total energy = 20.5796
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 46 : 
+
+The total energy E(un) = 20.5796 and it derivative DE(un)[dun] = -1.66969e-05
+The new value of the total energy = 20.5796
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 47 : 
+
+The total energy E(un) = 20.5796 and it derivative DE(un)[dun] = -3.29791e-06
+The new value of the total energy = 20.5796
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 48 : 
+
+The total energy E(un) = 20.5796 and it derivative DE(un)[dun] = -4.96057e-07
+The new value of the total energy = 20.5796
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 49 : 
+
+The total energy E(un) = 20.5796 and it derivative DE(un)[dun] = -6.63075e-09
+The new value of the total energy = 20.5796
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 50 : 
+
+The total energy E(un) = 20.5796 and it derivative DE(un)[dun] = -1.30672e-12
+The new value of the total energy = 20.5796
+ Energy decreased 
+Up Step = 1
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 51 : 
+
+The total energy E(un) = 20.5796 and it derivative DE(un)[dun] = -4.47434e-20
+Converged: step*du norm below tol and is =  2.48189e-12
+
+Area variation = 27.3242 % 
+
+V0 = 0.687224
+
+V1 = 0.499445
+
+Temps calc = 0 h 25 min 19 s 
+

@@ -1,0 +1,61 @@
+/*
+    il faut lancer ce test avec mpirun -np 4 FreeFem++-mpi -wg meshPartitionMPI.edp
+    -wg est pour la fenettre graphique 
+
+    Dans ce code on partitionne le maillage. 
+    L'assemblage des matrices est fait en parallèle : 
+    chaque processus assemble sa partie de la matrice globale,
+    et les contributions sont automatiquement combinées dans la matrice finale (sans besoin de faire du MPI à la main).
+    Donc la solution obtenue est globale.
+*/
+
+load "metis"
+load "gmsh"
+load "MUMPS" // run it with FreeFem++-mpi meshPartitionMPI.edp  -wg
+
+macro grad(u)[dx(u), dy(u)] // EOM
+
+int nbparts = mpisize; 
+
+mesh Th = gmshload("../src/2D_case/Geometries/U_Shape_with_Holes.msh"); 
+fespace Ph(Th, P0);
+Ph part;
+
+if(mpisize > 1) metisdual(part[], Th, nbparts);
+else            part[] = 0.0;
+
+if(mpirank == 0 && mpisize > 1)
+    plot(part, value=1, fill=1, wait=1, cmm="partitioning");
+
+// this command stores the partition into the mesh “region” field so MPI-aware integrals can pick the right piece.
+mesh cb = change(Th, fregion = part[][nuTriangle]);
+
+fespace Vh(cb, P1);
+real dt = 0.001;
+
+varf vPb(u, v) =  int2d(cb, mpirank)(u * v + dt * (grad(u)' * grad(v))) 
+                + int2d(cb, mpirank)(dt * 10. * cos(x)^4 * v) 
+                + on(1040, u = 2.0)
+                + on(1030, u = 1.0);
+
+matrix A = vPb(Vh, Vh);
+set(A, solver = sparsesolver, master = -1);
+
+varf vPbM(u, v) = int2d(cb, mpirank)(u * v);
+matrix M = vPbM(Vh, Vh);
+
+Vh b, u;
+b[] = vPb(0, Vh); // “constant part” of RHS
+u[] = 0.0;        // Solution
+
+int iMax = 200;
+
+for(int i = 0; i < iMax; ++i) {
+    // the full RHS : inc = b[] + M*u[];
+    real[int] inc = b[];
+    inc += M * u[];
+
+    u[] = A^-1 * inc;
+    if(mpirank==0) plot(u, fill=1, value=1, nbiso=30, wait=1, cmm="u");
+    // nbiso : number of isolines in the plot (level-sets)
+}

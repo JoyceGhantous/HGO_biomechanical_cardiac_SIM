@@ -1,0 +1,30 @@
+Test case 9 : 
+ 
+nu1 = 1
+C0 = 10, C1 = 0.01
+C2 = 10, C3 = 0.01
+kappa = 400 
+ 
+---------------------------------------- 
+
+Iteration 0 : 
+
+The total energy E(un) = 13.6955 and it derivative DE(un)[dun] = 0
+ Energy went up 
+Down Step = 0.4
+---------------------------------------- 
+
+---------------------------------------- 
+
+Iteration 1 : 
+
+The total energy E(un) = 706520 and it derivative DE(un)[dun] = 2.83352e+06
+
+Area variation = 25.8286 % 
+
+V0 = 0.684774
+
+V1 = 0.861642
+
+Computational time = 0 h 0 min 55 s 
+
