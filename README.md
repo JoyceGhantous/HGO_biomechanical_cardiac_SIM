@@ -1,5 +1,4 @@
-# B-HEARTS
-# __Biomechanical Hyperelastic Energy-based cARdiac Tissue Solver__
+# __HGO_biomechanical_cardiac_SIM__
 
 **Author :** Joyce Ghantous  
 **Date :**  2026    
