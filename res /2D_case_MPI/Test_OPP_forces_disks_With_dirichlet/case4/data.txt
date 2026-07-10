@@ -1,0 +1,73 @@
+Test case 
+==================
+
+testId   = horizontal_forces_disks_With_dirichlet
+caseId   = 4
+dim      = 2
+mode     = Direct
+Inv      = 0
+Check    = 0
+meshName = LR_gmsh_6_bigger
+
+Boundary conditions
+-------------------
+bcF right = 0.15
+bcF left  = -0.15
+
+HGO material parameters
+-----------------------
+nu1   = 0.088
+C0    = 0.000375
+C1    = 8
+C2    = 0.0576
+C3    = 16
+kappa = 20
+
+Quasi-incompressibility option
+------------------------------
+optQuasiIncomp = 0
+
+Line search parameters
+----------------------
+alphaMax   = 1
+alphaMin   = 1e-06
+alpha      = 0.5
+nbmaxls    = 50
+ArmijoCst1 = 0.0001
+ArmijoCst2 = 0.9
+
+Newton parameters
+-----------------
+Nbmax = 500
+tol   = 1e-07
+Jtol  = 1e-07
+
+Volume domain = 19.6394
+Global mesh info:
+number of vertices     = 4497
+number of 2D triangles = 8551
+number of boundary faces= 445
+
+Local mesh info:
+number of vertices       = 830
+number of 2D triangles   = 1549
+
+Local FE spaces info:
+Local P1xP1 DOFs number = 1660
+Local P0 DOFs number    = 1549
+
+[0] gradL2 = 4.08731e-12 < 1e-07 Converged at iteration 20
+------------------------- gradL2 < tol -------------------------------------
+
+After movemesh: 
+Final step = 1
+Final area = 19.706, Area variation (%) = 0.338917
+
+After movemesh, rank = 0
+Fax min/max = -1 -0.988194
+Fay min/max = -0.153209 0.0288405
+Integral of det(F) = 19.706, min (displacement) = -2.56975, max (displacement) = 1.96696
+
+phi[0] = -5.85411
+phi[1] = 5.09906
+phi[2] = 6.71906

@@ -1,0 +1,1874 @@
+Test case 
+==================
+
+testId   = horizontal_forces_disks_With_dirichlet
+caseId   = 2.2
+Mesh Name= Toy_Model_with_surface_Dirichletbc_smallerz
+dim      = 3
+mode     = Direct
+Inv      = 0
+Check    = 0
+Solver   = mumps
+
+Boundary conditions
+-------------------
+bcF right = 5
+bcF left  = -5
+
+HGO material parameters
+-----------------------
+nu1   = 1
+nu2   = 1
+Cst0    = 0.1804
+Cst1    = 9
+Cst2    = 0.058
+Cst3    = 15
+kappa = 80
+------------------------------
+
+Line search parameters
+----------------------
+alphaMax   = 1
+alphaMin   = 1e-06
+alpha      = 0.5
+nbmaxls    = 50
+ArmijoCst1 = 0.0001
+ArmijoCst2 = 0.9
+
+Newton parameters
+-----------------
+Nbmax = 500
+tol   = 1e-07
+Jtol  = 1e-07
+
+
+Results folder:
+res/3D_case_MPI/Test_horizontal_forces_disks_With_dirichlet/Direct/case_2/
+
+[M] Building decomposition from mesh of 16140 elements
+
+Global mesh info:
+number of vertices      = 3909
+number of tetrahedra    = 16140
+number of boundary faces= 5042
+
+Local mesh info:
+number of vertices      = 836
+number of tetrahedra    = 2969
+
+[TIME] Mesh loading and building decomposed mesh = 0.154765 s
+[Vh] (paraddm) ndof = 11727
+[Sh] (paraddm) ndof = 16140
+
+Local FE spaces info:
+Local P1xP1xP1 DOFs number = 2508
+Local P0 DOFs number       = 2969
+[TIME] FE spaces and test functions = 0.037873 s
+
+--- Newton iteration 0 ---
+[TIME] Precompute invariant fields = 0.196232 s
+[TIME] VArf Assembly = 39.6094 s
+[TIME] Assembly = 2.58373 s
+[M] timings - direct solver : 0.521027 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.59943 s
+----------------------------------------
+The total energy E(un) = 11.4756
+Energy parts without physical coefficients
+  int W_linear = 0
+  int W_mooney_rivlin = 0
+  int W_exponential = 48.1358
+  int W_fiber = 48.1358
+  int W_volumetric = 0
+ ||grad E|| = 4.02525 & dEn(un)[dun] = -3306.85
+----------------------------------------
+[TIME] Energy assembly = 19.2435 s
+Reduce alpha = 0.5 Jmin = -17.5138
+Jmin = -17.5138 & Jmax = 85.1867
+Reduce alpha = 0.25 Jmin = -0.230032
+Jmin = -0.230032 & Jmax = 20.6927
+[TIME] Line search = 1.80367 s
+Line-search accepted at ls iteration 5
+Accepted alpha = 0.03125
+New Energy = -45.2813
+min(J) = 0.901078   max(J) = 1.31878
+[TIME] Stopping criteria for Newton = 2.77662 s
+[TIME] FULL Newton iteration = 67.8379 s
+
+--- Newton iteration 1 ---
+[TIME] Precompute invariant fields = 0.254562 s
+[TIME] VArf Assembly = 48.052 s
+[TIME] Assembly = 2.51174 s
+[M] timings - direct solver : 0.518152 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.1819 s
+----------------------------------------
+The total energy E(un) = -45.2813
+Energy parts without physical coefficients
+  int W_linear = 0.890169
+  int W_mooney_rivlin = 0.884369
+  int W_exponential = 48.3814
+  int W_fiber = 69.7368
+  int W_volumetric = 0.543881
+ ||grad E|| = 33.2001 & dEn(un)[dun] = -2.22962
+----------------------------------------
+[TIME] Energy assembly = 16.5266 s
+Reduce alpha = 0.0390625 Jmin = -64.9377
+Jmin = -64.9377 & Jmax = 12.4655
+Reduce alpha = 0.0195312 Jmin = -13.9093
+Jmin = -13.9093 & Jmax = 2.18638
+Reduce alpha = 0.00976562 Jmin = -2.63321
+Jmin = -2.63321 & Jmax = 1.5449
+[TIME] Line search = 1.72137 s
+Line-search accepted at ls iteration 7
+Accepted alpha = 0.000610352
+New Energy = -45.2824
+min(J) = 0.90137   max(J) = 1.32354
+[TIME] Stopping criteria for Newton = 1.79052 s
+[TIME] FULL Newton iteration = 72.0556 s
+
+--- Newton iteration 2 ---
+[TIME] Precompute invariant fields = 0.172646 s
+[TIME] VArf Assembly = 31.4915 s
+[TIME] Assembly = 2.59479 s
+[M] timings - direct solver : 0.506696 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.54537 s
+----------------------------------------
+The total energy E(un) = -45.2824
+Energy parts without physical coefficients
+  int W_linear = 0.893283
+  int W_mooney_rivlin = 0.887491
+  int W_exponential = 48.3842
+  int W_fiber = 69.7643
+  int W_volumetric = 0.543005
+ ||grad E|| = 33.156 & dEn(un)[dun] = -262.32
+----------------------------------------
+[TIME] Energy assembly = 19.0896 s
+[TIME] Line search = 0.363675 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.000762939
+New Energy = -45.4824
+min(J) = 0.90122   max(J) = 1.33166
+[TIME] Stopping criteria for Newton = 2.74254 s
+[TIME] FULL Newton iteration = 58.0262 s
+
+--- Newton iteration 3 ---
+[TIME] Precompute invariant fields = 0.255628 s
+[TIME] VArf Assembly = 45.8604 s
+[TIME] Assembly = 2.50165 s
+[M] timings - direct solver : 0.380268 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.21555 s
+----------------------------------------
+The total energy E(un) = -45.4824
+Energy parts without physical coefficients
+  int W_linear = 0.903566
+  int W_mooney_rivlin = 0.898459
+  int W_exponential = 48.3903
+  int W_fiber = 70.136
+  int W_volumetric = 0.542122
+ ||grad E|| = 33.1167 & dEn(un)[dun] = -130.929
+----------------------------------------
+[TIME] Energy assembly = 14.0116 s
+[TIME] Line search = 0.261474 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.000953674
+New Energy = -45.6071
+min(J) = 0.900335   max(J) = 1.34552
+[TIME] Stopping criteria for Newton = 1.96371 s
+[TIME] FULL Newton iteration = 66.0885 s
+
+--- Newton iteration 4 ---
+[TIME] Precompute invariant fields = 0.187773 s
+[TIME] VArf Assembly = 42.5415 s
+[TIME] Assembly = 2.49571 s
+[M] timings - direct solver : 0.553455 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.55443 s
+----------------------------------------
+The total energy E(un) = -45.6071
+Energy parts without physical coefficients
+  int W_linear = 0.911894
+  int W_mooney_rivlin = 0.907154
+  int W_exponential = 48.3954
+  int W_fiber = 70.4228
+  int W_volumetric = 0.541093
+ ||grad E|| = 33.0706 & dEn(un)[dun] = -143.908
+----------------------------------------
+[TIME] Energy assembly = 15.5148 s
+[TIME] Line search = 0.510978 s
+Line-search accepted at ls iteration 2
+Accepted alpha = 0.000596046
+New Energy = -45.6837
+min(J) = 0.89958   max(J) = 1.34582
+[TIME] Stopping criteria for Newton = 1.88934 s
+[TIME] FULL Newton iteration = 64.7119 s
+
+--- Newton iteration 5 ---
+[TIME] Precompute invariant fields = 0.19023 s
+[TIME] VArf Assembly = 40.4782 s
+[TIME] Assembly = 2.52555 s
+[M] timings - direct solver : 0.761277 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.11607 s
+----------------------------------------
+The total energy E(un) = -45.6837
+Energy parts without physical coefficients
+  int W_linear = 0.927447
+  int W_mooney_rivlin = 0.923378
+  int W_exponential = 48.4481
+  int W_fiber = 70.7687
+  int W_volumetric = 0.539915
+ ||grad E|| = 33.031 & dEn(un)[dun] = -204.571
+----------------------------------------
+[TIME] Energy assembly = 19.2169 s
+[TIME] Line search = 0.365746 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.000745058
+New Energy = -45.8361
+min(J) = 0.899513   max(J) = 1.34941
+[TIME] Stopping criteria for Newton = 2.1173 s
+[TIME] FULL Newton iteration = 67.0376 s
+
+--- Newton iteration 6 ---
+[TIME] Precompute invariant fields = 0.16747 s
+[TIME] VArf Assembly = 31.3825 s
+[TIME] Assembly = 2.83506 s
+[M] timings - direct solver : 0.720846 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.33336 s
+----------------------------------------
+The total energy E(un) = -45.8361
+Energy parts without physical coefficients
+  int W_linear = 0.932374
+  int W_mooney_rivlin = 0.928642
+  int W_exponential = 48.4509
+  int W_fiber = 70.835
+  int W_volumetric = 0.53911
+ ||grad E|| = 32.9973 & dEn(un)[dun] = 3.47886
+----------------------------------------
+[TIME] Energy assembly = 21.7325 s
+
+ Newton direction is not descent: dE[dun] = 3.47886
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -1088.82
+[TIME] Line search = 0.418344 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.000931323
+New Energy = -46.8231
+min(J) = 0.899773   max(J) = 1.33563
+[TIME] Stopping criteria for Newton = 3.67286 s
+[TIME] FULL Newton iteration = 83.0937 s
+
+--- Newton iteration 7 ---
+[TIME] Precompute invariant fields = 0.303043 s
+[TIME] VArf Assembly = 38.6789 s
+[TIME] Assembly = 2.69246 s
+[M] timings - direct solver : 0.515589 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.19617 s
+----------------------------------------
+The total energy E(un) = -46.8231
+Energy parts without physical coefficients
+  int W_linear = 0.936027
+  int W_mooney_rivlin = 0.932528
+  int W_exponential = 48.4423
+  int W_fiber = 69.8385
+  int W_volumetric = 0.52759
+ ||grad E|| = 31.5361 & dEn(un)[dun] = -36.4072
+----------------------------------------
+[TIME] Energy assembly = 20.2007 s
+[TIME] Line search = 0.378723 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00116415
+New Energy = -46.8654
+min(J) = 0.899255   max(J) = 1.34607
+[TIME] Stopping criteria for Newton = 2.89309 s
+[TIME] FULL Newton iteration = 66.3692 s
+
+--- Newton iteration 8 ---
+[TIME] Precompute invariant fields = 0.271306 s
+[TIME] VArf Assembly = 54.9709 s
+[TIME] Assembly = 2.90171 s
+[M] timings - direct solver : 0.617788 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.05073 s
+----------------------------------------
+The total energy E(un) = -46.8654
+Energy parts without physical coefficients
+  int W_linear = 0.937034
+  int W_mooney_rivlin = 0.93362
+  int W_exponential = 48.4452
+  int W_fiber = 69.9513
+  int W_volumetric = 0.526527
+ ||grad E|| = 31.4921 & dEn(un)[dun] = 103.47
+----------------------------------------
+[TIME] Energy assembly = 19.944 s
+
+ Newton direction is not descent: dE[dun] = 103.47
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -991.752
+[TIME] Line search = 0.310277 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00145519
+New Energy = -48.2775
+min(J) = 0.899567   max(J) = 1.33403
+[TIME] Stopping criteria for Newton = 2.3442 s
+[TIME] FULL Newton iteration = 97.4543 s
+
+--- Newton iteration 9 ---
+[TIME] Precompute invariant fields = 0.213006 s
+[TIME] VArf Assembly = 38.2505 s
+[TIME] Assembly = 2.85032 s
+[M] timings - direct solver : 0.873344 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.95929 s
+----------------------------------------
+The total energy E(un) = -48.2775
+Energy parts without physical coefficients
+  int W_linear = 0.944442
+  int W_mooney_rivlin = 0.941406
+  int W_exponential = 48.4412
+  int W_fiber = 69.3953
+  int W_volumetric = 0.509361
+ ||grad E|| = 30.2267 & dEn(un)[dun] = -1734.86
+----------------------------------------
+[TIME] Energy assembly = 19.4284 s
+Reduce alpha = 0.00181899 Jmin = -0.988797
+Jmin = -0.988797 & Jmax = 1.77263
+[TIME] Line search = 1.04116 s
+Line-search accepted at ls iteration 3
+Accepted alpha = 0.000454747
+New Energy = -48.847
+min(J) = 0.899601   max(J) = 1.39886
+[TIME] Stopping criteria for Newton = 2.75323 s
+[TIME] FULL Newton iteration = 66.5205 s
+
+--- Newton iteration 10 ---
+[TIME] Precompute invariant fields = 0.25639 s
+[TIME] VArf Assembly = 52.0104 s
+[TIME] Assembly = 2.89465 s
+[M] timings - direct solver : 0.696687 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.81939 s
+----------------------------------------
+The total energy E(un) = -48.847
+Energy parts without physical coefficients
+  int W_linear = 1.16136
+  int W_mooney_rivlin = 1.15793
+  int W_exponential = 48.836
+  int W_fiber = 74.0742
+  int W_volumetric = 0.50275
+ ||grad E|| = 30.6844 & dEn(un)[dun] = -63.0505
+----------------------------------------
+[TIME] Energy assembly = 19.7524 s
+[TIME] Line search = 0.319295 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.000568434
+New Energy = -48.8828
+min(J) = 0.899314   max(J) = 1.39766
+[TIME] Stopping criteria for Newton = 2.20252 s
+[TIME] FULL Newton iteration = 79.2803 s
+
+--- Newton iteration 11 ---
+[TIME] Precompute invariant fields = 0.213334 s
+[TIME] VArf Assembly = 48.7038 s
+[TIME] Assembly = 2.72909 s
+[M] timings - direct solver : 0.544634 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.67197 s
+----------------------------------------
+The total energy E(un) = -48.8828
+Energy parts without physical coefficients
+  int W_linear = 1.16279
+  int W_mooney_rivlin = 1.15955
+  int W_exponential = 48.8358
+  int W_fiber = 74.1791
+  int W_volumetric = 0.502267
+ ||grad E|| = 30.6657 & dEn(un)[dun] = -76.6221
+----------------------------------------
+[TIME] Energy assembly = 19.0442 s
+[TIME] Line search = 0.250931 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.000710543
+New Energy = -48.9372
+min(J) = 0.899137   max(J) = 1.39612
+[TIME] Stopping criteria for Newton = 1.83213 s
+[TIME] FULL Newton iteration = 74.4632 s
+
+--- Newton iteration 12 ---
+[TIME] Precompute invariant fields = 0.173205 s
+[TIME] VArf Assembly = 35.5388 s
+[TIME] Assembly = 3.84206 s
+[M] timings - direct solver : 0.839109 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.22526 s
+----------------------------------------
+The total energy E(un) = -48.9372
+Energy parts without physical coefficients
+  int W_linear = 1.16337
+  int W_mooney_rivlin = 1.16014
+  int W_exponential = 48.8353
+  int W_fiber = 74.2894
+  int W_volumetric = 0.50167
+ ||grad E|| = 30.6421 & dEn(un)[dun] = -22.1757
+----------------------------------------
+[TIME] Energy assembly = 26.1171 s
+[TIME] Line search = 0.455668 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.000888178
+New Energy = -48.9568
+min(J) = 0.898544   max(J) = 1.39392
+[TIME] Stopping criteria for Newton = 2.9999 s
+[TIME] FULL Newton iteration = 70.3801 s
+
+--- Newton iteration 13 ---
+[TIME] Precompute invariant fields = 0.290702 s
+[TIME] VArf Assembly = 50.4748 s
+[TIME] Assembly = 2.94007 s
+[M] timings - direct solver : 0.539798 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.79529 s
+----------------------------------------
+The total energy E(un) = -48.9568
+Energy parts without physical coefficients
+  int W_linear = 1.17391
+  int W_mooney_rivlin = 1.17153
+  int W_exponential = 48.8404
+  int W_fiber = 74.4873
+  int W_volumetric = 0.500772
+ ||grad E|| = 30.6018 & dEn(un)[dun] = -52.961
+----------------------------------------
+[TIME] Energy assembly = 20.3647 s
+[TIME] Line search = 0.265312 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00111022
+New Energy = -49.0155
+min(J) = 0.898255   max(J) = 1.39056
+[TIME] Stopping criteria for Newton = 2.07127 s
+[TIME] FULL Newton iteration = 78.219 s
+
+--- Newton iteration 14 ---
+[TIME] Precompute invariant fields = 0.18217 s
+[TIME] VArf Assembly = 31.8664 s
+[TIME] Assembly = 2.84944 s
+[M] timings - direct solver : 0.38626 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 0.672817 s
+----------------------------------------
+The total energy E(un) = -49.0155
+Energy parts without physical coefficients
+  int W_linear = 1.17777
+  int W_mooney_rivlin = 1.17579
+  int W_exponential = 48.8435
+  int W_fiber = 74.7406
+  int W_volumetric = 0.499753
+ ||grad E|| = 30.5584 & dEn(un)[dun] = 460.354
+----------------------------------------
+[TIME] Energy assembly = 20.5977 s
+
+ Newton direction is not descent: dE[dun] = 460.354
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -933.819
+[TIME] Line search = 0.401423 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00138778
+New Energy = -50.2551
+min(J) = 0.898436   max(J) = 1.39948
+[TIME] Stopping criteria for Newton = 2.85257 s
+[TIME] FULL Newton iteration = 78.7282 s
+
+--- Newton iteration 15 ---
+[TIME] Precompute invariant fields = 0.282783 s
+[TIME] VArf Assembly = 26.325 s
+[TIME] Assembly = 2.43553 s
+[M] timings - direct solver : 0.544865 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 0.905153 s
+----------------------------------------
+The total energy E(un) = -50.2551
+Energy parts without physical coefficients
+  int W_linear = 1.1851
+  int W_mooney_rivlin = 1.18362
+  int W_exponential = 48.8082
+  int W_fiber = 73.9307
+  int W_volumetric = 0.484977
+ ||grad E|| = 28.7689 & dEn(un)[dun] = -604.237
+----------------------------------------
+[TIME] Energy assembly = 21.3688 s
+[TIME] Line search = 0.808082 s
+Line-search accepted at ls iteration 2
+Accepted alpha = 0.000867362
+New Energy = -50.6821
+min(J) = 0.900456   max(J) = 1.40811
+[TIME] Stopping criteria for Newton = 3.05733 s
+[TIME] FULL Newton iteration = 55.2107 s
+
+--- Newton iteration 16 ---
+[TIME] Precompute invariant fields = 0.295592 s
+[TIME] VArf Assembly = 47.771 s
+[TIME] Assembly = 2.99189 s
+[M] timings - direct solver : 0.608999 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.79767 s
+----------------------------------------
+The total energy E(un) = -50.6821
+Energy parts without physical coefficients
+  int W_linear = 1.3338
+  int W_mooney_rivlin = 1.3399
+  int W_exponential = 49.4132
+  int W_fiber = 75.2282
+  int W_volumetric = 0.479181
+ ||grad E|| = 30.6054 & dEn(un)[dun] = 39.4182
+----------------------------------------
+[TIME] Energy assembly = 21.5696 s
+
+ Newton direction is not descent: dE[dun] = 39.4182
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -936.691
+[TIME] Line search = 0.235158 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.0010842
+New Energy = -51.6001
+min(J) = 0.900536   max(J) = 1.40779
+[TIME] Stopping criteria for Newton = 1.81549 s
+[TIME] FULL Newton iteration = 93.2205 s
+
+--- Newton iteration 17 ---
+[TIME] Precompute invariant fields = 0.157046 s
+[TIME] VArf Assembly = 23.389 s
+[TIME] Assembly = 3.10131 s
+[M] timings - direct solver : 0.696964 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.45911 s
+----------------------------------------
+The total energy E(un) = -51.6001
+Energy parts without physical coefficients
+  int W_linear = 1.33933
+  int W_mooney_rivlin = 1.34575
+  int W_exponential = 49.1081
+  int W_fiber = 75.1269
+  int W_volumetric = 0.468513
+ ||grad E|| = 27.7183 & dEn(un)[dun] = 60.2787
+----------------------------------------
+[TIME] Energy assembly = 22.8335 s
+
+ Newton direction is not descent: dE[dun] = 60.2787
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -768.303
+[TIME] Line search = 0.427168 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00135525
+New Energy = -52.6255
+min(J) = 0.900589   max(J) = 1.40499
+[TIME] Stopping criteria for Newton = 3.27882 s
+[TIME] FULL Newton iteration = 76.0348 s
+
+--- Newton iteration 18 ---
+[TIME] Precompute invariant fields = 0.305584 s
+[TIME] VArf Assembly = 48.1032 s
+[TIME] Assembly = 2.92933 s
+[M] timings - direct solver : 0.682687 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 4.36448 s
+----------------------------------------
+The total energy E(un) = -52.6255
+Energy parts without physical coefficients
+  int W_linear = 1.34823
+  int W_mooney_rivlin = 1.35533
+  int W_exponential = 49.0903
+  int W_fiber = 75.1749
+  int W_volumetric = 0.455703
+ ||grad E|| = 26.8907 & dEn(un)[dun] = 39.4762
+----------------------------------------
+[TIME] Energy assembly = 22.0555 s
+
+ Newton direction is not descent: dE[dun] = 39.4762
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -723.109
+[TIME] Line search = 0.250997 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00169407
+New Energy = -53.8287
+min(J) = 0.900598   max(J) = 1.39947
+[TIME] Stopping criteria for Newton = 1.91527 s
+[TIME] FULL Newton iteration = 93.5653 s
+
+--- Newton iteration 19 ---
+[TIME] Precompute invariant fields = 0.174549 s
+[TIME] VArf Assembly = 29.3194 s
+[TIME] Assembly = 2.8267 s
+[M] timings - direct solver : 0.551048 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.05544 s
+----------------------------------------
+The total energy E(un) = -53.8287
+Energy parts without physical coefficients
+  int W_linear = 1.36013
+  int W_mooney_rivlin = 1.36814
+  int W_exponential = 49.0817
+  int W_fiber = 75.3634
+  int W_volumetric = 0.440525
+ ||grad E|| = 25.9513 & dEn(un)[dun] = -14.8343
+----------------------------------------
+[TIME] Energy assembly = 20.7817 s
+[TIME] Line search = 0.405671 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00211758
+New Energy = -53.8593
+min(J) = 0.900209   max(J) = 1.3994
+[TIME] Stopping criteria for Newton = 2.83564 s
+[TIME] FULL Newton iteration = 58.4267 s
+
+--- Newton iteration 20 ---
+[TIME] Precompute invariant fields = 0.268688 s
+[TIME] VArf Assembly = 40.0193 s
+[TIME] Assembly = 2.62721 s
+[M] timings - direct solver : 0.979505 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.82714 s
+----------------------------------------
+The total energy E(un) = -53.8593
+Energy parts without physical coefficients
+  int W_linear = 1.36421
+  int W_mooney_rivlin = 1.3727
+  int W_exponential = 49.0852
+  int W_fiber = 75.9539
+  int W_volumetric = 0.438293
+ ||grad E|| = 25.852 & dEn(un)[dun] = 156.94
+----------------------------------------
+[TIME] Energy assembly = 19.3718 s
+
+ Newton direction is not descent: dE[dun] = 156.94
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -668.324
+[TIME] Line search = 0.253214 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00264698
+New Energy = -55.5819
+min(J) = 0.900136   max(J) = 1.38879
+[TIME] Stopping criteria for Newton = 1.90582 s
+[TIME] FULL Newton iteration = 79.5604 s
+
+--- Newton iteration 21 ---
+[TIME] Precompute invariant fields = 0.183036 s
+[TIME] VArf Assembly = 30.3613 s
+[TIME] Assembly = 2.91406 s
+[M] timings - direct solver : 0.675069 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.20215 s
+----------------------------------------
+The total energy E(un) = -55.5819
+Energy parts without physical coefficients
+  int W_linear = 1.38342
+  int W_mooney_rivlin = 1.3934
+  int W_exponential = 49.0868
+  int W_fiber = 76.4411
+  int W_volumetric = 0.416347
+ ||grad E|| = 24.5221 & dEn(un)[dun] = 28.132
+----------------------------------------
+[TIME] Energy assembly = 19.3463 s
+
+ Newton direction is not descent: dE[dun] = 28.132
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -601.331
+[TIME] Line search = 0.532066 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00330872
+New Energy = -57.5106
+min(J) = 0.899927   max(J) = 1.37374
+[TIME] Stopping criteria for Newton = 2.83111 s
+[TIME] FULL Newton iteration = 77.1784 s
+
+--- Newton iteration 22 ---
+[TIME] Precompute invariant fields = 0.255043 s
+[TIME] VArf Assembly = 34.0473 s
+[TIME] Assembly = 1.85492 s
+[M] timings - direct solver : 0.720844 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.94052 s
+----------------------------------------
+The total energy E(un) = -57.5106
+Energy parts without physical coefficients
+  int W_linear = 1.40848
+  int W_mooney_rivlin = 1.42038
+  int W_exponential = 49.1028
+  int W_fiber = 77.2387
+  int W_volumetric = 0.391516
+ ||grad E|| = 23.0511 & dEn(un)[dun] = -42.3716
+----------------------------------------
+[TIME] Energy assembly = 17.8496 s
+[TIME] Line search = 0.361653 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.0041359
+New Energy = -57.6778
+min(J) = 0.899414   max(J) = 1.37304
+[TIME] Stopping criteria for Newton = 2.79402 s
+[TIME] FULL Newton iteration = 59.1278 s
+
+--- Newton iteration 23 ---
+[TIME] Precompute invariant fields = 0.268844 s
+[TIME] VArf Assembly = 40.4024 s
+[TIME] Assembly = 2.58938 s
+[M] timings - direct solver : 0.612203 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.56136 s
+----------------------------------------
+The total energy E(un) = -57.6778
+Energy parts without physical coefficients
+  int W_linear = 1.45941
+  int W_mooney_rivlin = 1.47197
+  int W_exponential = 49.198
+  int W_fiber = 77.8552
+  int W_volumetric = 0.386754
+ ||grad E|| = 22.7957 & dEn(un)[dun] = -20.5048
+----------------------------------------
+[TIME] Energy assembly = 16.7385 s
+[TIME] Line search = 0.486302 s
+Line-search accepted at ls iteration 2
+Accepted alpha = 0.00258494
+New Energy = -57.719
+min(J) = 0.897951   max(J) = 1.3724
+[TIME] Stopping criteria for Newton = 1.77165 s
+[TIME] FULL Newton iteration = 63.8341 s
+
+--- Newton iteration 24 ---
+[TIME] Precompute invariant fields = 0.171821 s
+[TIME] VArf Assembly = 23.1045 s
+[TIME] Assembly = 3.17879 s
+[M] timings - direct solver : 0.985135 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.52466 s
+----------------------------------------
+The total energy E(un) = -57.719
+Energy parts without physical coefficients
+  int W_linear = 1.48302
+  int W_mooney_rivlin = 1.49529
+  int W_exponential = 49.2597
+  int W_fiber = 78.6308
+  int W_volumetric = 0.383514
+ ||grad E|| = 22.6338 & dEn(un)[dun] = 1414.98
+----------------------------------------
+[TIME] Energy assembly = 20.9102 s
+
+ Newton direction is not descent: dE[dun] = 1414.98
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -512.288
+[TIME] Line search = 0.408094 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00323117
+New Energy = -59.3284
+min(J) = 0.897673   max(J) = 1.3579
+[TIME] Stopping criteria for Newton = 3.09384 s
+[TIME] FULL Newton iteration = 73.0165 s
+
+--- Newton iteration 25 ---
+[TIME] Precompute invariant fields = 0.271738 s
+[TIME] VArf Assembly = 30.5914 s
+[TIME] Assembly = 2.30062 s
+[M] timings - direct solver : 0.612002 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.78922 s
+----------------------------------------
+The total energy E(un) = -59.3284
+Energy parts without physical coefficients
+  int W_linear = 1.50695
+  int W_mooney_rivlin = 1.52127
+  int W_exponential = 49.2813
+  int W_fiber = 79.5352
+  int W_volumetric = 0.362575
+ ||grad E|| = 21.4035 & dEn(un)[dun] = -108.556
+----------------------------------------
+[TIME] Energy assembly = 19.4342 s
+[TIME] Line search = 0.726345 s
+Line-search accepted at ls iteration 2
+Accepted alpha = 0.00201948
+New Energy = -59.4592
+min(J) = 0.897009   max(J) = 1.34035
+[TIME] Stopping criteria for Newton = 2.75237 s
+[TIME] FULL Newton iteration = 57.8905 s
+
+--- Newton iteration 26 ---
+[TIME] Precompute invariant fields = 0.254302 s
+[TIME] VArf Assembly = 40.2465 s
+[TIME] Assembly = 2.86058 s
+[M] timings - direct solver : 0.780678 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.7847 s
+----------------------------------------
+The total energy E(un) = -59.4592
+Energy parts without physical coefficients
+  int W_linear = 1.75431
+  int W_mooney_rivlin = 1.78366
+  int W_exponential = 49.7719
+  int W_fiber = 81.5974
+  int W_volumetric = 0.354703
+ ||grad E|| = 22.682 & dEn(un)[dun] = 98.4981
+----------------------------------------
+[TIME] Energy assembly = 19.4692 s
+
+ Newton direction is not descent: dE[dun] = 98.4981
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -514.471
+[TIME] Line search = 0.251721 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00252435
+New Energy = -60.5792
+min(J) = 0.89677   max(J) = 1.3297
+[TIME] Stopping criteria for Newton = 1.92657 s
+[TIME] FULL Newton iteration = 81.5196 s
+
+--- Newton iteration 27 ---
+[TIME] Precompute invariant fields = 0.1847 s
+[TIME] VArf Assembly = 32.2772 s
+[TIME] Assembly = 2.60015 s
+[M] timings - direct solver : 0.715003 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.64434 s
+----------------------------------------
+The total energy E(un) = -60.5792
+Energy parts without physical coefficients
+  int W_linear = 1.77046
+  int W_mooney_rivlin = 1.80117
+  int W_exponential = 49.7762
+  int W_fiber = 81.6985
+  int W_volumetric = 0.340578
+ ||grad E|| = 20.1852 & dEn(un)[dun] = -40.7258
+----------------------------------------
+[TIME] Energy assembly = 19.9058 s
+[TIME] Line search = 0.779168 s
+Line-search accepted at ls iteration 2
+Accepted alpha = 0.00157772
+New Energy = -60.6341
+min(J) = 0.8942   max(J) = 1.32969
+[TIME] Stopping criteria for Newton = 2.89617 s
+[TIME] FULL Newton iteration = 61.3123 s
+
+--- Newton iteration 28 ---
+[TIME] Precompute invariant fields = 0.28425 s
+[TIME] VArf Assembly = 43.9493 s
+[TIME] Assembly = 2.57593 s
+[M] timings - direct solver : 0.48781 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 0.852883 s
+----------------------------------------
+The total energy E(un) = -60.6341
+Energy parts without physical coefficients
+  int W_linear = 1.82219
+  int W_mooney_rivlin = 1.85221
+  int W_exponential = 49.8714
+  int W_fiber = 81.924
+  int W_volumetric = 0.337778
+ ||grad E|| = 20.0168 & dEn(un)[dun] = 251.393
+----------------------------------------
+[TIME] Energy assembly = 18.4224 s
+
+ Newton direction is not descent: dE[dun] = 251.393
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -400.671
+[TIME] Line search = 0.255348 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00197215
+New Energy = -61.4127
+min(J) = 0.894015   max(J) = 1.32221
+[TIME] Stopping criteria for Newton = 2.09193 s
+[TIME] FULL Newton iteration = 81.1164 s
+
+--- Newton iteration 29 ---
+[TIME] Precompute invariant fields = 0.192706 s
+[TIME] VArf Assembly = 27.8291 s
+[TIME] Assembly = 3.0826 s
+[M] timings - direct solver : 0.7007 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 3.94104 s
+----------------------------------------
+The total energy E(un) = -61.4127
+Energy parts without physical coefficients
+  int W_linear = 1.83431
+  int W_mooney_rivlin = 1.86526
+  int W_exponential = 49.8837
+  int W_fiber = 82.4285
+  int W_volumetric = 0.327625
+ ||grad E|| = 19.4382 & dEn(un)[dun] = -426.209
+----------------------------------------
+[TIME] Energy assembly = 20.3442 s
+[TIME] Line search = 0.544641 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00246519
+New Energy = -62.1986
+min(J) = 0.888608   max(J) = 1.3399
+[TIME] Stopping criteria for Newton = 2.90395 s
+[TIME] FULL Newton iteration = 58.8675 s
+
+--- Newton iteration 30 ---
+[TIME] Precompute invariant fields = 0.254228 s
+[TIME] VArf Assembly = 37.7324 s
+[TIME] Assembly = 2.5099 s
+[M] timings - direct solver : 0.563813 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.54141 s
+----------------------------------------
+The total energy E(un) = -62.1986
+Energy parts without physical coefficients
+  int W_linear = 2.43888
+  int W_mooney_rivlin = 2.50626
+  int W_exponential = 51.3634
+  int W_fiber = 85.0921
+  int W_volumetric = 0.309649
+ ||grad E|| = 18.7426 & dEn(un)[dun] = -2573.08
+----------------------------------------
+[TIME] Energy assembly = 14.1845 s
+[TIME] Line search = 0.466146 s
+Line-search accepted at ls iteration 2
+Accepted alpha = 0.00154074
+New Energy = -65.9889
+min(J) = 0.892078   max(J) = 1.34049
+[TIME] Stopping criteria for Newton = 1.66538 s
+[TIME] FULL Newton iteration = 58.371 s
+
+--- Newton iteration 31 ---
+[TIME] Precompute invariant fields = 0.1655 s
+[TIME] VArf Assembly = 28.2322 s
+[TIME] Assembly = 2.52099 s
+[M] timings - direct solver : 0.694856 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.43082 s
+----------------------------------------
+The total energy E(un) = -65.9889
+Energy parts without physical coefficients
+  int W_linear = 2.90405
+  int W_mooney_rivlin = 2.99007
+  int W_exponential = 52.5061
+  int W_fiber = 88.1417
+  int W_volumetric = 0.291868
+ ||grad E|| = 18.0458 & dEn(un)[dun] = -557.199
+----------------------------------------
+[TIME] Energy assembly = 18.6611 s
+[TIME] Line search = 0.356147 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00192593
+New Energy = -67.0608
+min(J) = 0.892178   max(J) = 1.34317
+[TIME] Stopping criteria for Newton = 2.69893 s
+[TIME] FULL Newton iteration = 54.0907 s
+
+--- Newton iteration 32 ---
+[TIME] Precompute invariant fields = 0.258963 s
+[TIME] VArf Assembly = 36.3866 s
+[TIME] Assembly = 1.64798 s
+[M] timings - direct solver : 0.574987 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.00659 s
+----------------------------------------
+The total energy E(un) = -67.0608
+Energy parts without physical coefficients
+  int W_linear = 2.92852
+  int W_mooney_rivlin = 3.00131
+  int W_exponential = 52.54
+  int W_fiber = 88.3423
+  int W_volumetric = 0.290523
+ ||grad E|| = 17.9905 & dEn(un)[dun] = -300.404
+----------------------------------------
+[TIME] Energy assembly = 12.7935 s
+[TIME] Line search = 0.255706 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00240741
+New Energy = -67.7829
+min(J) = 0.892009   max(J) = 1.34494
+[TIME] Stopping criteria for Newton = 2.00731 s
+[TIME] FULL Newton iteration = 55.3722 s
+
+--- Newton iteration 33 ---
+[TIME] Precompute invariant fields = 0.195764 s
+[TIME] VArf Assembly = 33.651 s
+[TIME] Assembly = 2.53291 s
+[M] timings - direct solver : 0.620397 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.77397 s
+----------------------------------------
+The total energy E(un) = -67.7829
+Energy parts without physical coefficients
+  int W_linear = 2.96433
+  int W_mooney_rivlin = 3.02423
+  int W_exponential = 52.5923
+  int W_fiber = 88.5842
+  int W_volumetric = 0.289111
+ ||grad E|| = 17.9316 & dEn(un)[dun] = -124.707
+----------------------------------------
+[TIME] Energy assembly = 19.8591 s
+[TIME] Line search = 0.362909 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00300927
+New Energy = -68.1574
+min(J) = 0.89159   max(J) = 1.34636
+[TIME] Stopping criteria for Newton = 2.72565 s
+[TIME] FULL Newton iteration = 61.1252 s
+
+--- Newton iteration 34 ---
+[TIME] Precompute invariant fields = 0.260644 s
+[TIME] VArf Assembly = 34.4685 s
+[TIME] Assembly = 1.67024 s
+[M] timings - direct solver : 0.525425 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.43355 s
+----------------------------------------
+The total energy E(un) = -68.1574
+Energy parts without physical coefficients
+  int W_linear = 3.01466
+  int W_mooney_rivlin = 3.06157
+  int W_exponential = 52.6686
+  int W_fiber = 88.9024
+  int W_volumetric = 0.287432
+ ||grad E|| = 17.8612 & dEn(un)[dun] = 56.9943
+----------------------------------------
+[TIME] Energy assembly = 14.1329 s
+
+ Newton direction is not descent: dE[dun] = 56.9943
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -319.022
+[TIME] Line search = 0.36191 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00376158
+New Energy = -69.3116
+min(J) = 0.891253   max(J) = 1.35627
+[TIME] Stopping criteria for Newton = 2.75174 s
+[TIME] FULL Newton iteration = 71.652 s
+
+--- Newton iteration 35 ---
+[TIME] Precompute invariant fields = 0.250424 s
+[TIME] VArf Assembly = 37.723 s
+[TIME] Assembly = 2.53803 s
+[M] timings - direct solver : 0.573932 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.92294 s
+----------------------------------------
+The total energy E(un) = -69.3116
+Energy parts without physical coefficients
+  int W_linear = 3.02657
+  int W_mooney_rivlin = 3.07317
+  int W_exponential = 52.5274
+  int W_fiber = 89.555
+  int W_volumetric = 0.273069
+ ||grad E|| = 16.7427 & dEn(un)[dun] = 570.562
+----------------------------------------
+[TIME] Energy assembly = 18.6141 s
+
+ Newton direction is not descent: dE[dun] = 570.562
+-------------------------Switching to fallback descent direction--------------------- 
+
+Fallback dE[dun] = -280.318
+[TIME] Line search = 0.260785 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00470198
+New Energy = -70.5903
+min(J) = 0.890846   max(J) = 1.36234
+[TIME] Stopping criteria for Newton = 1.82279 s
+[TIME] FULL Newton iteration = 77.5599 s
+
+--- Newton iteration 36 ---
+[TIME] Precompute invariant fields = 0.180081 s
+[TIME] VArf Assembly = 24.7243 s
+[TIME] Assembly = 2.44501 s
+[M] timings - direct solver : 0.453917 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 0.883174 s
+----------------------------------------
+The total energy E(un) = -70.5903
+Energy parts without physical coefficients
+  int W_linear = 3.04258
+  int W_mooney_rivlin = 3.08919
+  int W_exponential = 52.4818
+  int W_fiber = 90.5164
+  int W_volumetric = 0.256709
+ ||grad E|| = 15.776 & dEn(un)[dun] = -1689.11
+----------------------------------------
+[TIME] Energy assembly = 18.6521 s
+[TIME] Line search = 0.356911 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00587747
+New Energy = -80.1831
+min(J) = 0.887165   max(J) = 1.33677
+[TIME] Stopping criteria for Newton = 2.72389 s
+[TIME] FULL Newton iteration = 49.9887 s
+
+--- Newton iteration 37 ---
+[TIME] Precompute invariant fields = 0.271009 s
+[TIME] VArf Assembly = 37.6268 s
+[TIME] Assembly = 2.51092 s
+[M] timings - direct solver : 0.396139 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.55441 s
+----------------------------------------
+The total energy E(un) = -80.1831
+Energy parts without physical coefficients
+  int W_linear = 3.72233
+  int W_mooney_rivlin = 3.66271
+  int W_exponential = 54.5388
+  int W_fiber = 95.4569
+  int W_volumetric = 0.232096
+ ||grad E|| = 14.8463 & dEn(un)[dun] = -188.071
+----------------------------------------
+[TIME] Energy assembly = 18.9285 s
+[TIME] Line search = 0.298431 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00734684
+New Energy = -81.5596
+min(J) = 0.88617   max(J) = 1.3355
+[TIME] Stopping criteria for Newton = 1.74487 s
+[TIME] FULL Newton iteration = 62.9505 s
+
+--- Newton iteration 38 ---
+[TIME] Precompute invariant fields = 0.170425 s
+[TIME] VArf Assembly = 22.7163 s
+[TIME] Assembly = 2.53972 s
+[M] timings - direct solver : 0.522723 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.05942 s
+----------------------------------------
+The total energy E(un) = -81.5596
+Energy parts without physical coefficients
+  int W_linear = 3.76695
+  int W_mooney_rivlin = 3.68479
+  int W_exponential = 54.6127
+  int W_fiber = 96.1307
+  int W_volumetric = 0.229626
+ ||grad E|| = 14.7296 & dEn(un)[dun] = -167.777
+----------------------------------------
+[TIME] Energy assembly = 18.8083 s
+[TIME] Line search = 0.381749 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.00918355
+New Energy = -83.093
+min(J) = 0.884986   max(J) = 1.33387
+[TIME] Stopping criteria for Newton = 2.74315 s
+[TIME] FULL Newton iteration = 48.4397 s
+
+--- Newton iteration 39 ---
+[TIME] Precompute invariant fields = 0.256583 s
+[TIME] VArf Assembly = 37.2963 s
+[TIME] Assembly = 2.50799 s
+[M] timings - direct solver : 0.468975 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.77025 s
+----------------------------------------
+The total energy E(un) = -83.093
+Energy parts without physical coefficients
+  int W_linear = 3.82514
+  int W_mooney_rivlin = 3.71872
+  int W_exponential = 54.7138
+  int W_fiber = 96.9727
+  int W_volumetric = 0.226644
+ ||grad E|| = 14.587 & dEn(un)[dun] = -150.675
+----------------------------------------
+[TIME] Energy assembly = 16.0893 s
+[TIME] Line search = 0.226929 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.0114794
+New Energy = -84.8125
+min(J) = 0.88361   max(J) = 1.3318
+[TIME] Stopping criteria for Newton = 1.74567 s
+[TIME] FULL Newton iteration = 59.9072 s
+
+--- Newton iteration 40 ---
+[TIME] Precompute invariant fields = 0.165103 s
+[TIME] VArf Assembly = 25.1415 s
+[TIME] Assembly = 2.53539 s
+[M] timings - direct solver : 0.35008 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 0.909392 s
+----------------------------------------
+The total energy E(un) = -84.8125
+Energy parts without physical coefficients
+  int W_linear = 3.89728
+  int W_mooney_rivlin = 3.76385
+  int W_exponential = 54.8457
+  int W_fiber = 98.0371
+  int W_volumetric = 0.223025
+ ||grad E|| = 14.4114 & dEn(un)[dun] = -135.063
+----------------------------------------
+[TIME] Energy assembly = 18.6799 s
+[TIME] Line search = 0.386936 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.0143493
+New Energy = -86.7362
+min(J) = 0.882067   max(J) = 1.32915
+[TIME] Stopping criteria for Newton = 2.75643 s
+[TIME] FULL Newton iteration = 50.5953 s
+
+--- Newton iteration 41 ---
+[TIME] Precompute invariant fields = 0.268933 s
+[TIME] VArf Assembly = 37.2485 s
+[TIME] Assembly = 2.5313 s
+[M] timings - direct solver : 0.47823 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.10047 s
+----------------------------------------
+The total energy E(un) = -86.7362
+Energy parts without physical coefficients
+  int W_linear = 3.98406
+  int W_mooney_rivlin = 3.82039
+  int W_exponential = 55.0133
+  int W_fiber = 99.3846
+  int W_volumetric = 0.218654
+ ||grad E|| = 14.1956 & dEn(un)[dun] = -120.578
+----------------------------------------
+[TIME] Energy assembly = 13.8048 s
+[TIME] Line search = 0.24702 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.0179366
+New Energy = -88.879
+min(J) = 0.88042   max(J) = 1.3258
+[TIME] Stopping criteria for Newton = 1.77698 s
+[TIME] FULL Newton iteration = 56.9914 s
+
+--- Newton iteration 42 ---
+[TIME] Precompute invariant fields = 0.166665 s
+[TIME] VArf Assembly = 27.5738 s
+[TIME] Assembly = 2.51928 s
+[M] timings - direct solver : 0.471755 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.38072 s
+----------------------------------------
+The total energy E(un) = -88.879
+Energy parts without physical coefficients
+  int W_linear = 4.08617
+  int W_mooney_rivlin = 3.88875
+  int W_exponential = 55.2227
+  int W_fiber = 101.088
+  int W_volumetric = 0.213412
+ ||grad E|| = 13.9309 & dEn(un)[dun] = -107.032
+----------------------------------------
+[TIME] Energy assembly = 18.5236 s
+[TIME] Line search = 0.358376 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.0224208
+New Energy = -91.2511
+min(J) = 0.878775   max(J) = 1.32161
+[TIME] Stopping criteria for Newton = 2.74776 s
+[TIME] FULL Newton iteration = 53.291 s
+
+--- Newton iteration 43 ---
+[TIME] Precompute invariant fields = 0.268873 s
+[TIME] VArf Assembly = 31.6008 s
+[TIME] Assembly = 1.73398 s
+[M] timings - direct solver : 0.621732 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 3.846 s
+----------------------------------------
+The total energy E(un) = -91.2511
+Energy parts without physical coefficients
+  int W_linear = 4.20413
+  int W_mooney_rivlin = 3.96918
+  int W_exponential = 55.4809
+  int W_fiber = 103.232
+  int W_volumetric = 0.207179
+ ||grad E|| = 13.6074 & dEn(un)[dun] = -94.2868
+----------------------------------------
+[TIME] Energy assembly = 16.4713 s
+[TIME] Line search = 0.363464 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.028026
+New Energy = -93.8555
+min(J) = 0.877288   max(J) = 1.31644
+[TIME] Stopping criteria for Newton = 2.65606 s
+[TIME] FULL Newton iteration = 56.9611 s
+
+--- Newton iteration 44 ---
+[TIME] Precompute invariant fields = 0.249987 s
+[TIME] VArf Assembly = 37.5232 s
+[TIME] Assembly = 2.52256 s
+[M] timings - direct solver : 0.573551 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.35126 s
+----------------------------------------
+The total energy E(un) = -93.8555
+Energy parts without physical coefficients
+  int W_linear = 4.33792
+  int W_mooney_rivlin = 4.06153
+  int W_exponential = 55.7954
+  int W_fiber = 105.918
+  int W_volumetric = 0.199849
+ ||grad E|| = 13.2137 & dEn(un)[dun] = -82.2489
+----------------------------------------
+[TIME] Energy assembly = 18.6754 s
+[TIME] Line search = 0.35978 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.0350325
+New Energy = -96.685
+min(J) = 0.876166   max(J) = 1.31193
+[TIME] Stopping criteria for Newton = 1.92529 s
+[TIME] FULL Newton iteration = 62.6268 s
+
+--- Newton iteration 45 ---
+[TIME] Precompute invariant fields = 0.187086 s
+[TIME] VArf Assembly = 28.041 s
+[TIME] Assembly = 4.34281 s
+[M] timings - direct solver : 0.860077 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.1089 s
+----------------------------------------
+The total energy E(un) = -96.685
+Energy parts without physical coefficients
+  int W_linear = 4.48673
+  int W_mooney_rivlin = 4.16502
+  int W_exponential = 56.1742
+  int W_fiber = 109.259
+  int W_volumetric = 0.191344
+ ||grad E|| = 12.7375 & dEn(un)[dun] = -70.8763
+----------------------------------------
+[TIME] Energy assembly = 20.6775 s
+[TIME] Line search = 0.400543 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.0437906
+New Energy = -99.719
+min(J) = 0.875653   max(J) = 1.30888
+[TIME] Stopping criteria for Newton = 2.98919 s
+[TIME] FULL Newton iteration = 58.7698 s
+
+--- Newton iteration 46 ---
+[TIME] Precompute invariant fields = 0.288386 s
+[TIME] VArf Assembly = 42.5996 s
+[TIME] Assembly = 2.58158 s
+[M] timings - direct solver : 0.301787 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 0.85097 s
+----------------------------------------
+The total energy E(un) = -99.719
+Energy parts without physical coefficients
+  int W_linear = 4.6485
+  int W_mooney_rivlin = 4.27788
+  int W_exponential = 56.6239
+  int W_fiber = 113.376
+  int W_volumetric = 0.181648
+ ||grad E|| = 12.1655 & dEn(un)[dun] = -60.174
+----------------------------------------
+[TIME] Energy assembly = 19.1673 s
+[TIME] Line search = 0.379544 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.0547382
+New Energy = -102.92
+min(J) = 0.876012   max(J) = 1.30468
+[TIME] Stopping criteria for Newton = 2.82102 s
+[TIME] FULL Newton iteration = 68.7107 s
+
+--- Newton iteration 47 ---
+[TIME] Precompute invariant fields = 0.354894 s
+[TIME] VArf Assembly = 24.8367 s
+[TIME] Assembly = 2.22984 s
+[M] timings - direct solver : 0.621815 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.09428 s
+----------------------------------------
+The total energy E(un) = -102.92
+Energy parts without physical coefficients
+  int W_linear = 4.81956
+  int W_mooney_rivlin = 4.3972
+  int W_exponential = 57.1492
+  int W_fiber = 118.388
+  int W_volumetric = 0.170834
+ ||grad E|| = 11.4853 & dEn(un)[dun] = -50.1856
+----------------------------------------
+[TIME] Energy assembly = 20.4258 s
+[TIME] Line search = 0.498285 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.0684228
+New Energy = -106.234
+min(J) = 0.877487   max(J) = 1.29928
+[TIME] Stopping criteria for Newton = 3.2548 s
+[TIME] FULL Newton iteration = 52.7186 s
+
+--- Newton iteration 48 ---
+[TIME] Precompute invariant fields = 0.374788 s
+[TIME] VArf Assembly = 43.8961 s
+[TIME] Assembly = 2.53909 s
+[M] timings - direct solver : 0.584882 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.1398 s
+----------------------------------------
+The total energy E(un) = -106.234
+Energy parts without physical coefficients
+  int W_linear = 4.9943
+  int W_mooney_rivlin = 4.51866
+  int W_exponential = 57.7499
+  int W_fiber = 124.397
+  int W_volumetric = 0.159109
+ ||grad E|| = 10.6858 & dEn(un)[dun] = -40.9795
+----------------------------------------
+[TIME] Energy assembly = 19.4897 s
+[TIME] Line search = 0.366778 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.0855285
+New Energy = -109.587
+min(J) = 0.880256   max(J) = 1.29276
+[TIME] Stopping criteria for Newton = 2.36438 s
+[TIME] FULL Newton iteration = 70.1919 s
+
+--- Newton iteration 49 ---
+[TIME] Precompute invariant fields = 0.194277 s
+[TIME] VArf Assembly = 29.0808 s
+[TIME] Assembly = 2.72109 s
+[M] timings - direct solver : 0.743959 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.48571 s
+----------------------------------------
+The total energy E(un) = -109.587
+Energy parts without physical coefficients
+  int W_linear = 5.16504
+  int W_mooney_rivlin = 4.63652
+  int W_exponential = 58.4192
+  int W_fiber = 131.468
+  int W_volumetric = 0.146849
+ ||grad E|| = 9.76064 & dEn(un)[dun] = -32.6319
+----------------------------------------
+[TIME] Energy assembly = 20.7912 s
+[TIME] Line search = 0.39009 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.106911
+New Energy = -112.886
+min(J) = 0.884393   max(J) = 1.28544
+[TIME] Stopping criteria for Newton = 2.76081 s
+[TIME] FULL Newton iteration = 58.4462 s
+
+--- Newton iteration 50 ---
+[TIME] Precompute invariant fields = 0.27438 s
+[TIME] VArf Assembly = 44.4567 s
+[TIME] Assembly = 2.78738 s
+[M] timings - direct solver : 0.678598 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.26219 s
+----------------------------------------
+The total energy E(un) = -112.886
+Energy parts without physical coefficients
+  int W_linear = 5.32237
+  int W_mooney_rivlin = 4.74384
+  int W_exponential = 59.14
+  int W_fiber = 139.594
+  int W_volumetric = 0.134627
+ ||grad E|| = 8.71098 & dEn(un)[dun] = -25.2108
+----------------------------------------
+[TIME] Energy assembly = 19.8561 s
+[TIME] Line search = 0.472304 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.133638
+New Energy = -116.029
+min(J) = 0.889851   max(J) = 1.29462
+[TIME] Stopping criteria for Newton = 2.02212 s
+[TIME] FULL Newton iteration = 72.1521 s
+
+--- Newton iteration 51 ---
+[TIME] Precompute invariant fields = 0.219161 s
+[TIME] VArf Assembly = 23.439 s
+[TIME] Assembly = 2.5112 s
+[M] timings - direct solver : 0.818386 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 3.25777 s
+----------------------------------------
+The total energy E(un) = -116.029
+Energy parts without physical coefficients
+  int W_linear = 5.45597
+  int W_mooney_rivlin = 4.83305
+  int W_exponential = 59.8831
+  int W_fiber = 148.67
+  int W_volumetric = 0.123202
+ ||grad E|| = 7.54968 & dEn(un)[dun] = -18.767
+----------------------------------------
+[TIME] Energy assembly = 22.3482 s
+[TIME] Line search = 0.410004 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.167048
+New Energy = -118.903
+min(J) = 0.886507   max(J) = 1.31412
+[TIME] Stopping criteria for Newton = 2.93937 s
+[TIME] FULL Newton iteration = 55.1478 s
+
+--- Newton iteration 52 ---
+[TIME] Precompute invariant fields = 0.283023 s
+[TIME] VArf Assembly = 41.579 s
+[TIME] Assembly = 2.68419 s
+[M] timings - direct solver : 0.638656 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.43686 s
+----------------------------------------
+The total energy E(un) = -118.903
+Energy parts without physical coefficients
+  int W_linear = 5.55597
+  int W_mooney_rivlin = 4.89681
+  int W_exponential = 60.6059
+  int W_fiber = 158.458
+  int W_volumetric = 0.113451
+ ||grad E|| = 6.30573 & dEn(un)[dun] = -13.3286
+----------------------------------------
+[TIME] Energy assembly = 19.2769 s
+[TIME] Line search = 0.367162 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.20881
+New Energy = -121.399
+min(J) = 0.883566   max(J) = 1.33431
+[TIME] Stopping criteria for Newton = 2.27445 s
+[TIME] FULL Newton iteration = 67.9231 s
+
+--- Newton iteration 53 ---
+[TIME] Precompute invariant fields = 0.165339 s
+[TIME] VArf Assembly = 23.2177 s
+[TIME] Assembly = 2.25521 s
+[M] timings - direct solver : 0.530377 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.0052 s
+----------------------------------------
+The total energy E(un) = -121.399
+Energy parts without physical coefficients
+  int W_linear = 5.61458
+  int W_mooney_rivlin = 4.9292
+  int W_exponential = 61.2554
+  int W_fiber = 168.568
+  int W_volumetric = 0.106207
+ ||grad E|| = 5.02735 & dEn(un)[dun] = -8.90089
+----------------------------------------
+[TIME] Energy assembly = 21.7729 s
+[TIME] Line search = 0.45196 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.261012
+New Energy = -123.427
+min(J) = 0.881695   max(J) = 1.35453
+[TIME] Stopping criteria for Newton = 3.29651 s
+[TIME] FULL Newton iteration = 52.1912 s
+
+--- Newton iteration 54 ---
+[TIME] Precompute invariant fields = 0.302935 s
+[TIME] VArf Assembly = 45.9646 s
+[TIME] Assembly = 3.87317 s
+[M] timings - direct solver : 0.882922 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.00695 s
+----------------------------------------
+The total energy E(un) = -123.427
+Energy parts without physical coefficients
+  int W_linear = 5.6277
+  int W_mooney_rivlin = 4.92696
+  int W_exponential = 61.775
+  int W_fiber = 178.463
+  int W_volumetric = 0.102014
+ ||grad E|| = 3.7814 & dEn(un)[dun] = -5.46431
+----------------------------------------
+[TIME] Energy assembly = 34.7511 s
+[TIME] Line search = 0.966082 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.326265
+New Energy = -124.929
+min(J) = 0.880752   max(J) = 1.37383
+[TIME] Stopping criteria for Newton = 6.75162 s
+[TIME] FULL Newton iteration = 94.6707 s
+
+--- Newton iteration 55 ---
+[TIME] Precompute invariant fields = 0.298449 s
+[TIME] VArf Assembly = 40.4517 s
+[TIME] Assembly = 4.5171 s
+[M] timings - direct solver : 0.988017 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.45153 s
+----------------------------------------
+The total energy E(un) = -124.929
+Energy parts without physical coefficients
+  int W_linear = 5.59684
+  int W_mooney_rivlin = 4.89113
+  int W_exponential = 62.1201
+  int W_fiber = 187.493
+  int W_volumetric = 0.100861
+ ||grad E|| = 2.64502 & dEn(un)[dun] = -2.96678
+----------------------------------------
+[TIME] Energy assembly = 35.1913 s
+[TIME] Line search = 0.711617 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.407832
+New Energy = -125.903
+min(J) = 0.8805   max(J) = 1.39096
+[TIME] Stopping criteria for Newton = 3.4183 s
+[TIME] FULL Newton iteration = 86.0665 s
+
+--- Newton iteration 56 ---
+[TIME] Precompute invariant fields = 0.438781 s
+[TIME] VArf Assembly = 53.893 s
+[TIME] Assembly = 6.94905 s
+[M] timings - direct solver : 1.00364 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.36103 s
+----------------------------------------
+The total energy E(un) = -125.903
+Energy parts without physical coefficients
+  int W_linear = 5.53178
+  int W_mooney_rivlin = 4.82949
+  int W_exponential = 62.2778
+  int W_fiber = 194.992
+  int W_volumetric = 0.102018
+ ||grad E|| = 1.6867 & dEn(un)[dun] = -1.32711
+----------------------------------------
+[TIME] Energy assembly = 37.5412 s
+[TIME] Line search = 0.413165 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.509789
+New Energy = -126.415
+min(J) = 0.880646   max(J) = 1.40458
+[TIME] Stopping criteria for Newton = 4.84298 s
+[TIME] FULL Newton iteration = 105.464 s
+
+--- Newton iteration 57 ---
+[TIME] Precompute invariant fields = 0.266768 s
+[TIME] VArf Assembly = 37.9916 s
+[TIME] Assembly = 1.85115 s
+[M] timings - direct solver : 0.656788 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.02661 s
+----------------------------------------
+The total energy E(un) = -126.415
+Energy parts without physical coefficients
+  int W_linear = 5.45197
+  int W_mooney_rivlin = 4.75797
+  int W_exponential = 62.2815
+  int W_fiber = 200.45
+  int W_volumetric = 0.104184
+ ||grad E|| = 0.945756 & dEn(un)[dun] = -0.431458
+----------------------------------------
+[TIME] Energy assembly = 19.0679 s
+[TIME] Line search = 0.700584 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.637237
+New Energy = -126.606
+min(J) = 0.880901   max(J) = 1.41369
+[TIME] Stopping criteria for Newton = 3.32134 s
+[TIME] FULL Newton iteration = 64.2734 s
+
+--- Newton iteration 58 ---
+[TIME] Precompute invariant fields = 0.301826 s
+[TIME] VArf Assembly = 44.4866 s
+[TIME] Assembly = 2.86645 s
+[M] timings - direct solver : 0.869081 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 3.00833 s
+----------------------------------------
+The total energy E(un) = -126.606
+Energy parts without physical coefficients
+  int W_linear = 5.38121
+  int W_mooney_rivlin = 4.69612
+  int W_exponential = 62.2035
+  int W_fiber = 203.721
+  int W_volumetric = 0.106044
+ ||grad E|| = 0.427044 & dEn(un)[dun] = -0.0810489
+----------------------------------------
+[TIME] Energy assembly = 19.644 s
+[TIME] Line search = 0.261097 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.796546
+New Energy = -126.646
+min(J) = 0.881067   max(J) = 1.41825
+[TIME] Stopping criteria for Newton = 1.86157 s
+[TIME] FULL Newton iteration = 72.4452 s
+
+--- Newton iteration 59 ---
+[TIME] Precompute invariant fields = 0.187658 s
+[TIME] VArf Assembly = 28.8763 s
+[TIME] Assembly = 2.67778 s
+[M] timings - direct solver : 0.832346 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.34838 s
+----------------------------------------
+The total energy E(un) = -126.646
+Energy parts without physical coefficients
+  int W_linear = 5.33701
+  int W_mooney_rivlin = 4.65799
+  int W_exponential = 62.1238
+  int W_fiber = 205.159
+  int W_volumetric = 0.106967
+ ||grad E|| = 0.1204 & dEn(un)[dun] = -0.00515663
+----------------------------------------
+[TIME] Energy assembly = 21.224 s
+[TIME] Line search = 0.69638 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 0.995682
+New Energy = -126.649
+min(J) = 0.881107   max(J) = 1.41956
+[TIME] Stopping criteria for Newton = 3.93462 s
+[TIME] FULL Newton iteration = 58.9734 s
+
+--- Newton iteration 60 ---
+[TIME] Precompute invariant fields = 0.674473 s
+[TIME] VArf Assembly = 54.4135 s
+[TIME] Assembly = 4.61848 s
+[M] timings - direct solver : 0.855652 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 1.86367 s
+----------------------------------------
+The total energy E(un) = -126.649
+Energy parts without physical coefficients
+  int W_linear = 5.32155
+  int W_mooney_rivlin = 4.64474
+  int W_exponential = 62.0885
+  int W_fiber = 205.51
+  int W_volumetric = 0.107174
+ ||grad E|| = 0.00541147 & dEn(un)[dun] = -4.45752e-06
+----------------------------------------
+[TIME] Energy assembly = 32.3257 s
+[TIME] Line search = 0.323296 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 1
+New Energy = -126.649
+min(J) = 0.881103   max(J) = 1.41958
+[TIME] Stopping criteria for Newton = 2.09849 s
+[TIME] FULL Newton iteration = 96.3348 s
+
+--- Newton iteration 61 ---
+[TIME] Precompute invariant fields = 0.185134 s
+[TIME] VArf Assembly = 29.485 s
+[TIME] Assembly = 6.60184 s
+[M] timings - direct solver : 1.08806 s
+Solving the linear system = done
+[TIME] Linear pb solving took = 2.97683 s
+----------------------------------------
+The total energy E(un) = -126.649
+Energy parts without physical coefficients
+  int W_linear = 5.3211
+  int W_mooney_rivlin = 4.64436
+  int W_exponential = 62.0871
+  int W_fiber = 205.511
+  int W_volumetric = 0.107168
+ ||grad E|| = 2.03102e-05 & dEn(un)[dun] = -7.71767e-11
+----------------------------------------
+[TIME] Energy assembly = 41.6348 s
+[TIME] Line search = 0.877101 s
+Line-search accepted at ls iteration 1
+Accepted alpha = 1
+New Energy = -126.649
+min(J) = 0.881103   max(J) = 1.41958
+[4] gradL2 = 1.10927e-09 < 1e-07 Converged at iteration 61
+------------------------- gradL2 < tol -------------------------------------
+[5] gradL2 = 1.10927e-09 < 1e-07 Converged at iteration 61
+------------------------- gradL2 < tol -------------------------------------
+[0] gradL2 = 1.10927e-09 < 1e-07 Converged at iteration 61
+------------------------- gradL2 < tol -------------------------------------
+[1] gradL2 = 1.10927e-09 < 1e-07 Converged at iteration 61
+------------------------- gradL2 < tol -------------------------------------
+[2] gradL2 = 1.10927e-09 < 1e-07 Converged at iteration 61
+------------------------- gradL2 < tol -------------------------------------
+[3] gradL2 = 1.10927e-09 < 1e-07 Converged at iteration 61
+------------------------- gradL2 < tol -------------------------------------
+!! WARNING !! failJ = 6, failNan = 6Before movemesh, rank = 0
+Fax0 min/max = -0.991772 -0.387048
+Fay0 min/max = -0.922059 -0.12802
+Faz0 min/max = 0 0
+Before movemesh, rank = 2
+Fax0 min/max = -0.999257 -0.960711
+Fay0 min/max = -0.277549 -0.0385436
+Before movemesh, rank = 1
+Fax0 min/max = -1 -0.992236
+Fay0 min/max = -0.124367 0.0571791
+Faz0 min/max = 0 0
+Before movemesh, rank = 3
+Faz0 min/max = 0 0
+Fax0 min/max = -1 -0.993803
+Fay0 min/max = -0.07319 0.111155
+Faz0 min/max = 0 0
+Before movemesh, rank = 5
+Fax0 min/max = -0.999992 -0.964841
+Fay0 min/max = 0.0040335 0.262833
+Faz0 min/max = 0 0
+Before movemesh, rank = 4
+Fax0 min/max = -0.992868 -0.357432
+Fay0 min/max = 0.119219 0.933939
+Faz0 min/max = 0 0
+Iteration 0: Volume0 = 48.1358
+Initial step = 0
+
+ Iteration = 1 ; Step = 0.2 ; min(detJ) = 0.872792 ; volume = 46.4067 ; Volume variation (%) = -3.5921
+
+ Iteration = 2 ; Step = 0.4 ; min(detJ) = 0.809757 ; volume = 45.768 ; Volume variation (%) = -4.91887
+
+ Iteration = 3 ; Step = 0.6 ; min(detJ) = 0.804642 ; volume = 46.1835 ; Volume variation (%) = -4.05571
+
+ Iteration = 4 ; Step = 0.8 ; min(detJ) = 0.842061 ; volume = 47.6168 ; Volume variation (%) = -1.07804
+
+ Iteration = 5 ; Step = 1 ; min(detJ) = 0.881103 ; volume = 50.0317 ; Volume variation (%) = 3.93875
+After movemesh, rank = 1
+Fax min/max = -1 -0.992236
+Fay min/max = -0.124367 0.0571791
+Faz min/max = 0 0
+After movemesh, rank = 3
+Fax min/max = -1 -0.993803
+Fay min/max = -0.07319 0.111155
+Faz min/max = 0 0
+After movemesh, rank = 2
+Fax min/max = -0.999257 -0.960711
+Fay min/max = -0.277549 -0.0385436
+Faz min/max = 0 0
+After movemesh, rank = 5
+Fax min/max = -0.999992 -0.964841
+Fay min/max = 0.0040335 0.262833
+Faz min/max = 0 0
+After movemesh, rank = 0
+Fax min/max = -0.991772 -0.387048
+Fay min/max = -0.922059 -0.12802
+Faz min/max = 0 0
+After movemesh, rank = 4
+Fax min/max = -0.992868 -0.357432
+Fay min/max = 0.119219 0.933939
+Faz min/max = 0 0
+
+Integral of det(F) = 50.0317, min (displacement) = -3.3118, max (displacement) = 2.8378
+
+Initial X-coordinates are : 12	
+	-4.625	-4.6	-3.94	-3.255	-2.325
+	-1.2	1.2	2.325	3.255	3.94
+	4.6	4.625	
+Initial Y-coordinates are : 12	
+	-0.25	 -1	-2.275	-3.255	-4.025
+	-4.45	-4.45	-4.025	-3.255	-2.275
+	 -1	-0.25	
+X[0] = -7.11614
+Y[0] = -3.30443
+
+X[1] = -6.54538
+Y[1] = -3.78949
+
+X[2] = -4.90861
+Y[2] = -4.09816
+
+X[3] = -3.6441
+Y[3] = -4.34414
+
+X[4] = -2.4119
+Y[4] = -4.497
+
+X[5] = -1.2048
+Y[5] = -4.51791
+
+X[6] = 1.19782
+Y[6] = -4.51476
+
+X[7] = 2.40828
+Y[7] = -4.49296
+
+X[8] = 3.64104
+Y[8] = -4.34162
+
+X[9] = 4.90308
+Y[9] = -4.09472
+
+X[10] = 6.53516
+Y[10] = -3.78579
+
+X[11] = 7.11265
+Y[11] = -3.30249
+
+[TIME] Post-processing = 6.04898 s
+[TIME] Total time = 4269.24 s

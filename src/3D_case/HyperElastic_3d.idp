@@ -15,35 +15,26 @@
 			C[5] ]
 */
 
-macro C3d(d)
-[
-  1. + 2.*dx(d[0]) + dx(d[0])^2 + dx(d[1])^2 + dx(d[2])^2,
-  1. + 2.*dy(d[1]) + dy(d[1])^2 + dy(d[0])^2 + dy(d[2])^2,
-  1. + 2.*dz(d[2]) + dz(d[2])^2 + dz(d[0])^2 + dz(d[1])^2,
-  dy(d[0]) + dx(d[0])*dy(d[0]) + dx(d[1]) + dx(d[1])*dy(d[1]) + dx(d[2])*dy(d[2]),
-  dy(d[0])*dz(d[0]) + dz(d[1]) + dy(d[1])*dz(d[1]) + dy(d[2]) + dy(d[2])*dz(d[2]),
-  dz(d[0]) + dx(d[0])*dz(d[0]) + dx(d[1])*dz(d[1]) + dx(d[2]) + dx(d[2])*dz(d[2])
-] //
+macro C1(d) ( 1. + 2.*dx(d[0]) + dx(d[0])^2 + dx(d[1])^2 + dx(d[2])^2 ) //
+macro C2(d) ( 1. + 2.*dy(d[1]) + dy(d[1])^2 + dy(d[0])^2 + dy(d[2])^2 ) //
+macro C3(d) ( 1. + 2.*dz(d[2]) + dz(d[2])^2 + dz(d[0])^2 + dz(d[1])^2 ) //
+macro C4(d) ( dy(d[0]) + dx(d[0])*dy(d[0]) + dx(d[1]) + dx(d[1])*dy(d[1]) + dx(d[2])*dy(d[2]) ) //
+macro C5(d) ( dy(d[0])*dz(d[0]) + dz(d[1]) + dy(d[1])*dz(d[1]) + dy(d[2]) + dy(d[2])*dz(d[2]) ) //
+macro C6(d) ( dz(d[0]) + dx(d[0])*dz(d[0]) + dx(d[1])*dz(d[1]) + dx(d[2]) + dx(d[2])*dz(d[2]) ) //
 
-macro dC3d(d, dd)
-[ 
-  2.*(1. + dx(d[0]))*dx(dd[0]) + 2.*dx(d[1])*dx(dd[1]) + 2.*dx(d[2])*dx(dd[2]), 
-  2.*dy(d[0])*dy(dd[0]) + 2.*(1. + dy(d[1]))*dy(dd[1]) + 2.*dy(d[2])*dy(dd[2]),
-  2.*dz(d[0])*dz(dd[0]) + 2.*dz(d[1])*dz(dd[1]) + 2.*(1. + dz(d[2]))*dz(dd[2]),
-  dx(dd[0])*dy(d[0]) + (1. + dx(d[0]))*dy(dd[0]) + dx(dd[1])*(1. + dy(d[1])) + dx(d[1])*dy(dd[1]) + dx(dd[2])*dy(d[2]) + dx(d[2])*dy(dd[2]), 
-  dy(dd[0])*dz(d[0]) + dy(d[0])*dz(dd[0]) + dy(dd[1])*dz(d[1]) + (1. + dy(d[1]))*dz(dd[1]) + dy(dd[2])*(1. + dz(d[2])) + dy(d[2])*dz(dd[2]), 
-  dx(dd[0])*dz(d[0]) + (1. + dx(d[0]))*dz(dd[0]) + dx(dd[1])*dz(d[1]) + dx(d[1])*dz(dd[1]) + dx(dd[2])*(1. + dz(d[2])) + dx(d[2])*dz(dd[2]) 
-] //
+macro dC1(d, dd, Cu) (2.*(1. + dx(d[0]))*dx(dd[0]) + 2.*dx(d[1])*dx(dd[1]) + 2.*dx(d[2])*dx(dd[2])) //
+macro dC2(d, dd, Cu) (2.*dy(d[0])*dy(dd[0]) + 2.*(1. + dy(d[1]))*dy(dd[1]) + 2.*dy(d[2])*dy(dd[2])) //
+macro dC3(d, dd, Cu) (2.*dz(d[0])*dz(dd[0]) + 2.*dz(d[1])*dz(dd[1]) + 2.*(1. + dz(d[2]))*dz(dd[2])) //
+macro dC4(d, dd, Cu) (dx(dd[0])*dy(d[0]) + (1. + dx(d[0]))*dy(dd[0]) + dx(dd[1])*(1. + dy(d[1])) + dx(d[1])*dy(dd[1]) + dx(dd[2])*dy(d[2]) + dx(d[2])*dy(dd[2]) ) //
+macro dC5(d, dd, Cu) (dy(dd[0])*dz(d[0]) + dy(d[0])*dz(dd[0]) + dy(dd[1])*dz(d[1]) + (1. + dy(d[1]))*dz(dd[1]) + dy(dd[2])*(1. + dz(d[2])) + dy(d[2])*dz(dd[2]) ) //
+macro dC6(d, dd, Cu) (dx(dd[0])*dz(d[0]) + (1. + dx(d[0]))*dz(dd[0]) + dx(dd[1])*dz(d[1]) + dx(d[1])*dz(dd[1]) + dx(dd[2])*(1. + dz(d[2])) + dx(d[2])*dz(dd[2]) )//
 
-macro ddC3d(dd, ddd) 
-[ 
-  2.*( dx(dd[0])*dx(ddd[0]) + dx(dd[1])*dx(ddd[1]) + dx(dd[2])*dx(ddd[2]) ), 
-  2.*( dy(dd[0])*dy(ddd[0]) + dy(dd[1])*dy(ddd[1]) + dy(dd[2])*dy(ddd[2]) ), 
-  2.*( dz(dd[0])*dz(ddd[0]) + dz(dd[1])*dz(ddd[1]) + dz(dd[2])*dz(ddd[2]) ),
-  dx(dd[0])*dy(ddd[0]) + dx(ddd[0])*dy(dd[0]) + dx(dd[1])*dy(ddd[1]) + dx(ddd[1])*dy(dd[1]) + dx(dd[2])*dy(ddd[2]) + dx(ddd[2])*dy(dd[2]), 
-  dy(dd[0])*dz(ddd[0]) + dy(ddd[0])*dz(dd[0]) + dy(dd[1])*dz(ddd[1]) + dy(ddd[1])*dz(dd[1]) + dy(dd[2])*dz(ddd[2]) + dy(ddd[2])*dz(dd[2]),
-  dx(dd[0])*dz(ddd[0]) + dx(ddd[0])*dz(dd[0]) + dx(dd[1])*dz(ddd[1]) + dx(ddd[1])*dz(dd[1]) + dx(dd[2])*dz(ddd[2]) + dx(ddd[2])*dz(dd[2])
-] //
+macro ddC1(d, dd, ddd) (2.*( dx(dd[0])*dx(ddd[0]) + dx(dd[1])*dx(ddd[1]) + dx(dd[2])*dx(ddd[2]) )) //
+macro ddC2(d, dd, ddd) (2.*( dy(dd[0])*dy(ddd[0]) + dy(dd[1])*dy(ddd[1]) + dy(dd[2])*dy(ddd[2]) )) //
+macro ddC3(d, dd, ddd) (2.*( dz(dd[0])*dz(ddd[0]) + dz(dd[1])*dz(ddd[1]) + dz(dd[2])*dz(ddd[2]) )) //
+macro ddC4(d, dd, ddd) (dx(dd[0])*dy(ddd[0]) + dx(ddd[0])*dy(dd[0]) + dx(dd[1])*dy(ddd[1]) + dx(ddd[1])*dy(dd[1]) + dx(dd[2])*dy(ddd[2]) + dx(ddd[2])*dy(dd[2]) ) //
+macro ddC5(d, dd, ddd) (dy(dd[0])*dz(ddd[0]) + dy(ddd[0])*dz(dd[0]) + dy(dd[1])*dz(ddd[1]) + dy(ddd[1])*dz(dd[1]) + dy(dd[2])*dz(ddd[2]) + dy(ddd[2])*dz(dd[2]) ) //
+macro ddC6(d, dd, ddd) (dx(dd[0])*dz(ddd[0]) + dx(ddd[0])*dz(dd[0]) + dx(dd[1])*dz(ddd[1]) + dx(ddd[1])*dz(dd[1]) + dx(dd[2])*dz(ddd[2]) + dx(ddd[2])*dz(dd[2]) ) //
 
 /*
 	I3C(C) computes the three invariants of C,
@@ -79,67 +70,117 @@ macro ddC3d(dd, ddd)
 				  + 2 * C13 * C12 * C23
 	
 	dI3C and ddI3C are the corresponding derivatives
+
 */
-macro I3C(C)
-[
-	C[0] + C[1] + C[2], 
-	C[0] * C[1] + C[0] * C[2] + C[1] * C[2] - C[3] * C[3]- C[4] * C[4] - C[5] * C[5],
-	C[0] * C[1] * C[2] - C[0] * C[4]^2 - C[3]^2 * C[2] + 2. * C[3] * C[5] * C[4] - C[5]^2 * C[1]
-] //EOM
 
-macro dI3C(C, dC)
-[
-	dC[0] + dC[1] + dC[2],
-	dC[0] * C[1] + C[0] * dC[1] + dC[0] * C[2] + C[0] * dC[2] 
-		+ dC[1] * C[2] + C[1] * dC[2] - 2.* (C[3] * dC[3] + C[4] * dC[4] + C[5] * dC[5]),
-	dC[0] * C[1] * C[2] + C[0] * dC[1] * C[2] + C[0] * C[1] * dC[2] 
-	    - dC[0] * C[4]^2 - 2. * C[0] * C[4] * dC[4] 
-		- dC[2] * C[3]^2 - 2. * C[2] * C[3] * dC[3]
-		+ 2. * ( dC[3] * C[5] * C[4] + C[3] * dC[5] * C[4]  + C[3] * C[5] * dC[4] ) 
-		- dC[1] * C[5]^2 - C[1] * 2. * C[5] * dC[5]
-] //
+// I1, I2, I3 below are expressed directly in terms of Cu = [C1u,...,C6u] 
+macro I1C(Cu) (Cu[0] + Cu[1] + Cu[2]) //
+macro I2C(Cu) (Cu[0]*Cu[1] + Cu[0]*Cu[2] + Cu[1]*Cu[2] - Cu[3]^2 - Cu[4]^2 - Cu[5]^2) //
+macro I3C(Cu) (Cu[0]*Cu[1]*Cu[2] - Cu[0]*Cu[4]^2 - Cu[3]^2*Cu[2] + 2.*Cu[3]*Cu[5]*Cu[4] - Cu[5]^2*Cu[1]) //
 
-macro  ddI3C(C, dC, ddC)
-[
-	0.*dC[0]*ddC[0],
-	dC[0] * ddC[1] + ddC[0] * dC[1] + dC[0] * ddC[2] + ddC[0] * dC[2] 
-		+ dC[1] * ddC[2] + ddC[1] * dC[2] - 2.* (ddC[3] * dC[3] + ddC[4] * dC[4] + ddC[5] * dC[5]),
-	dC[0] * ( ddC[1] * C[2] + C[1] * ddC[2] ) 
+// If needed one can use the following terms
+macro I1(d) (C1(d) + C2(d) + C3(d)) //
+macro I2(d) (C1(d)*C2(d) + C1(d)*C3(d) + C2(d)*C3(d) - C4(d)^2 - C5(d)^2 - C6(d)^2) //
+macro I3(d) (C1(d)*C2(d)*C3(d) - C1(d)*C5(d)^2 - C4(d)^2*C3(d) + 2.*C4(d)*C6(d)*C5(d) - C6(d)^2*C2(d)) //
+
+/*
+   dI1, dI2, dI3 in terms of Cu, dCu = [dC1, dC2, dC3, dC4, dC5, dC6]
+    evaluated with (d, dd, Cu)
+*/
+
+macro dI1C(Cu, dCu) (dCu[0] + dCu[1] + dCu[2]) //
+macro dI2C(Cu, dCu) (dCu[0]*Cu[1] + Cu[0]*dCu[1] + dCu[0]*Cu[2] + Cu[0]*dCu[2] 
+				   		+ dCu[1]*Cu[2] + Cu[1]*dCu[2] - 2.* (Cu[3]*dCu[3] + Cu[4]*dCu[4] + Cu[5]*dCu[5]) ) //
+macro dI3C(Cu, dCu) (dCu[0]*Cu[1]*Cu[2] + Cu[0]*dCu[1]*Cu[2] + Cu[0]*Cu[1]*dCu[2] 
+                   		- dCu[0]*Cu[4]^2 - 2. * Cu[0]*Cu[4]*dCu[4] 
+				   		- dCu[2]*Cu[3]^2 - 2. * Cu[2]*Cu[3]*dCu[3]
+				   		+ 2. * (dCu[3]*Cu[5]*Cu[4] + Cu[3]*dCu[5]*Cu[4]  + Cu[3]*Cu[5]*dCu[4])
+				   		- dCu[1]*Cu[5]^2 - 2. * Cu[1]*Cu[5]*dCu[5] ) //
+
+//
+
+macro dI1(d, dd, Cu) (dC1(d, dd, Cu) + dC2(d, dd, Cu) + dC3(d, dd, Cu)) //
+macro dI2(d, dd, Cu) (dI2C(Cu, [dC1(d, dd, Cu), dC2(d, dd, Cu), dC3(d, dd, Cu), 
+								dC4(d, dd, Cu), dC5(d, dd, Cu), dC6(d, dd, Cu)])) //
+macro dI3(d, dd, Cu) (dI3C(Cu, [dC1(d, dd, Cu), dC2(d, dd, Cu), dC3(d, dd, Cu), 
+								dC4(d, dd, Cu), dC5(d, dd, Cu), dC6(d, dd, Cu)])) //
+
+/*
+	ddI1, ddI2, ddI3  in terms of Cu, dCu = [dC1, dC2, dC3, dC4, dC5, dC6],
+	ddC = [ddC1, ddC2, ddC3, ddC4, ddC5, ddC6] evaluated with (d, dd, Cu)
+*/
+
+macro ddI1(d, dd, ddd) ( ddC1(d, dd, ddd) + ddC2(d, dd, ddd) + ddC3(d, dd, ddd)) //
+
+macro ddI2C(C, dC, ddC) (
+    dC[0] * ddC[1] + ddC[0] * dC[1] + dC[0] * ddC[2] + ddC[0] * dC[2] 
+		+ dC[1] * ddC[2] + ddC[1] * dC[2] 
+		- 2.* (ddC[3] * dC[3] + ddC[4] * dC[4] + ddC[5] * dC[5])
+) //
+
+macro ddI2complimentary(C, ddC) (
+	ddC[0] * C[1] + C[0] * ddC[1] + ddC[0] * C[2] + C[0] * ddC[2] 
+		+ ddC[1] * C[2] + C[1] * ddC[2] 
+		- 2.* (ddC[3] * C[3] + ddC[4] * C[4] + ddC[5] * C[5])
+) //
+
+macro ddI3C(C, dC, ddC) (
+   dC[0] * ( ddC[1] * C[2] + C[1] * ddC[2] ) 
 		+ ddC[0] * dC[1] * C[2]  + C[0] * dC[1] * ddC[2] 
-		+ ddC[0] * C[1] * dC[2] + C[0] * ddC[1] * dC[2] 
+		+ ddC[0] * C[1] * dC[2]  + C[0] * ddC[1] * dC[2] 
 	    - 2. * dC[0] * C[4] * ddC[4] - 2. * ( ddC[0] * C[4] + C[0] * ddC[4] ) * dC[4] 
 		- 2. * dC[2] * C[3] * ddC[3] - 2. * ( ddC[2] * C[3] + C[2] * ddC[3] ) * dC[3]
 		+ 2. * ( dC[3] * (ddC[5] * C[4] + C[5] * ddC[4]) + ddC[3] * dC[5] * C[4] + C[3] * dC[5] * ddC[4]  + (ddC[3] * C[5] + C[3] * ddC[5]) * dC[4] ) 
 		- 2. * dC[1] * C[5] * ddC[5] - ddC[1] * 2. * C[5] * dC[5] - C[1] * 2. * ddC[5] * dC[5]
-] //
+) //
 
-// I4 = a^T C a 
-macro I4C(C, a)
-(
-	a[0]*C[0]*a[0] + a[1]*C[1]*a[1] + a[2]*C[2]*a[2]
-	+ 2.*a[0]*C[3]*a[1] + 2.*a[0]*C[5]*a[2] + 2.*a[1]*C[4]*a[2]
-    
-) //  
+macro ddI3complimentary(C, ddC) (
+	ddC[0] * C[1] * C[2] + C[0] * ddC[1] * C[2] + C[0] * C[1] * ddC[2] 
+	    - ddC[0] * C[4]^2 - 2. * C[0] * C[4] * ddC[4] 
+		- ddC[2] * C[3]^2 - 2. * C[2] * C[3] * ddC[3]
+		+ 2. * ( ddC[3] * C[5] * C[4] + C[3] * ddC[5] * C[4]  + C[3] * C[5] * ddC[4] ) 
+		- ddC[1] * C[5]^2 - C[1] * 2. * C[5] * ddC[5]
+) //
 
-macro dI4C(C, dC, a)
-(
-	a[0]*dC[0]*a[0] + a[1]*dC[1]*a[1] + a[2]*dC[2]*a[2]
-	+ 2.*a[0]*dC[3]*a[1] + 2.*a[0]*dC[5]*a[2] + 2.*a[1]*dC[4]*a[2]
-	
-) // 
+/*
+   ddI2, ddI3 now take the precomputed Cu field directly (instead of
+   rebuilding [C1(d),...,C6(d)] each time).
+*/
 
-macro ddI4C(C, dC, ddC, a)
-(
-	0. 
-)//
+macro ddI2(d, dd, ddd, Cu) (ddI2C(Cu,
+							  [dC1(d, dd, Cu), dC2(d, dd, Cu), dC3(d, dd, Cu), 
+							   dC4(d, dd, Cu), dC5(d, dd, Cu), dC6(d, dd, Cu)],
+							  [dC1(d, ddd, Cu), dC2(d, ddd, Cu), dC3(d, ddd, Cu), 
+							   dC4(d, ddd, Cu), dC5(d, ddd, Cu), dC6(d, ddd, Cu)])
+						+ ddI2complimentary(Cu,
+							  [ddC1(d, dd, ddd), ddC2(d, dd, ddd), ddC3(d, dd, ddd), 
+							   ddC4(d, dd, ddd), ddC5(d, dd, ddd), ddC6(d, dd, ddd)]) ) //
 
-// shortcuts for formulas
-macro I3d(d) (I3C(C3d(d)))  //
-macro dI3d(d, dd) (dI3C(C3d(d), dC3d(d, dd))) //
-macro ddI3d(d, dd, ddd) (ddI3C(C3d(d), dC3d(d, dd), dC3d(d, ddd)) + dI3C(C3d(d), ddC3d((dd), (ddd)))) //
+macro ddI3(d, dd, ddd, Cu) (ddI3C(Cu,
+							  [dC1(d, dd, Cu), dC2(d, dd, Cu), dC3(d, dd, Cu),
+							   dC4(d, dd, Cu), dC5(d, dd, Cu), dC6(d, dd, Cu)],
+							  [dC1(d, ddd, Cu), dC2(d, ddd, Cu), dC3(d, ddd, Cu), 
+							   dC4(d, ddd, Cu), dC5(d, ddd, Cu), dC6(d, ddd, Cu)])
+						+ ddI3complimentary(Cu,
+							  [ddC1(d, dd, ddd), ddC2(d, dd, ddd), ddC3(d, dd, ddd), 
+							   ddC4(d, dd, ddd), ddC5(d, dd, ddd), ddC6(d, dd, ddd)])) //
 
-macro I4(d, a) (I4C(C3d(d), a)) //
-macro dI4(d, dd, a) (dI4C(C3d(d), dC3d(d, dd), a)) //
-macro ddI4(d, dd, ddd, a) (dI4C(C3d(d), ddC3d((dd), (ddd)), a)) //
 
-// ddI4C(C2d(d), dC2d(d, dd), dC2d(d, ddd), a)  = 0. so we do not include it in ddI4
+/*
+	I4 = a^T C a, written in terms of the precomputed Cu field
+*/
+
+macro I4C(Cu, a) ( a[0]*Cu[0]*a[0] + a[1]*Cu[1]*a[1] + a[2]*Cu[2]*a[2]
+				  + 2.*a[0]*Cu[3]*a[1] + 2.*a[0]*Cu[5]*a[2] + 2.*a[1]*Cu[4]*a[2] ) //
+
+// used in PrecomputeInvariants (direct from d)
+macro I4(d, a) ( a[0]*C1(d)*a[0] + a[1]*C2(d)*a[1] + a[2]*C3(d)*a[2]
+				  + 2.*a[0]*C4(d)*a[1] + 2.*a[0]*C6(d)*a[2] + 2.*a[1]*C5(d)*a[2] ) //  
+
+// Derivaties
+
+macro dI4(d, dd, a, Cu) ( a[0]*dC1(d, dd, Cu)*a[0] + a[1]*dC2(d, dd, Cu)*a[1] + a[2]*dC3(d, dd, Cu)*a[2]
+					 + 2.*a[0]*dC4(d, dd, Cu)*a[1] + 2.*a[0]*dC6(d, dd, Cu)*a[2] + 2.*a[1]*dC5(d, dd, Cu)*a[2] ) // 
+
+macro ddI4(d, dd, ddd, a) (a[0]*ddC1(d, dd, ddd)*a[0] + a[1]*ddC2(d, dd, ddd)*a[1] + a[2]*ddC3(d, dd, ddd)*a[2]
+					 	+ 2.*a[0]*ddC4(d, dd, ddd)*a[1] + 2.*a[0]*ddC6(d, dd, ddd)*a[2] + 2.*a[1]*ddC5(d, dd, ddd)*a[2] ) //

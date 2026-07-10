@@ -1,0 +1,111 @@
+// Post-processing macros for 2D case
+
+/*
+    The following MoveMeshProgressif2d macro does the same work as the above movemesh, 
+    but in a progressive way, which is more robust for large deformations
+*/
+
+macro MoveMeshProgressif2d(Th0, Thcur, displt)
+{
+    real Step = 0.0;
+    int iter = 0;
+    real dStep = 0.1;
+    real epsStep = 1e-12;
+
+    if (verbosity > 0) {
+        cout << "Iteration " << iter << ": Aire = " << int2d(Th0)( 1.0 ) << endl ;
+        cout << "Initial step = " << Step << endl;
+    }
+    vol << iter << " " << int2d(Th0)( 1.0 ) << endl;
+
+    while (Step < 1.0 - epsStep) {
+
+        real d = min(dStep, 1.0 - Step);
+        real StepTry = Step + d;
+
+        if (verbosity > 0) {
+            cout << "Additional step, d = "     << d << endl;
+            cout << "Movemesh Trying Step   = " << StepTry << endl;
+        }
+
+        real minS = checkmovemesh(Th0, [x + StepTry*displt[0], y + StepTry*displt[1]]);
+
+        while (minS <= 1e-12) {
+            d *= 0.5;
+            if (d < epsStep) {
+                cout << "Impossible d'aller plus loin sans inversion." << endl;
+                break;
+            }
+            StepTry = Step + d;
+            minS = checkmovemesh(Th0, [x + StepTry*displt[0], y + StepTry*displt[1]]);
+        }
+
+        if (d < epsStep) break;
+
+        Thcur = movemesh(Th0, [x + StepTry*displt[0], y + StepTry*displt[1]]);
+        Step = StepTry;
+
+        if (verbosity > 0) {
+            cout << "Step = " << Step << ", minS = " << minS << endl;
+            plot(Thcur, wait=false);
+        }
+
+        iter ++;
+        
+        vol << iter << " " << int2d(Thcur)( 1.0 ) << endl;
+        if (verbosity > 0) cout << "\n Iteration " << iter << ": Aire = " << int2d(Thcur)( 1.0 ) << endl;
+    }
+
+    string path = res + "mesh/Final_mesh_" + testId + "_" + caseId + ".eps";
+    if (verbosity > 0) plot(Thcur, ps = path);
+    cout << endl ;
+
+} // EOM
+
+// ---------------------------------------------------------------
+
+macro AreaVariation(Th0, Th1, displt)
+{
+    real V0 = int2d(Th0)( 1.0 );
+    real V1 = int2d(Th1)( 1.0 );
+    real p = 100.0 * abs(V1 - V0) / V0;
+
+    real integralJac = int2d(Th0)((1.0 + dx(displt[0]))*(1.0 + dy(displt[1])) - dx(displt[1])*dy(displt[0]));
+
+    if (verbosity > 0){
+        cout << "\n";
+        cout << "Area variation = " << p << " % \n" << endl;
+        cout << "Area of the reference domain Omega_0 = " << V0 << "\n" << endl;
+        cout << "Area of the deformed domain Omega    = " << V1 << "\n" << endl;
+        cout << "int_{Omega0} J dx = " << integralJac << "\n" << endl;
+    }
+} // EOM
+// IntegralJac has to be less than V1 to garanty injectivity property
+
+// ---------------------------------------------------------------
+
+macro DeformedFiber2d(a, b, displt)  
+{
+    Sh Fax = a[0] + dx(displt[0]) * a[0] + dy(displt[0]) * a[1]; 
+    Sh Fay = a[1] + dx(displt[1]) * a[0] + dy(displt[1]) * a[1]; 
+    string fiberpath = res + "fiber/Fa_final_" + testId + "_" + caseId + ".vtu";
+    savevtk(fiberpath, Th, [Fax, Fay], dataname="Fa");
+
+    if (verbosity > 1) {
+        string fnA = res + "fiber/Deformed_tg_vec_" + testId + "_" + caseId + ".eps"; 
+        plot([Fax, Fay], wait=1, cmm="Fa = (Fax,Fay)", ps=fnA);
+    }
+
+    if (verbosity > 2) {     
+        Sh Fbx, Fby, ps; 
+
+        Fbx = bx + dx(displt[0]) * bx + dy(displt[0]) * by;
+        Fby = by + dx(displt[1]) * bx + dy(displt[1]) * by; 
+        string fnB = res + "fiber/Deformed_normal_vec_" + testId + "_" + caseId + ".eps"; 
+        plot([Fbx, Fby], wait=1, cmm="Fb = (Fbx,Fby)", ps=fnB);
+        
+        ps = Fax*Fbx + Fay*Fby; 
+        cout << "min(Fa . F(a^orth)) = " << ps[].min << " and max(Fa . F(a^orth)) = " << ps[].max << endl; 
+
+    }
+} // EOM

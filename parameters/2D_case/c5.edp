@@ -1,0 +1,13 @@
+/*
+    This test case has values from HO in N\cm^2 with nu1 = 1 
+*/
+
+nu1 = 1.;
+nu2 = 0;
+C0 = 0.000375;
+C1 = 8.;
+C2 = 0.0576;
+C3 = 16.;
+kappa = 20;
+if (!Inv) g = 0.5;
+meshName = "LR_gmsh_6_bigger";

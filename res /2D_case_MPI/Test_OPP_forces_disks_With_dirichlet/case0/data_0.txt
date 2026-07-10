@@ -1,0 +1,72 @@
+Test case 
+==================
+
+testId   = horizontal_forces_disks_With_dirichlet
+caseId   = 0
+dim      = 2
+mode     = Direct
+Inv      = 0
+Check    = 0
+meshName = LR_gmsh_6
+
+Boundary conditions
+-------------------
+bcF right = 1
+bcF left  = -1
+
+HGO material parameters
+-----------------------
+nu1   = 1
+C0    = 10
+C1    = 0.5
+C2    = 15
+C3    = 0.9
+kappa = 800
+
+Quasi-incompressibility option
+------------------------------
+optQuasiIncomp = 0
+
+Line search parameters
+----------------------
+alphaMax   = 1
+alphaMin   = 1e-06
+alpha      = 0.5
+nbmaxls    = 50
+ArmijoCst1 = 0.0001
+ArmijoCst2 = 0.9
+
+Newton parameters
+-----------------
+Nbmax = 500
+tol   = 1e-07
+Jtol  = 1e-07
+
+Global mesh info:
+number of vertices     = 5629
+number of 2D triangles = 10614
+number of boundary faces= 646
+
+Local mesh info:
+number of vertices       = 962
+number of 2D triangles   = 1782
+
+Local FE spaces info:
+Local P1xP1 DOFs number = 1924
+Local P0 DOFs number    = 1782
+
+[0] gradL2 = 9.55215e-09 < 1e-07 Converged at iteration 26
+------------------------- gradL2 < tol -------------------------------------
+
+phi[0] = -1.36883
+phi[1] = -1.24714
+phi[2] = -0.959147
+phi[3] = -0.724897
+phi[4] = -0.485608
+phi[5] = -0.243689
+phi[6] = 0.243732
+phi[7] = 0.485676
+phi[8] = 0.724996
+phi[9] = 0.959179
+phi[10] = 1.24711
+phi[11] = 1.36887

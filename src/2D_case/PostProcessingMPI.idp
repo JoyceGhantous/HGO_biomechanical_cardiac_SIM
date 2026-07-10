@@ -1,0 +1,194 @@
+// Post-processing macros for 2D MPI case
+
+/*
+    The following MoveMeshProgressif2dMPI macro does the same work as the above movemesh, 
+    but in a progressive way, which is more robust for large deformations.
+    It takes into account the parallel distribution of the mesh.
+*/
+
+macro MoveMeshProgressif2dMPI(Th0i, ThMovedi, ux, uy)
+{
+    real Step = 0.0;
+    real dStep = 0.1;
+    real epsStep = 1e-12;
+    real tolArea = 1e-8;
+    int iter = 0;
+    real A;
+
+    if (verbosity > 1) cout << "[" << mpirank << "] Number of vertices in Th0i: " << Th0i.nv << "\n" << endl;
+
+    ShVhi wPOU;
+    wPOU[] = ShDk[mpiRank(Mcommddm)];
+
+    real A0loc = int2d(Th0i)(wPOU);
+    real[int] sendA(1), recvA(1);
+    sendA[0] = A0loc;
+    mpiAllReduce(sendA, recvA, mpiCommWorld, mpiSUM);
+    real A0 = recvA[0];
+
+    if (mpirank == 0){
+        cout << " Iteration " << iter << ": Aire = " << A0  << endl ;
+        cout << "Initial step = " << Step << endl;
+        vol << iter << " " << A0 << endl;
+    }
+    
+    if (mpirank == 0 && verbosity > 0)
+        cout << "Iteration " << iter << "[" << mpirank << "] "  << endl << ux[] << endl;
+
+    while (Step < 1.0 - epsStep ) {
+
+        real d = min(dStep, 1.0 - Step);
+        real StepTry = Step + d;
+
+        if (mpirank == 0 && verbosity > 0) {
+            cout << "Additional step, d = "     << d << endl;
+            cout << "Movemesh Trying Step   = " << StepTry << endl;
+        }
+
+        real minSLoc = checkmovemesh(Th0i, [x + StepTry*(ux), y + StepTry*(uy)]);
+
+        real[int] sendMin(1), recvMin(1);
+        sendMin[0] = minSLoc;
+        mpiAllReduce(sendMin, recvMin, mpiCommWorld, mpiMIN);
+        if (mpirank == 0 && verbosity > 0)
+           cout << "[" << mpirank << "] " << minSLoc << endl;
+        real minS = recvMin[0];
+        
+        while (minS <= tolArea) {
+            d *= 0.5;
+            if (d < epsStep) {
+                if (mpirank == 0)
+                    cout << "Impossible d'aller plus loin sans inversion." << endl;
+                break;
+            }
+            StepTry = Step + d;
+            minSLoc = checkmovemesh(Th0i, [x + StepTry*(ux), y + StepTry*(uy)]);
+            sendMin[0] = minSLoc;
+            mpiAllReduce(sendMin, recvMin, mpiCommWorld, mpiMIN);
+            minS = recvMin[0];
+            if (mpirank == 0)
+                cout << "[" << mpirank << "] " << minSLoc << endl;
+       
+            cout << minS << endl;
+
+        }
+
+        if (d < epsStep) break;
+
+        ThMovedi = movemesh(Th0i, [x + StepTry*(ux), y + StepTry*(uy)]);
+        Step = StepTry;
+
+        real Aloc = int2d(Th0i)(
+                                wPOU * (
+                                    (1.0 + Step*dx(ux)) * (1.0 + Step*dy(uy))
+                                  - (Step*dy(ux)) * (Step*dx(uy))
+                                )
+                            );
+
+        sendA[0] = Aloc;
+        mpiAllReduce(sendA, recvA, mpiCommWorld, mpiSUM);
+        A = recvA[0];
+
+        iter++;
+        
+        if (mpirank == 0){
+            cout << "\n Iteration = " << iter
+                 << ", Step = " << Step
+                 << ", minS = " << minS
+                 << ", Aire = " << A
+                 << ", Area variation (%) = " << 100.0*(A - A0)/A0
+                 << endl;
+            vol << iter << " " << A << endl;
+        }
+    }
+
+    if (mpirank == 0){
+        cout << "\n Final step = " << Step << endl;
+        cout << "Final area = " << A << ", Area variation (%) = " << 100.0*(A - A0)/A0 << "\n" << endl;
+        data << "After movemesh: " << endl;
+        data << "Final step = " << Step << endl;
+        data << "Final area = " << A << ", Area variation (%) = " << 100.0*(A - A0)/A0 << "\n" << endl;
+    }
+
+    ShVhi defs(tag);
+    tag[] = mpirank;
+    plotMPI(ThMovedi, tag, P1, def1, real, cmm = "Global moved domain");
+    savevtk(res + "mesh/ThMoved_" + mpirank + ".vtu", ThMovedi, tag, dataname="rank", 
+        bin = false, floatmesh = true, floatsol = true);
+    
+    mpiBarrier(mpiCommWorld);
+    if (mpirank == 0) writePVTU2D(res + "mesh/", "ThMoved", mpisize, "rank", "Float32")
+
+} // EOM
+
+// ---------------------------------------------------------------
+
+macro PrintInfo(Th, ux, uy){
+    real integralLocal = int2d(Th)( di * ((1.0 + dx(ux))*(1.0 + dy(uy)) - dx(uy)*dy(ux) ) );
+    real integral = 0.0;
+    mpiAllReduce(integralLocal, integral, mpiCommWorld, mpiSUM);
+
+    real mindLocal = ux[].min;   
+    real maxdLocal = ux[].max;
+    real mind = 0.0, maxd = 0.0;
+    mpiAllReduce(mindLocal, mind, mpiCommWorld, mpiMIN);
+    mpiAllReduce(maxdLocal, maxd, mpiCommWorld, mpiMAX);
+
+    if (mpirank == 0){
+        cout << endl;
+        cout << "Integral of det(F) = " << integral << ", min (displacement) = " << mind << ", max (displacement) = " << maxd << "\n" << endl;
+        data << "Integral of det(F) = " << integral << ", min (displacement) = " << mind << ", max (displacement) = " << maxd << "\n" << endl;
+    }
+} // EOM
+
+// ---------------------------------------------------------------
+
+/*
+    This macro evaluates a distributed field X + uh at a list of 2D points
+    by determining which process contains each point.
+
+    chi(ThLoc) defines an indicator function for the local domain:
+        - close to 1 if the point lies inside ThLoc,
+        - close to 0 if the point lies outside it.
+
+    nPts is the number of evaluation points (X, Y).
+
+    Uloc[i]: uh(X_i, Y_i) if the point belongs to the local submesh,
+             0 otherwise.
+    mLoc[i]: 1 if the point is found locally,
+             0 otherwise.
+
+    Usum[i] is the sum of the local values found for point i.
+    mSum[i] is the total number of processes that reported containing
+            this point. If the point lies in the overlap region, it may
+            be found by two processes; otherwise, it is found by one process.
+
+    Uout[i]: final reconstructed value uh(X_i, Y_i).
+*/
+
+macro evalDistributedAtPoints(ThLoc, uh, X, Y) { 
+    func chiLoc = chi(ThLoc);
+    int nPts = X.n; 
+    real[int] Uloc(nPts), Usum(nPts), mLoc(nPts), mSum(nPts), Uout(nPts); 
+    Uloc = 0.0; Usum = 0.0; 
+    mLoc = 0.0; mSum = 0.0; 
+    
+    for (int i = 0; i < nPts; ++i) { 
+        if (chiLoc(X[i], Y[i]) > 0.5) { 
+            Uloc[i] = uh(X[i], Y[i]); 
+            mLoc[i] = 1.0; 
+        } 
+    } 
+    
+    mpiAllReduce(Uloc, Usum, mpiCommWorld, mpiSUM); 
+    mpiAllReduce(mLoc,  mSum,  mpiCommWorld, mpiSUM); 
+
+    for (int i = 0; i < nPts; ++i) { 
+        Uout[i] = Usum[i] / (mSum[i] + 1e-16); 
+        if (mpirank == 0){
+            cout << X[i] + Uout[i] << endl;
+            data << "phi[" << i << "] = " << X[i] + Uout[i] << endl;
+        }
+    } 
+
+} // EOM

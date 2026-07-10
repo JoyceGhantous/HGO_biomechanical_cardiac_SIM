@@ -1,0 +1,201 @@
+// Post-processing macros for 3D case
+
+/*
+    Determinant of the Jacobian of the 3D transformation:
+        Phi_s(x) = (x, y, z) + s * u(x, y, z)
+    where u = (ux, uy, uz)
+*/
+macro DetMove3D(ux,uy,uz,s)
+( (1.+(s)*dx(ux)) * ( (1.+(s)*dy(uy)) * (1.+(s)*dz(uz))    - ((s)*dz(uy))    * ((s)*dy(uz)) )
+ - ((s)*dy(ux))   * ( ((s)*dx(uy))    * (1.+(s)*dz(uz))    - ((s)*dz(uy))    * ((s)*dx(uz)) )
+ + ((s)*dz(ux))   * ( ((s)*dx(uy))    * ((s)*dy(uz))       - (1.+(s)*dy(uy)) * ((s)*dx(uz)) ) ) //
+
+/* 
+    This macro performs a progressive displacement of a 3D mesh while ensuring that min(det J) > tolJ. 
+    Notes: 
+        - detJ is a P0 finite element function, with one value per mesh element. 
+        - minJ is the minimum value of detJ over all mesh elements. 
+        - ReachedStep is the final displacement value that was successfully applied. 
+*/
+
+macro MoveMeshProgressif3dMPI(Th0i, ThMovedi, ux, uy, uz, ReachedStep)
+{
+    real Step = 0.0;
+    int iter = 0;
+    real dStep = 0.2;
+    real epsStep = 1e-12;
+    real tolJ = 1e-10;
+
+    if (verbosity > 1)
+        cout << "[" << mpirank << "] Number of vertices in Th0i: " << Th0i.nv << "\n" << endl;
+
+    ShVhi wPOU;
+    wPOU[] = ShDk[mpiRank(Mcommddm)];
+
+    real V0loc = int3d(Th0i)(wPOU);
+    real[int] sendV0 = [V0loc], recvV0(1);
+    mpiAllReduce(sendV0, recvV0, mpiCommWorld, mpiSUM);
+    real V0 = recvV0[0];
+
+    real V = V0; 
+
+    if (mpirank == 0) {
+        cout << "Iteration " << iter << ": Volume0 = " << V0 << endl;
+        cout << "Initial step = " << Step << endl;
+        vol << iter << " " << V0 << endl;
+    }
+
+    while (Step < 1.0 - epsStep) {
+
+        real d = min(dStep, 1.0 - Step);
+        real StepTry = Step + d;
+
+        if (mpirank == 0 && verbosity > 0){
+            cout << "Additional step, d     = " << d << endl;
+            cout << "Movemesh Trying Step   = " << StepTry << endl;
+        }
+
+        ShVhi detJfield = DetMove3D(ux, uy, uz, StepTry);
+
+        real[int] vals = detJfield[];
+        real minJloc = vals[0];
+        for (int k = 1; k < vals.n; ++k)
+            minJloc = min(minJloc, vals[k]);
+
+        real[int] sendDet = [minJloc], recvDet(1);
+        mpiAllReduce(sendDet, recvDet, mpiCommWorld, mpiMIN);
+        real minJ = recvDet[0];
+
+        if (verbosity > 0)
+            cout << "[" << mpirank << "] min(detJ) = " << minJ << endl;
+
+        while (minJ <= tolJ) {
+            d *= 0.5;
+            if (d < epsStep) {
+                if (mpirank == 0)
+                    cout << "Stop: impossible d'aller plus loin sans inversion." << endl;
+                break;
+            }
+
+            StepTry = Step + d;
+            detJfield = DetMove3D(ux, uy, uz, StepTry);
+
+            vals = detJfield[];
+            minJloc = vals[0];
+            for (int k = 1; k < vals.n; ++k)
+                minJloc = min(minJloc, vals[k]);
+
+            sendDet[0] = minJloc;
+            mpiAllReduce(sendDet, recvDet, mpiCommWorld, mpiMIN);
+            minJ = recvDet[0];
+
+            if (mpirank == 0 && verbosity > 0)
+                cout << "[" << mpirank << "] reduced min(detJ) = " << minJ << endl;
+        }
+
+        if (d < epsStep) break;
+
+        ThMovedi = movemesh(Th0i, [x + StepTry*ux, y + StepTry*uy, z + StepTry*uz]);
+        ThMovedi = checkmesh(ThMovedi);
+
+        Step = StepTry;
+
+        real Vloc = int3d(Th0i)(wPOU * DetMove3D(ux, uy, uz, Step));
+        real[int] sendV = [Vloc], recvV(1);
+        mpiAllReduce(sendV, recvV, mpiCommWorld, mpiSUM);
+        V = recvV[0];
+
+        iter++;
+
+        if (mpirank == 0) {
+            cout << "\n Iteration = " << iter
+                 << " ; Step = " << Step
+                 << " ; min(detJ) = " << minJ
+                 << " ; volume = " << V
+                 << " ; Volume variation (%) = " << 100.0*(V - V0)/V0
+                 << endl;
+            vol << iter << " " << V << endl;
+        }
+    }
+
+    ReachedStep = Step;
+
+} // EOM
+
+
+
+
+// ---------------------------------------------------------------
+
+macro PrintInfo(Th, ux, uy, uz){
+    real integralLocal = int3d(Th)( di * DetMove3D(ux, uy, uz, 1.0) );
+    real integral = 0.0;
+    mpiAllReduce(integralLocal, integral, mpiCommWorld, mpiSUM);
+
+    real mindLocal = ux[].min;   
+    real maxdLocal = ux[].max;
+    real mind = 0.0, maxd = 0.0;
+    mpiAllReduce(mindLocal, mind, mpiCommWorld, mpiMIN);
+    mpiAllReduce(maxdLocal, maxd, mpiCommWorld, mpiMAX);
+
+    if (mpirank == 0){
+        cout << endl;
+        cout << "Integral of det(F) = " << integral << ", min (displacement) = " << mind << ", max (displacement) = " << maxd << "\n" << endl;
+    }
+} // EOM
+
+// ---------------------------------------------------------------
+
+/*
+    This macro evaluates a distributed field X + uh at a list of 3D points
+    by checking which process contains each point.
+
+    chi(ThLoc) defines an indicator function for the local domain:
+        - close to 1 if the point lies inside ThLoc,
+        - close to 0 if the point lies outside it.
+
+    nPts is the number of evaluation points (X, Y, Z).
+
+    Uloc[i]: uh(X_i, Y_i, Z_i) if the point belongs to the local submesh,
+             0 otherwise.
+    mLoc[i]: 1 if the point is found locally,
+             0 otherwise.
+
+    Usum[i] is the sum of the local values found for point i.
+    mSum[i] is the total number of processes that reported containing
+            this point. If the point lies in the halo region, it may be
+            found by two processes; otherwise, it is found by one process.
+
+    Uout[i]: final reconstructed value uh(X_i, Y_i, Z_i).
+*/
+
+macro evalDistributedAtPoints3d(ThLoc, uh, uhB, X, Y, Z) { 
+    func chiLoc = chi(ThLoc);
+    int nPts = X.n; 
+    real[int] Uloc(nPts), Usum(nPts), mLoc(nPts), UlocB(nPts), UsumB(nPts), UoutB(nPts), mSum(nPts), Uout(nPts); 
+    Uloc  = 0.0; Usum  = 0.0; 
+    UlocB = 0.0; UsumB = 0.0; 
+    mLoc  = 0.0; mSum  = 0.0; 
+    
+    for (int i = 0; i < nPts; ++i) { 
+        if (chiLoc(X[i], Y[i], Z[i]) > 0.5) { 
+            Uloc[i]  = uh(X[i], Y[i], Z[i]); 
+            UlocB[i] = uhB(X[i], Y[i], Z[i]); 
+            mLoc[i]  = 1.0; 
+        } 
+    } 
+    
+    mpiAllReduce(Uloc,  Usum, mpiCommWorld, mpiSUM); 
+    mpiAllReduce(UlocB, UsumB, mpiCommWorld, mpiSUM); 
+    mpiAllReduce(mLoc,  mSum,  mpiCommWorld, mpiSUM); 
+
+    for (int i = 0; i < nPts; ++i) { 
+        Uout[i]  = Usum[i]  / (mSum[i] + 1e-16); 
+        UoutB[i] = UsumB[i] / (mSum[i] + 1e-16); 
+        if (mpirank == 0){
+            cout << "X[" << i << "] = " << X[i] + Uout[i] << endl;
+            cout << "Y[" << i << "] = " << Y[i] + UoutB[i] << "\n" << endl;
+        }
+    } 
+
+} // EOM

@@ -1,0 +1,551 @@
+/* 
+      Run this code with : 
+      time ff-mpirun -np 6 Resolution_3d_MPI.edp -wg -case c -bcF g -dim 3 -Inv 0/1  -ffddm_verbosity N \
+                     -ffddm_partitioner 2 -ffddm_overlap 1 
+*/
+
+macro dimension() 3 // EOM
+
+// ---------------------------------------------------------------------
+
+include "param_parallele3d.edp"
+
+// For help, see /usr/local/lib/ff++/4.15/idp for the hpddm source files
+load "hpddm"
+include "ffddm.idp"
+include "macro_ddm.idp"  
+
+include "src/3D_case/Energy.idp"
+include "src/3D_case/PostProcessing.idp"
+include "src/3D_case/Check.idp"
+
+// ---------------------------------------------------------------------
+real t0 = clock();
+
+real tAssembly, tLineSearch, tPost, tNewtonIter, tEn, tCheckNewton, totalTime, tmesh, tPrecompute;
+int failJ = 0, failNan = 0;
+Tick(totalTime);
+
+Tick(tmesh);
+string meshPath = "src/3D_case/Geometries/Meshes/msh/" + meshName + ".msh";
+mesh3 ThGlobal = gmshload3(meshPath);
+
+broadcast(processor(0, mpiCommWorld), ThGlobal); 
+
+ffddmprecond = "ras"; // Restricted Additive Schwarz = ras - Put it before the buildDmesh
+ffddmbuildDmesh(M, ThGlobal, mpiCommWorld);
+
+if (mpirank == 0 && !Inv) {
+      cout << endl;
+      cout << "Global mesh info:" << endl;
+      cout << "number of vertices      = " << MThglob.nv << endl;
+      cout << "number of tetrahedra    = " << MThglob.nt << endl;
+      cout << "number of boundary faces= " << MThglob.nbe << endl;
+      cout << endl;
+      cout << "Local mesh info:" << endl;
+      cout << "number of vertices      = " << MThi.nv << endl;
+      cout << "number of tetrahedra    = " << MThi.nt << endl;
+      cout << endl;
+
+      data << endl;
+      data << "Global mesh info:" << endl;
+      data << "number of vertices      = " << MThglob.nv << endl;
+      data << "number of tetrahedra    = " << MThglob.nt << endl;
+      data << "number of boundary faces= " << MThglob.nbe << endl;
+      data << endl;
+      data << "Local mesh info:" << endl;
+      data << "number of vertices      = " << MThi.nv << endl;
+      data << "number of tetrahedra    = " << MThi.nt << endl;
+      data << endl;
+}
+
+if (!Inv) {
+      {
+            fespace ShLoc(MThi, P0);
+            ShLoc rankF = mpirank;
+            int[int] order = [0];
+            savevtk(res + "/mesh/partition_3d_" + mpirank + ".vtu", MThi, rankF,  dataname="rank", order=order,
+                    bin = false, floatmesh = true, floatsol = true);
+      }
+      mpiBarrier(mpiCommWorld);
+      if (mpirank == 0) writePVTU3D(res + "mesh/", "partition_3d", mpisize, "rank", "Float32")
+}
+
+Tock("Mesh loading and building decomposed mesh", tmesh);
+
+// ----------------------------------------------------------
+// Options for Solver
+
+int[int] lparams(42);
+lparams = 0;
+// Mumps parameters
+lparams[0]  = 1;    // SYM = 0 : matrice non symétrique
+lparams[1]  = 1;    // PAR = 1 : host participe au calcul
+lparams[5]  = 2;    // ICNTL(4) = 2 : verbosité warnings+erreurs (utile pour debug mémoire)
+lparams[8]  = 3;    // ICNTL(7) = 5 : METIS (meilleur fill-in que SCOTCH sur gros problèmes)
+lparams[13] = 300;  // ICNTL(14) = 300 : relaxation mémoire 300%
+lparams[19] = 1;    // ICNTL(22) = 1 : OUT-OF-CORE activé (écriture sur disque)
+
+// ----------------------------------------------------------
+
+Tick(tmesh);
+
+// Distributed FE space
+macro def(u)  [u, u#B, u#C] // EOM
+macro init(u) [u, u, u]   // EOM
+ffddmbuildDfespace(Vh, M, real, def, init, [P1, P1, P1]);
+
+macro defs(u) u // EOM
+macro inits(u) u   // EOM
+ffddmbuildDfespace(Sh, M, real, defs, inits, P0);
+
+if(mpirank == 0 && !Inv) {
+      cout << endl;
+      cout << "Local FE spaces info:" << endl;
+      cout << "Local P1xP1xP1 DOFs number = " << VhVhi.ndof << endl; // Vh.ndof = 3 × nombre de sommets
+      cout << "Local P0 DOFs number       = " << ShVhi.ndof << endl; // 1 degré de liberté par tétraèdre
+
+      data << endl;
+      data << "Local FE spaces info:" << endl;
+      data << "Local P1xP1xP1 DOFs number = " << VhVhi.ndof << endl; 
+      data << "Local P0 DOFs number       = " << ShVhi.ndof << endl;
+
+}
+
+// Test Fct
+
+VhVhi def(un), def(dun), def(vn); 
+[un , unB , unC ] = [0, 0, 0]; // u_n at the n-th iteration
+[dun, dunB, dunC] = [0, 0, 0]; // Delta u_n 
+ 
+// Fibres
+
+ShVhi defs(ax), defs(ay), defs(az), defs(bx), defs(by), defs(bz), defs(n);
+n  = sqrt(x^2 + y^2);
+ax = y / n;   ay = -x / n;    az = 0;
+bx = x / n;   by = y / n;     bz = 0;
+
+if(!Inv) {
+      string Initfiberpath = res + "fiber/a_" + mpirank + ".vtu";
+      savevtk(Initfiberpath, MThi, [ax, ay, az], dataname="a", bin = false, floatmesh = true, floatsol = true);
+      mpiBarrier(mpiCommWorld);
+      if (mpirank == 0) writePVTUVectorCell(res + "fiber/", "a", mpisize, "a", "Float32")
+}
+
+Tock("FE spaces and test functions", tmesh);
+
+// ---------------------------------------------------------------------
+ShVhi defs(C1u), defs(C2u), defs(C3u), defs(C4u), defs(C5u), defs(C6u);
+ShVhi defs(I1u), defs(I2u), defs(I3u), defs(I4u);
+
+// Macro to compute all invariant fields from the current "un".
+// Call this once at the start of each Newton iteration, BEFORE
+// assembling the varf.
+macro PrecomputeInvariants(d)
+	C1u = C1(d);
+	C2u = C2(d);
+	C3u = C3(d);
+	C4u = C4(d);
+	C5u = C5(d);
+	C6u = C6(d);
+	I1u = I1(d);
+	I2u = I2(d);
+	I3u = I3(d);
+	I4u = I4(d, [ax, ay, az]);
+// EOM
+
+// ---------------------------------------------------------------------
+
+// -----------------------------
+// Newton Pb :
+//    D2W = - (Dw - Fext)
+//    => D2W + Dw - Fext = 0
+// -----------------------------
+
+// Macro of Newthon method
+macro Varf(varfNewton, meshName, VhName)
+    varf varfNewton([dun, dunB, dunC], [vn, vnB, vnC]) =
+          int3d(meshName, qforder=3)( ddW3d([un, unB, unC], [dun, dunB, dunC], [vn, vnB, vnC], [ax, ay, az],
+                                 [C1u, C2u, C3u, C4u, C5u, C6u], I1u, I2u, I3u, I4u) )
+        + int3d(meshName, qforder=3)( dW3d([un, unB, unC], [vn, vnB, vnC], [ax, ay, az], 
+                                 [C1u, C2u, C3u, C4u, C5u, C6u], I1u, I2u, I3u, I4u) )
+        - int2d(meshName, 201)(   g * vn )
+        - int2d(meshName, 202)(   g * vn )
+        - int2d(meshName, 203)( - g * vn )
+        - int2d(meshName, 204)( - g * vn ) 
+        + on(1000, dun=0, dunB=0, dunC=0);
+// EOM
+
+// Macros for the energy
+macro WNH(d, msh, di)    ( int3d(msh, qforder=3)( di * WNeoHook(I1u, I3u) ) )  // EOM
+macro WMR(d, msh, di)    ( int3d(msh, qforder=3)( di * WMooneyRivlin(I2u, I3u) ) )  // EOM
+macro WEX(d, msh, di)    ( int3d(msh, qforder=3)( di * WExp(I1u, I3u) ) )               // EOM
+macro WFB(d, msh, di)    ( int3d(msh, qforder=3)( di * WExpFiber(I3u, I4u)) ) // EOM
+macro VOL(d, msh, di)    ( int3d(msh, qforder=3)( di * WQuasiIncompln(I3u) ))      // EOM
+
+macro EXTF(d, msh, di)   (   int2d(msh, 201)(  di * g * d[0] )
+                              + int2d(msh, 202)(  di * g * d[0] )
+                              + int2d(msh, 203)( -di * g * d[0] )
+                              + int2d(msh, 204)( -di * g * d[0] ) )  // EOM
+
+macro ENERGY(d, a, msh, di) ( 
+       nu1 * WNH(d, msh, di)     + nu2 * WMR(d, msh, di)
+      + Cst0 * WEX(d, msh, di)   + Cst2 * WFB(d, msh, di) 
+      + kappa * VOL(d, msh, di)  - EXTF(d, msh, di)
+) // EOM
+
+macro dENERGY(d, dd, a, msh, di) ( int3d(msh)( di * dW3d(d, dd, a, [C1u, C2u, C3u, C4u, C5u, C6u], I1u, I2u, I3u, I4u)  ) 
+                                    - EXTF(dd, msh, di) ) // EOM
+
+// ----------------------------------------------------------
+//  Newton Algo with Goldstein linesearch
+// ----------------------------------------------------------
+
+// Local partition matricies
+VhVhi def(di);
+di[] = VhDk[mpirank]; 
+
+for (int i = 0; i < Nbmax; i++){
+
+      Tick(tNewtonIter);
+
+      if (mpirank == 0 ) cout << "\n--- Newton iteration " << i << " ---" << endl;  
+
+      Tick(tPrecompute);
+      PrecomputeInvariants([un, unB, unC]);
+      Tock("Precompute invariant fields", tPrecompute);
+
+      Tick(tAssembly);
+      ffddmsetupOperator(M, Vh, Varf);
+      Tock("VArf Assembly", tAssembly);
+
+      Tick(tAssembly);
+      real[int] rhsi(VhVhi.ndof);
+      ffddmbuildrhs(M, Varf, rhsi);
+      rhsi *= -1;
+      Tock("Assembly", tAssembly);
+
+      Tick(tmesh); 
+
+      if (Solver == "mumps") {
+            dun[] = Mdirectsolve(rhsi, lparams = lparams);
+      }
+      else if (Solver == "gmres") {
+            real[int] x0i(VhVhi.ndof);
+            x0i = 0.0;
+            ffddmsetupPrecond(M, Varf);
+            ffddmgeneosetup(M, Varf);
+
+            dun[] = MfGMRES(x0i, rhsi, 1e-6, 100, "right");
+            Mwritesummary
+      }
+      else {
+            if (mpirank == 0)
+                  cout << "Unknown Solver = " << Solver << endl;
+            exec("exit 1");
+      }
+
+      if (mpirank == 0) cout << "Solving the linear system = done" << endl;
+      Tock("Linear pb solving took", tmesh);      
+
+      Tick(tEn);
+      real EnLoc  = ENERGY([un , unB , unC], [ax, ay, az], MThi, di);
+      real dEnLoc = dENERGY([un , unB , unC], [dun, dunB, dunC], [ax, ay, az], MThi, di);
+
+      real[int] locs = [EnLoc, dEnLoc];
+      real[int] globs(2);
+      globs = 0.;
+
+      mpiAllReduce(locs, globs, mpiCommWorld, mpiSUM);
+      
+      real En  = globs[0], dEn = globs[1];
+      real gradL2 = sqrt(Vhscalprod(rhsi, rhsi));
+
+      if(!Inv){
+            real W1Loc  = WNH([un , unB , unC], MThi, di);
+            real W2Loc  = WMR([un , unB , unC], MThi, di);
+            real W3Loc  = WEX([un , unB , unC], MThi, di);
+            real W4Loc  = WFB([un , unB , unC], MThi, di);
+            real W5Loc  = VOL([un , unB , unC], MThi, di);
+
+            real[int] Wlocs = [ W1Loc, W2Loc, W3Loc, W4Loc, W5Loc];
+            real[int] Wglobs(5);
+            Wglobs = 0.;
+            
+            mpiAllReduce(Wlocs, Wglobs, mpiCommWorld, mpiSUM);
+
+            if (mpirank == 0) {
+                  cout << "----------------------------------------" << endl;
+                  cout << "The total energy E(un) = " << En << endl;
+                  cout << "Energy parts without physical coefficients" << endl;
+                  cout << "  int W_linear = " << Wglobs[0] << endl;
+                  cout << "  int W_mooney_rivlin = " << Wglobs[1] << endl;
+                  cout << "  int W_exponential = " << Wglobs[2] << endl;
+                  cout << "  int W_fiber = " << Wglobs[3] << endl;
+                  cout << "  int W_volumetric = " << Wglobs[4] << endl;
+                  cout << " ||grad E|| = " << gradL2 << " & dEn(un)[dun] = " << dEn << endl;
+                  cout << "----------------------------------------" << endl;
+            }
+
+            if (mpirank == 0) en << i << " " << En 
+                                << " " << Wglobs[0] 
+                                << " " << Wglobs[1] 
+                                << " " << Wglobs[2]
+                                << " " << Wglobs[3]
+                                << " " << Wglobs[4]
+                                << " " << dEn << endl;
+      }
+      else {
+            if (mpirank == 0 ) {
+                  en << i << " " << En << " " << dEn << endl;
+                  cout << "----------------------------------------" << endl;
+                  cout << "The total energy E(un) = " << En << endl;
+                  cout << " ||grad E||_L2 = " << gradL2 << " & dEn(un)[dun] = " << dEn << endl;
+                  cout << "----------------------------------------" << endl;
+            }
+      }
+
+      Tock("Energy assembly", tEn);
+
+      // ----------------------------------------------------------
+      // Check the newthon result
+      // if(Check) CheckNewtonIdentity(MThi, un, unB, unC, dun, dunB, dunC, ax, ay, az, di, dEn, tol, tCheckNewton);
+
+      // -----------------------------------------------------------
+
+      if (dEn >= 0) {
+            if (mpirank == 0) {
+              cout << "\n Newton direction is not descent: dE[dun] = " << dEn << endl;
+              cout << "-------------------------Switching to fallback descent direction--------------------- \n" << endl;
+            }
+
+            dun[] = rhsi; 
+            dEn = 0;
+            real dEnLocFallback = dENERGY([un, unB, unC], 
+                                          [dun, dunB, dunC], 
+                                          [ax, ay, az], MThi, di);
+            mpiAllReduce(dEnLocFallback, dEn, mpiCommWorld, mpiSUM);
+
+            if (mpirank == 0) {
+              cout << "Fallback dE[dun] = " << dEn << endl;
+            }
+
+            if (dEn >= 0) {
+                  if (mpirank == 0) {
+                    cout << "Fallback is also not descent. Stop." << endl;
+                  }
+                  break;
+            }
+      }
+
+      Tick(tLineSearch);
+
+      // -------------------------------------------------
+      // Goldstein linesearch
+ 
+      real alphaT = alpha;
+      real Ent = 0.0, Jmin = 0.0, Jmax = 0.0;
+
+      bool accepted = false;
+      VhVhi def(ut);
+      ShVhi J;
+      int lsIt = 0;
+
+      while (alphaT >= alphaMin && lsIt < nbmaxls) {
+            lsIt++;
+
+            [ut, utB, utC] = [un, unB, unC] + alphaT * [dun, dunB, dunC];
+            PrecomputeInvariants([ut, utB, utC]);
+
+            // ------------------------------------------------
+            J = DetMove3D(ut, utB, utC, 1.0);
+            
+            real JminLoc = J[].min, JmaxLoc = J[].max;
+            mpiAllReduce(JminLoc, Jmin, mpiCommWorld, mpiMIN);
+            mpiAllReduce(JmaxLoc, Jmax, mpiCommWorld, mpiMAX);
+
+            if (Jmin <= Jtol) {
+                  if (mpirank == 0) {
+                    cout << "Reduce alpha = " << alphaT << " Jmin = " << Jmin << endl;
+                    cout << "Jmin = " << Jmin << " & Jmax = " << Jmax << endl;
+                  }
+                  failJ++;
+                  alphaT *= 0.5;
+                  continue;
+            }
+
+            // ------------------------------------------------
+            real EnLoct = ENERGY([ut, utB, utC], [ax, ay, az], MThi, di);
+            mpiAllReduce(EnLoct, Ent, mpiCommWorld, mpiSUM);
+
+            if (Ent != Ent || abs(Ent) > 1e14) {  // NaN ou trop grand
+                  failNan++;
+                  alphaT *= 0.5;
+                  continue;
+            }
+
+            bool armijo   = (Ent <= En + ArmijoCst1 * alphaT * dEn);
+            bool goldstein= (Ent >= En + ArmijoCst2 * alphaT * dEn);
+            
+            if (!armijo) {
+                // Step is too large -> decrease it
+                alphaT *= 0.5;
+            } else if (!goldstein && alphaT < alphaMax) {
+                // Step is too small -> increase it
+                alphaT *= 2.;
+            } else {
+                // Both conditions are satisfied
+                accepted = true;
+                break;
+            }
+      }
+
+      if (!accepted) {
+            cout << "[" << mpirank << "] Line-search failed: alphaT = " << alphaT << " Stoped at iteration " << i <<  endl;
+            cout << "LS Iteration = " << lsIt << endl; 
+            cout << "--------------------------------------------------------------" << endl;
+            break;
+      }
+      Tock("Line search", tLineSearch);
+
+
+      // -------- accepted step --------
+      if (mpirank == 0 ) {
+            cout << "Line-search accepted at ls iteration " << lsIt << endl;
+            cout << "Accepted alpha = " << alphaT << endl;
+
+            cout << "New Energy = " << Ent << endl;
+
+            cout << "min(J) = " << Jmin << "   max(J) = " << Jmax << endl;
+            Jac << i << " " << Jmin << " " << Jmax << endl;
+      }
+
+      // ------------------------------------------------
+      // update
+      mpiBarrier(mpiCommWorld);
+      [un, unB, unC] = [ut, utB, utC];
+
+      En = Ent;
+      alpha = min(alphaMax, 1.25 * alphaT);
+
+      // ------------------------------------------------
+      // stopping criteria
+
+      Tick(tCheckNewton);
+      PrecomputeInvariants([un, unB, unC]);
+      ffddmbuildrhs(M, Varf, rhsi);
+      gradL2 = sqrt(Vhscalprod(rhsi, rhsi));
+      if (mpirank == 0) LGe << i << " " << gradL2 << " " << dEn << endl;
+
+      if (gradL2 < tol) {
+            cout << "[" << mpirank << "] gradL2 = " << gradL2 << " < " << tol << " Converged at iteration " << i << endl;
+            cout << "------------------------- gradL2 < tol -------------------------------------" << endl;
+            break;
+      }
+
+      Tock("Stopping criteria for Newton", tCheckNewton);
+
+      Tock("FULL Newton iteration", tNewtonIter);
+
+}
+
+mpiBarrier(mpiCommWorld);
+Tick(tPost);
+
+// ---------------------------------------------------------------
+// Post-processing
+// ---------------------------------------------------------------
+
+if (mpirank == 0) {
+      if (failJ > 0 || failNan > 0) cout << "!! WARNING !! failJ = " << failJ << ", failNan = " << failNan;
+}
+
+if (!Inv){
+
+      mesh3 Th0i = MThi;
+
+      fespace Sh0(Th0i, P1);
+
+      Sh0 Fax0 = ax + dx(un)  * ax + dy(un)  * ay + dz(un)  * az;
+      Sh0 Fay0 = ay + dx(unB) * ax + dy(unB) * ay + dz(unB) * az;
+      Sh0 Faz0 = az + dx(unC) * ax + dy(unC) * ay + dz(unC) * az;
+
+      Sh0 normFa = sqrt(Fax0^2 + Fay0^2 + Faz0^2);
+      Fax0 = Fax0 / normFa;
+      Fay0 = Fay0 / normFa;
+      Faz0 = Faz0 / normFa;
+
+      cout << "Before movemesh, rank = " << mpirank << endl;
+      cout << "Fax0 min/max = " << Fax0[].min << " " << Fax0[].max << endl;
+      cout << "Fay0 min/max = " << Fay0[].min << " " << Fay0[].max << endl;
+      cout << "Faz0 min/max = " << Faz0[].min << " " << Faz0[].max << endl;
+
+      real reached;
+      mesh3 ThMoved = Th0i;
+      MoveMeshProgressif3dMPI(Th0i, ThMoved, un, unB, unC, reached);
+
+      ShVhi tag;
+      tag[] = mpirank;
+      plotMPI(ThMoved, tag, P1, def1, real, cmm = "Global moved domain");
+      savevtk(res + "mesh/ThMoved_" + mpirank + ".vtu", ThMoved, tag, dataname = "rank",
+              bin = false, floatmesh = true, floatsol = true);
+      mpiBarrier(mpiCommWorld);
+      if (mpirank == 0) writePVTU3D(res + "mesh/", "ThMoved", mpisize, "rank", "Float32")
+
+      fespace ShMoved(ThMoved, P1);
+
+      ShMoved Fax, Fay, Faz;
+
+      Fax[] = Fax0[];
+      Fay[] = Fay0[];
+      Faz[] = Faz0[];
+
+      cout << "After movemesh, rank = " << mpirank << endl;
+      cout << "Fax min/max = " << Fax[].min << " " << Fax[].max << endl;
+      cout << "Fay min/max = " << Fay[].min << " " << Fay[].max << endl;
+      cout << "Faz min/max = " << Faz[].min << " " << Faz[].max << endl;
+
+      data << "After movemesh, rank = " << mpirank << endl;
+      data << "Fax min/max = " << Fax[].min << " " << Fax[].max << endl;
+      data << "Fay min/max = " << Fay[].min << " " << Fay[].max << endl;
+      data << "Faz min/max = " << Faz[].min << " " << Faz[].max << endl;
+      data << endl;
+
+      string fiberpath = res + "fiber/Fa_final_" + mpirank + ".vtu";
+      savevtk(fiberpath, ThMoved, [Fax, Fay, Faz], dataname="Fa", bin = false, floatmesh = true, floatsol = true);
+
+      mpiBarrier(mpiCommWorld);
+      if (mpirank == 0) writePVTUVectorCell(res + "fiber/", "Fa_final", mpisize, "Fa", "Float32")
+      
+      PrintInfo(MThi, un, unB, unC);
+}
+
+
+// --------- Used for inverse Pb ------------------------------
+real[int] X(12), Y(12), Z(12);
+
+X = 5.0 * [
+    -0.925, -0.92, -0.788, -0.651, -0.465, -0.24,
+     0.24,   0.465, 0.651,  0.788,  0.92,  0.925
+];
+Y = 5.0 * [
+    -0.05,   -0.2, -0.455, -0.651, -0.805, -0.89, 
+    -0.89, -0.805, -0.651, -0.455, -0.2, -0.05
+];
+
+Z = (3/14) * [
+     1.0, 2.09, 3.18, 4.27, 5.36, 6.45,
+    7.55, 8.64, 9.73, 10.82, 11.91, 13.0
+];
+
+if (mpirank==0){
+      cout << "Initial X-coordinates are : " << X << endl;
+      cout << "Initial Y-coordinates are : " << Y << endl;
+}
+
+evalDistributedAtPoints3d(MThi, un, unB, X, Y, Z);
+
+Tock("Post-processing", tPost);
+
+Tock("Total time", totalTime);
+

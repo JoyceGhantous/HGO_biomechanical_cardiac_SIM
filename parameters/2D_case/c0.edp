@@ -1,0 +1,9 @@
+/*
+    The first academic test case
+*/
+nu1 = 1.;     nu2 = 1.;
+C0 = 10.;     C1 = 0.5;
+C2 = 15.;     C3 = 0.9;
+kappa = 800.; 
+if (!Inv) g = 1;
+meshName = "LR_gmsh_6";

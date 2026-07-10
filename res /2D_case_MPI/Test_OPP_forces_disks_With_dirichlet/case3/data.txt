@@ -1,0 +1,75 @@
+
+[3] gradL2 = 5.90271e-10 < 1e-07 Converged at iteration 17
+------------------------- gradL2 < tol -------------------------------------
+
+After movemesh, rank = 3
+Fax min/max = -1 -0.975044
+Fay min/max = -0.20537 0.222012
+F right = 1.6
+bcF left  = -1.6
+
+HGO material parameters
+-----------------------
+nu1   = 0
+C0    = 3
+C1    = 2
+C2    = 3
+C3    = 2
+kappa = 70
+
+Quasi-incompressibility option
+------------------------------
+optQuasiIncomp = 0
+
+Line search parameters
+----------------------
+alphaMax   = 1
+alphaMin   = 1e-06
+alpha      = 0.1
+nbmaxls    = 50
+ArmijoCst1 = 0.0001
+ArmijoCst2 = 0.9
+
+Newton parameters
+-----------------
+Nbmax = 500
+tol   = 1e-07
+Jtol  = 1e-07
+
+Global mesh info:
+number of vertices     = 4497
+number of 2D triangles = 8551
+number of boundary faces= 445
+
+Local mesh info:
+number of vertices       = 823
+number of 2D triangles   = 1534
+
+Local FE spaces info:
+Local P1xP1 DOFs number = 1646
+Local P0 DOFs number    = 1534
+
+[0] gradL2 = 5.90271e-10 < 1e-07 Converged at iteration 17
+------------------------- gradL2 < tol -------------------------------------
+
+After movemesh: 
+Final step = 1
+Final area = 19.8482, Area variation (%) = 1.063
+
+After movemesh, rank = 0
+Fax min/max = -1 -0.976918
+Fay min/max = -0.213617 0.206867
+Integral of det(F) = 19.8482, min (displacement) = -3.1297, max (displacement) = 2.29116
+
+phi[0] = -6.62052
+phi[1] = -6.16622
+phi[2] = -4.70083
+phi[3] = -3.54842
+phi[4] = -2.37519
+phi[5] = -1.18826
+phi[6] = 1.18907
+phi[7] = 2.37597
+phi[8] = 3.54892
+phi[9] = 4.70121
+phi[10] = 6.16584
+phi[11] = 6.62132

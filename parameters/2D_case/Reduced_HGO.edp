@@ -1,7 +1,14 @@
-nu1 = 1.;
+/*
+    These values are in Pa
+    They are computed from values obtained from the IHU Lyric that are in kPas
+*/
+
+nu1 = 0.;
+nu2 = 0.;
 C0 = 1803.99;
 C1 = 9.242;
 C2 = 580.23;
 C3 = 15.972;
 kappa = 1000000.; 
 caseId = 2006;
+

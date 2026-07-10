@@ -1,0 +1,12 @@
+/*
+    This is an academic test case where I tested the impact of changing each parameter on the final deformation
+*/
+nu1 = nu2 = 0.;
+C0 = 3; 
+C1 = 2;
+C2 = C0;
+C3 = 2;
+kappa = 70;
+if (!Inv) g = 1.6;	
+alpha = 0.1;
+meshName = "LR_gmsh_6_bigger";

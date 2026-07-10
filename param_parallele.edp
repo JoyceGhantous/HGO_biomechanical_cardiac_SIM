@@ -1,65 +1,206 @@
 load "gmsh"
+load "msh3"
 load "iovtk"
 load "Element_P3"
 include "getARGV.idp"
 
-verbosity = 0;
+// in ffddm, verbosity is already defined and set to 0 by default
+real g     = getARGV("-bcF", 2.0);
+int  dim   = getARGV("-dim", 2);
+int caseId = getARGV("-case", 2);
 
+// Check the Newton identity at each iteration -Check 1 turns it on
+bool Check = getARGV("-Check", 0);
+
+// optimization parameters for the line search
+real alphaMax = getARGV("-alphaMax", 1.0);
+real alphaMin = getARGV("-alphaMin", 1e-6);
+real alpha    = getARGV("-alpha", 0.5);
+
+int nbmaxls     = getARGV("-nbmaxls", 50);
+real ArmijoCst1 = getARGV("-ArmijoCst1", 1e-4);
+real ArmijoCst2 = getARGV("-ArmijoCst2", 0.9);
+
+// Total number of iterations and tolerances
+int Nbmax     = getARGV("-Nbmax", 500);
+real tol      = getARGV("-tol", 1e-7);
+real Jtol     = getARGV("-Jtol", 1e-7); 
+
+// Inv = 0 : no inv problem -> more quantaties compouted and saved
+// Inv = 1 : solve the inverse problem -> only necessary quantaties computed
+bool Inv      = getARGV("-Inv", 0);
+string testId = "horizontal_forces_disks_With_dirichlet";
+
+// ----------------------------------------------------------------
+// options: 0 = quasi-incompressibility with ln
+//          1 = quasi-incompressibility without ln
 real optQuasiIncomp = 0.;
-real nu1, C0, C1, C2, C3, kappa;
-int caseId;
 
-if (case == "0"){
-    nu1 = 1.;
-    C0 = 10.;
-    C1 = 0.5;
-    C2 = 15.;
-    C3 = 0.9;
-    kappa = 800.; 
-    caseId = 0;
-}
-if (case == "8"){ include "parameters/2D_case/test8.edp" }
+// Parameters for the HGO model
+// nu1, nu2, C0, C1, C2, C3 and kappa are used in EnergyDef.edp
+// There is not a nu2 in the 2D case
+real nu1, nu2, C0, C1, C2, C3, kappa;
+string meshName;
+
+// the following test cases have nu1 /= 0
+if (caseId == 0){ include "parameters/2D_case/c0.edp" }
+if (caseId == 1){ include "parameters/2D_case/c1.edp" }
+
+// Test case with nu1 = 1 and values from HO in N\cm^2
+if (caseId == 2){ include "parameters/2D_case/c2.edp" }
+
+// the following test cases have nu1 = 0
+if (caseId == 3){ include "parameters/2D_case/c3.edp" }
+
+// Values from guicco an HO in N\cm^2
+if (caseId == 4){ include "parameters/2D_case/c4.edp" }
+
+// Values from HO in N\cm^2 with nu1 =1 
+if (caseId == 5){ include "parameters/2D_case/c5.edp" }
+
+// ----------------------------------------------------------------
+
+// basic path
+string mode = "Direct";
+if (Inv)
+    mode = "Inverse";
+
+string res = "res/"
+           + dim + "D_case_MPI/"
+           + "Test_" + testId + "/"
+           + mode + "/"
+           + "case_" + caseId + "/";
 
 
-real g = 1.;
+if (mpirank == 0) exec("mkdir -p " + res);
+ofstream data(res + "data.txt");
 
-real alpha = 0.1, alphaMax = 1., alphaMin = 0.0001;
-int  Nbmax = 500;
-real tol = 1e-7, Jtol = 1e-6;
-int  Nsteps = 100;
-
-string res = "res/2D_case_MPI/Test_" + testId + "/";
-
-// ---- Uniquement le proc 0 crée les dossiers et fichiers ----
 if (mpirank == 0) {
+
+    exec("mkdir -p " + res);
     exec("mkdir -p " + res + "en");
     exec("mkdir -p " + res + "grad");
     exec("mkdir -p " + res + "vol");
     exec("mkdir -p " + res + "jac");
     exec("mkdir -p " + res + "mesh");
-    exec("mkdir -p " + res + "data");
     exec("mkdir -p " + res + "fiber");
 
-    cout << "Test case " + caseId + " : \n " << endl;
-    cout << "nu1 = " << nu1 << endl;
-    cout << "C0 = " << C0 << ", C1 = " << C1 << endl;
-    cout << "C2 = " << C2 << ", C3 = " << C3 << endl;
-    cout << "kappa = " << kappa << " \n " << endl;
+    data << "Test case " << endl;
+    data << "==================" << endl;
+    data << endl;
 
-    cout << "Border conditions : g = "<< g << "-> Right & g = "<<  -g << "-> Left " << endl;
-    cout << "No body force \n" << endl;
-    cout << "Optimization parameters for the Newton method : \n" << endl;
-    cout << "Jtol     = " << Jtol     << endl;
-    cout << "alpha    = " << alpha    << endl;
-    cout << "alphaMax = " << alphaMax << endl;
-    cout << "alphaMin = " << alphaMin << endl;
-    cout << "Nbmax    = " << Nbmax    << endl;
-    cout << "tol      = " << tol      << endl;
-    cout << "For movemesh : Nsteps = " << Nsteps <<endl;
+    data << "testId   = " << testId   << endl;
+    data << "caseId   = " << caseId   << endl;
+    data << "dim      = " << dim      << endl;
+    data << "mode     = " << mode     << endl;
+    data << "Inv      = " << Inv      << endl;
+    data << "Check    = " << Check    << endl;
+    if (dim == 2) data << "meshName = " << meshName << endl;
+
+    data << endl;
+    data << "Boundary conditions" << endl;
+    data << "-------------------" << endl;
+    data << "bcF right = " <<  g  << endl;
+    data << "bcF left  = " << -g << endl;
+
+    data << endl;
+    data << "HGO material parameters" << endl;
+    data << "-----------------------" << endl;
+    data << "nu1   = " << nu1 << endl;
+
+    if (dim == 3)
+        data << "nu2   = " << nu2 << endl;
+
+    data << "C0    = " << C0    << endl;
+    data << "C1    = " << C1    << endl;
+    data << "C2    = " << C2    << endl;
+    data << "C3    = " << C3    << endl;
+    data << "kappa = " << kappa << endl;
+
+    data << endl;
+    data << "Quasi-incompressibility option" << endl;
+    data << "------------------------------" << endl;
+    data << "optQuasiIncomp = " << optQuasiIncomp << endl;
+
+    data << endl;
+    data << "Line search parameters" << endl;
+    data << "----------------------" << endl;
+    data << "alphaMax   = " << alphaMax   << endl;
+    data << "alphaMin   = " << alphaMin   << endl;
+    data << "alpha      = " << alpha      << endl;
+    data << "nbmaxls    = " << nbmaxls    << endl;
+    data << "ArmijoCst1 = " << ArmijoCst1 << endl;
+    data << "ArmijoCst2 = " << ArmijoCst2 << endl;
+
+    data << endl;
+    data << "Newton parameters" << endl;
+    data << "-----------------" << endl;
+    data << "Nbmax = " << Nbmax << endl;
+    data << "tol   = " << tol   << endl;
+    data << "Jtol  = " << Jtol  << endl;
+
+    cout << "Test case " << endl;
+    cout << "==================" << endl;
+    cout << endl;
+
+    cout << "testId   = " << testId   << endl;
+    cout << "caseId   = " << caseId   << endl;
+    cout << "dim      = " << dim      << endl;
+    cout << "mode     = " << mode     << endl;
+    cout << "Inv      = " << Inv      << endl;
+    cout << "Check    = " << Check    << endl;
+    if (dim == 2) cout << "meshName = " << meshName << endl;
+
+    cout << endl;
+    cout << "Boundary conditions" << endl;
+    cout << "-------------------" << endl;
+    cout << "bcF right = " <<  g  << endl;
+    cout << "bcF left  = " << -g << endl;
+
+    cout << endl;
+    cout << "HGO material parameters" << endl;
+    cout << "-----------------------" << endl;
+    cout << "nu1   = " << nu1 << endl;
+
+    if (dim == 3) cout << "nu2   = " << nu2 << endl;
+
+    cout << "C0    = " << C0    << endl;
+    cout << "C1    = " << C1    << endl;
+    cout << "C2    = " << C2    << endl;
+    cout << "C3    = " << C3    << endl;
+    cout << "kappa = " << kappa << endl;
+
+    cout << endl;
+    cout << "Quasi-incompressibility option" << endl;
+    cout << "------------------------------" << endl;
+    cout << "optQuasiIncomp = " << optQuasiIncomp << endl;
+
+    cout << endl;
+    cout << "Line search parameters" << endl;
+    cout << "----------------------" << endl;
+    cout << "alphaMax   = " << alphaMax   << endl;
+    cout << "alphaMin   = " << alphaMin   << endl;
+    cout << "alpha      = " << alpha      << endl;
+    cout << "nbmaxls    = " << nbmaxls    << endl;
+    cout << "ArmijoCst1 = " << ArmijoCst1 << endl;
+    cout << "ArmijoCst2 = " << ArmijoCst2 << endl;
+
+    cout << endl;
+    cout << "Newton parameters" << endl;
+    cout << "-----------------" << endl;
+    cout << "Nbmax = " << Nbmax << endl;
+    cout << "tol   = " << tol   << endl;
+    cout << "Jtol  = " << Jtol  << endl;
+
+    cout << endl;
+    cout << "Results folder:" << endl;
+    cout << res << endl;
+    cout << endl;
 }
-// Les ofstream aussi : déclarés seulement sur proc 0
-// (on les utilise ensuite avec "if (mpirank==0) en << ...")
-ofstream en  (res + "en/energy"         + caseId + ".txt");
-ofstream LGe (res + "grad/L2Gradenergy" + caseId + ".txt");
-ofstream vol (res + "vol/volume"        + caseId + ".txt");
-ofstream Jac (res + "jac/jacobian"      + caseId + ".txt");
+
+mpiBarrier(mpiCommWorld);
+
+ofstream en  (res + "en/energy"         + caseId + "_bcF" + g + ".txt");
+ofstream LGe (res + "grad/L2Gradenergy" + caseId + "_bcF" + g + ".txt");
+ofstream vol (res + "vol/volume"        + caseId + "_bcF" + g + ".txt");
+ofstream Jac (res + "jac/jacobian"      + caseId + "_bcF" + g + ".txt");

@@ -1,0 +1,179 @@
+Test case 
+==================
+
+testId   = horizontal_forces_disks_With_dirichlet
+caseId   = 10
+dim      = 3
+mode     = Direct
+Inv      = 0
+Check    = 0
+Solver   = mumps
+
+Boundary conditions
+-------------------
+bcF right = 2
+bcF left  = -2
+
+HGO material parameters
+-----------------------
+nu1   = 0.1
+nu2   = 0.1
+Cst0    = 10
+Cst1    = 0.5
+Cst2    = 10
+Cst3    = 0.9
+kappa = 40
+------------------------------
+
+Line search parameters
+----------------------
+alphaMax   = 1
+alphaMin   = 1e-06
+alpha      = 0.5
+nbmaxls    = 50
+ArmijoCst1 = 0.0001
+ArmijoCst2 = 0.9
+
+Newton parameters
+-----------------
+Nbmax = 500
+tol   = 1e-07
+Jtol  = 1e-07
+
+Global mesh info:
+number of vertices      = 23102
+number of tetrahedra    = 111576
+number of boundary faces= 20796
+
+Local mesh info:
+number of vertices      = 4433
+number of tetrahedra    = 19979
+
+
+Local FE spaces info:
+Local P1xP1xP1 DOFs number = 13299
+Local P0 DOFs number       = 19979
+
+
+[3] gradL2 = 3.47225e-08 < 1e-07 Converged at iteration 43
+------------------------- gradL2 < tol -------------------------------------
+[4] gradL2 = 3.47225e-08 < 1e-07 Converged at iteration 43
+------------------------- gradL2 < tol -------------------------------------
+[5] gradL2 = 3.47225e-08 < 1e-07 Converged at iteration 43
+------------------------- gradL2 < tol -------------------------------------
+[0] gradL2 = 3.47225e-08 < 1e-07 Converged at iteration 43
+------------------------- gradL2 < tol -------------------------------------
+[1] gradL2 = 3.47225e-08 < 1e-07 Converged at iteration 43
+------------------------- gradL2 < tol -------------------------------------
+[2] gradL2 = 3.47225e-08 < 1e-07 Converged at iteration 43
+------------------------- gradL2 < tol -------------------------------------
+Before movemesh, rank = 0
+Fax0 min/max = -0.99773 -0.254224
+Fay0 min/max = -0.966053 -0.0521722
+Faz0 min/max = -0.2713 0.140064
+Before movemesh, rank = 3
+Fax0 min/max = -0.998719 -0.254224
+Fay0 min/max = -0.966266 -0.0327674
+Faz0 min/max = -0.19783 0.161982
+Before movemesh, rank = 4
+Fax0 min/max = -0.999208 -0.228445
+Fay0 min/max = 0.0293226 0.973257
+Faz0 min/max = -0.205834 0.22614
+Before movemesh, rank = 1
+Fax0 min/max = -0.999672 -0.251654
+Fay0 min/max = 0.0164107 0.966943
+Faz0 min/max = -0.176289 0.269859
+Before movemesh, rank = 5
+Fax0 min/max = -0.999999 -0.933057
+Fay0 min/max = -0.260451 0.24576
+Faz0 min/max = -0.30277 0.316102
+Before movemesh, rank = 2
+Fax0 min/max = -0.999999 -0.915459
+Fay0 min/max = -0.297206 0.219778
+Faz0 min/max = -0.288779 0.302156
+Iteration 0: Volume0 = 344.408
+Initial step = 0
+
+ Iteration = 1 ; Step = 0.2 ; min(detJ) = 0.916743 ; volume = 336.762 ; Volume variation (%) = -2.22007
+
+ Iteration = 2 ; Step = 0.4 ; min(detJ) = 0.871972 ; volume = 333.475 ; Volume variation (%) = -3.17437
+
+ Iteration = 3 ; Step = 0.6 ; min(detJ) = 0.859426 ; volume = 334.497 ; Volume variation (%) = -2.8778
+
+ Iteration = 4 ; Step = 0.8 ; min(detJ) = 0.864252 ; volume = 339.775 ; Volume variation (%) = -1.34526
+
+ Iteration = 5 ; Step = 1 ; min(detJ) = 0.87815 ; volume = 349.258 ; Volume variation (%) = 1.40835
+After movemesh, rank = 5
+Fax min/max = -0.999999 -0.933057
+Fay min/max = -0.260451 0.24576
+Faz min/max = -0.30277 0.316102
+After movemesh, rank = 2
+Fax min/max = -0.999999 -0.915459
+Fay min/max = -0.297206 0.219778
+Faz min/max = -0.288779 0.302156
+After movemesh, rank = 3
+Fax min/max = -0.998719 -0.254224
+Fay min/max = -0.966266 -0.0327674
+Faz min/max = -0.19783 0.161982
+After movemesh, rank = 4
+Fax min/max = -0.999208 -0.228445
+Fay min/max = 0.0293226 0.973257
+Faz min/max = -0.205834 0.22614
+After movemesh, rank = 0
+Fax min/max = -0.99773 -0.254224
+Fay min/max = -0.966053 -0.0521722
+Faz min/max = -0.2713 0.140064
+After movemesh, rank = 1
+Fax min/max = -0.999672 -0.251654
+Fay min/max = 0.0164107 0.966943
+Faz min/max = -0.176289 0.269859
+
+Integral of det(F) = 349.258, min (displacement) = -2.56189, max (displacement) = 1.99351
+
+Initial X-coordinates are : 12
+        -4.625  -4.6    -3.94   -3.255  -2.325
+        -1.2    1.2     2.325   3.255   3.94
+        4.6     4.625
+Initial Y-coordinates are : 12
+        -0.25    -1     -2.275  -3.255  -4.025
+        -4.45   -4.45   -4.025  -3.255  -2.275
+         -1     -0.25
+X[0] = -6.22275
+Y[0] = -2.51091
+
+X[1] = -5.82076
+Y[1] = -3.12783
+
+X[2] = -4.52229
+Y[2] = -3.78119
+
+X[3] = -3.44808
+Y[3] = -4.22241
+
+X[4] = -2.32021
+Y[4] = -4.51258
+
+X[5] = -1.15268
+Y[5] = -4.53545
+
+X[6] = 1.14919
+Y[6] = -4.53417
+
+X[7] = 2.32121
+Y[7] = -4.49696
+
+X[8] = 3.44639
+Y[8] = -4.22067
+
+X[9] = 4.52241
+Y[9] = -3.78183
+
+X[10] = 5.82246
+Y[10] = -3.13606
+
+X[11] = 6.21587
+Y[11] = -2.50991
+
+[TIME] Post-processing = 18.1473 s
+[TIME] Total time = 17263.7 s 
+4 h 47 min 43 s

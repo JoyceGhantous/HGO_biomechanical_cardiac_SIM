@@ -1,0 +1,92 @@
+// ----------------------------------------------------
+// Check Newton identity: dE[dun] + H[dun,dun] = 0
+// ----------------------------------------------------
+macro CheckNewtonIdentity(MThi, un, unB, dun, dunB, ax, ay, di, dEn, tol, tCheckNewton) {
+    Tick(tCheckNewton);
+
+    real HddLoc = int2d(MThi)(
+        di * ddW2d([un, unB], [dun, dunB], [dun, dunB], [ax, ay])
+    );
+
+    real Hdd = 0.0;
+    mpiAllReduce(HddLoc, Hdd, mpiCommWorld, mpiSUM);
+
+    if (mpirank == 0) {
+        if (abs(dEn + Hdd) > tol) {
+            cout << "Newton identity not verified:" << endl;
+            cout << "  dE[dun]       = " << dEn << endl;
+            cout << "  H[dun,dun]    = " << Hdd << endl;
+            cout << "  dE[dun]+Hdd   = " << dEn + Hdd << endl;
+        }
+    }
+
+    Tock("Check Newton identity", tCheckNewton);
+} // EOM 
+
+
+// ----------------------------------------------------
+// Time measurement macros 
+// ----------------------------------------------------
+
+macro Tick(t) 
+    mpiBarrier(mpiCommWorld); 
+    t = clock(); //
+
+macro Tock(label,t) 
+    mpiBarrier(mpiCommWorld); 
+    if (mpirank == 0) 
+        cout << "[TIME] " << label << " = " << clock() - t << " s" << endl; //
+
+
+macro writePVTU2D(outdir, basename, nproc, fieldname, vtkType)
+{
+    ofstream fpvtu(outdir + basename + ".pvtu");
+
+    fpvtu << "<?xml version=\"1.0\"?>\n";
+    fpvtu << "<VTKFile type=\"PUnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n";
+    fpvtu << "  <PUnstructuredGrid GhostLevel=\"0\">\n";
+
+    fpvtu << "    <PCellData Scalars=\"" << fieldname << "\">\n";
+    fpvtu << "      <PDataArray type=\"" << vtkType << "\" Name=\"" << fieldname << "\" NumberOfComponents=\"1\"/>\n";
+    fpvtu << "    </PCellData>\n";
+
+    fpvtu << "    <PPoints>\n";
+    fpvtu << "      <PDataArray type=\"" << vtkType << "\" NumberOfComponents=\"3\"/>\n";
+    fpvtu << "    </PPoints>\n";
+
+    for (int p = 0; p < nproc; ++p) {
+        fpvtu << "    <Piece Source=\"" << basename << "_" << p << ".vtu\"/>\n";
+    }
+
+    fpvtu << "  </PUnstructuredGrid>\n";
+    fpvtu << "</VTKFile>\n";
+} // EOM
+
+macro writePVTUVector2DCell(outdir, basename, nproc, fieldname, vtkType)
+{
+    ofstream fpvtu(outdir + basename + ".pvtu");
+
+    fpvtu << "<?xml version=\"1.0\"?>\n";
+    fpvtu << "<VTKFile type=\"PUnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n";
+    fpvtu << "  <PUnstructuredGrid GhostLevel=\"0\">\n";
+
+    fpvtu << "    <PCellData Vectors=\"" << fieldname << "\">\n";
+    fpvtu << "      <PDataArray type=\"" << vtkType
+          << "\" Name=\"" << fieldname
+          << "\" NumberOfComponents=\"3\"/>\n";
+    fpvtu << "    </PCellData>\n";
+
+    fpvtu << "    <PPoints>\n";
+    fpvtu << "      <PDataArray type=\"" << vtkType
+          << "\" NumberOfComponents=\"3\"/>\n";
+    fpvtu << "    </PPoints>\n";
+
+    for (int p = 0; p < nproc; ++p) {
+        fpvtu << "    <Piece Source=\"" << basename << "_" << p << ".vtu\"/>\n";
+    }
+
+    fpvtu << "  </PUnstructuredGrid>\n";
+    fpvtu << "</VTKFile>\n";
+
+    cout << "PVTU vector CellData written: " << outdir + basename + ".pvtu" << endl;
+} // EOM

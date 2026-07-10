@@ -1,0 +1,9 @@
+/*
+    Academic test case with similar values as the IHU parameters
+*/
+nu1 = 1.;     nu2 = 1.;
+C0 = 180.;     C1 = 2;
+C2 = 58.;     C3 = 4;
+kappa = 8000.; 
+if (!Inv) g = 200;
+meshName = "LR_gmsh_6_bigger";

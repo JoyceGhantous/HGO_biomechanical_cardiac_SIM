@@ -1,0 +1,248 @@
+load "gmsh"
+load "msh3"
+load "iovtk"
+load "Element_P3"
+include "getARGV.idp"
+
+// in ffddm, verbosity is already defined and set to 0 by default
+real g     = getARGV("-bcF", 1.0);
+int  dim   = getARGV("-dim", 3);
+real caseId = getARGV("-case", 10);
+
+// Check the Newton identity at each iteration -Check 1 turns it on
+bool Check = getARGV("-Check", 0);
+
+// optimization parameters for the line search
+real alphaMax = getARGV("-alphaMax", 1.0);
+real alphaMin = getARGV("-alphaMin", 1e-6);
+real alpha    = getARGV("-alpha", 0.5);
+
+int nbmaxls     = getARGV("-nbmaxls", 50);
+real ArmijoCst1 = getARGV("-ArmijoCst1", 1e-4);
+real ArmijoCst2 = getARGV("-ArmijoCst2", 0.9);
+
+// Total number of iterations and tolerances
+int Nbmax     = getARGV("-Nbmax", 500);
+real tol      = getARGV("-tol", 1e-7);
+real Jtol     = getARGV("-Jtol", 1e-7); 
+
+// Inv = 0 : no inv problem -> more quantaties compouted and saved
+// Inv = 1 : solve the inverse problem -> only necessary quantaties computed
+bool Inv      = getARGV("-Inv", 0);
+string Solver = getARGV("-Solver", "mumps");
+string testId = "horizontal_forces_disks_With_dirichlet";
+
+// ----------------------------------------------------------------
+
+// Parameters for the HGO model
+// nu1, nu2, Cst0, Cst1, Cst2, Cst3 and kappa are used in EnergyDef.edp
+// There is not a nu2 in the 2D case
+real nu1, nu2, Cst0, Cst1, Cst2, Cst3, kappa;
+string meshName;
+
+// ----------------------------------------------------------------
+
+if (caseId == 0){
+    // Test case works good with small z domain
+    nu1  = 1.;       nu2 = nu1;
+    Cst0 = 10.;     Cst1 = 0.4;
+    Cst2 = 15.;     Cst3 = 0.9;
+    kappa = 80.; 
+    if (!Inv) g = 4;
+    meshName = "Toy_Model_with_surface_Dirichletbc_smallerz";
+}
+if (caseId == 2){
+    // This test cas contains the exact values from IHU in N/cm^2
+    nu1  = 1.0;         nu2 = nu1;
+    Cst0 = 0.1804;     Cst1 = 9.242;
+    Cst2 = 0.0580;     Cst3 = 15.972;
+    kappa = 80.; 
+    if (!Inv) g = 5.;
+    meshName = "Toy_Model_with_surface_Dirichletbc_smallerz";
+}
+if (caseId == 2.2){
+    // This test cas contains values from IHU in N/cm^2
+    // With these set of parameters you get a great deformation that in the test cas 2
+    // However it takes more time to run
+    nu1  = 1.0;         nu2 = nu1;
+    Cst0 = 0.1804;     Cst1 = 9;
+    Cst2 = 0.0580;     Cst3 = 15;
+    kappa = 80.; 
+    if (!Inv) g = 5.;
+    meshName = "Toy_Model_with_surface_Dirichletbc_smallerz";
+}
+
+// ----------------------------------------------------------------
+
+if (caseId == 10){
+    nu1  = 0.1;       nu2 = nu1;
+    Cst0 = 10.;     Cst1 = 0.5;
+    Cst2 = 10.;     Cst3 = 0.9;
+    kappa = 40.; 
+    if (!Inv) g = 2;
+    meshName = "Toy_Model_with_more_holes";
+}
+if (caseId == 12){
+    nu1 = 0.1;
+    nu2 = 0.1;
+    C0 = 0.000375;
+    C1 = 8.;
+    C2 = 0.0576;
+    C3 = 16.;
+    kappa = 20;
+    if (!Inv) g = 1.0;
+    meshName = "Toy_Model_with_more_holes";
+}
+
+if (caseId == 100){
+    // Test case works good with small z domain
+    nu1  = 1.;       nu2 = nu1;
+    Cst0 = 10.;     Cst1 = 0.5;
+    Cst2 = 15.;     Cst3 = 0.9;
+    kappa = 80.; 
+    if (!Inv) g = 4;
+    meshName = "Toy_Model_with_ligne_Dirichletbc";
+}
+
+// ----------------------------------------------------------------
+
+// basic path
+string mode = "Direct";
+if (Inv)
+    mode = "Inverse";
+
+string res = "res/"
+           + dim + "D_case_MPI/"
+           + "Test_" + testId + "/"
+           + mode + "/"
+           + "case_" + caseId + "/";
+
+if (mpirank == 0) exec("mkdir -p " + res);
+ofstream data(res + "data.txt");
+
+if (mpirank == 0) {
+
+    exec("mkdir -p " + res);
+    exec("mkdir -p " + res + "en");
+    exec("mkdir -p " + res + "grad");
+    exec("mkdir -p " + res + "vol");
+    exec("mkdir -p " + res + "jac");
+    exec("mkdir -p " + res + "mesh");
+    exec("mkdir -p " + res + "fiber");
+
+    cout << "Test case " << endl;
+    cout << "==================" << endl;
+    cout << endl;
+    
+    cout << "testId   = " << testId   << endl;
+    cout << "caseId   = " << caseId   << endl;
+    cout << "Mesh Name= " << meshName << endl;
+    cout << "dim      = " << dim      << endl;
+    cout << "mode     = " << mode     << endl;
+    cout << "Inv      = " << Inv      << endl;
+    cout << "Check    = " << Check    << endl;
+    cout << "Solver   = " << Solver   << endl;
+    if (dim == 2) cout << "meshName = " << meshName << endl;
+    
+    cout << endl;
+    cout << "Boundary conditions" << endl;
+    cout << "-------------------" << endl;
+    cout << "bcF right = " <<  g  << endl;
+    cout << "bcF left  = " << -g << endl;
+    
+    cout << endl;
+    cout << "HGO material parameters" << endl;
+    cout << "-----------------------" << endl;
+    cout << "nu1   = " << nu1 << endl;
+    
+    if (dim == 3)
+        cout << "nu2   = " << nu2 << endl;
+
+    cout << "Cst0    = " << Cst0    << endl;
+    cout << "Cst1    = " << Cst1    << endl;
+    cout << "Cst2    = " << Cst2    << endl;
+    cout << "Cst3    = " << Cst3    << endl;
+    cout << "kappa = " << kappa << endl;
+    cout << "------------------------------" << endl;
+
+    cout << endl;
+    cout << "Line search parameters" << endl;
+    cout << "----------------------" << endl;
+    cout << "alphaMax   = " << alphaMax   << endl;
+    cout << "alphaMin   = " << alphaMin   << endl;
+    cout << "alpha      = " << alpha      << endl;
+    cout << "nbmaxls    = " << nbmaxls    << endl;
+    cout << "ArmijoCst1 = " << ArmijoCst1 << endl;
+    cout << "ArmijoCst2 = " << ArmijoCst2 << endl;
+
+    cout << endl;
+    cout << "Newton parameters" << endl;
+    cout << "-----------------" << endl;
+    cout << "Nbmax = " << Nbmax << endl;
+    cout << "tol   = " << tol   << endl;
+    cout << "Jtol  = " << Jtol  << endl;
+    cout << endl;
+
+    data << "Test case " << endl;
+    data << "==================" << endl;
+    data << endl;
+
+    data << "testId   = " << testId   << endl;
+    data << "caseId   = " << caseId   << endl;
+    data << "dim      = " << dim      << endl;
+    data << "mode     = " << mode     << endl;
+    data << "Inv      = " << Inv      << endl;
+    data << "Check    = " << Check    << endl;
+    data << "Solver   = " << Solver   << endl;
+    if (dim == 2) data << "meshName = " << meshName << endl;
+
+    data << endl;
+    data << "Boundary conditions" << endl;
+    data << "-------------------" << endl;
+    data << "bcF right = " <<  g  << endl;
+    data << "bcF left  = " << -g << endl;
+
+    data << endl;
+    data << "HGO material parameters" << endl;
+    data << "-----------------------" << endl;
+    data << "nu1   = " << nu1 << endl;
+
+    if (dim == 3)
+        data << "nu2   = " << nu2 << endl;
+
+    data << "Cst0    = " << Cst0    << endl;
+    data << "Cst1    = " << Cst1    << endl;
+    data << "Cst2    = " << Cst2    << endl;
+    data << "Cst3    = " << Cst3    << endl;
+    data << "kappa = " << kappa << endl;
+    data << "------------------------------" << endl;
+
+    data << endl;
+    data << "Line search parameters" << endl;
+    data << "----------------------" << endl;
+    data << "alphaMax   = " << alphaMax   << endl;
+    data << "alphaMin   = " << alphaMin   << endl;
+    data << "alpha      = " << alpha      << endl;
+    data << "nbmaxls    = " << nbmaxls    << endl;
+    data << "ArmijoCst1 = " << ArmijoCst1 << endl;
+    data << "ArmijoCst2 = " << ArmijoCst2 << endl;
+
+    data << endl;
+    data << "Newton parameters" << endl;
+    data << "-----------------" << endl;
+    data << "Nbmax = " << Nbmax << endl;
+    data << "tol   = " << tol   << endl;
+    data << "Jtol  = " << Jtol  << endl;
+
+    cout << endl;
+    cout << "Results folder:" << endl;
+    cout << res << endl;
+    cout << endl;
+}
+
+mpiBarrier(mpiCommWorld);
+
+ofstream en  (res + "en/energy"         + caseId + "_bcF" + g + ".txt");
+ofstream LGe (res + "grad/L2Gradenergy" + caseId + "_bcF" + g + ".txt");
+ofstream vol (res + "vol/volume"        + caseId + "_bcF" + g + ".txt");
+ofstream Jac (res + "jac/jacobian"      + caseId + "_bcF" + g + ".txt");
